@@ -471,3 +471,12 @@ composer.lock
 *.css.map
 *.sass.map
 *.scss.map
+
+# Uploads
+uploads/
+
+#VS Code
+.vscode/
+
+#Misc
+.~*

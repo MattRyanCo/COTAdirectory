@@ -74,3 +74,17 @@ button {
 button:hover {
     background-color: #27ae60;
 }
+
+table {
+    width: 50%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th {
+    padding: 8px 0px;
+    text-align:left;
+    font-size: 1.1em;;
+}
+ tr.new_family {
+    border-top: #ccc solid 1px;
+ }
