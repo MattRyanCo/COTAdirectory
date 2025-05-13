@@ -22,16 +22,13 @@ class CSVImporter {
         fgetcsv($file); // Skip header
 
         while (($row = fgetcsv($file)) !== false) {
-            // var_dump($row); // Debugging output
 
             if ($this->validateRow($row)) {
                 $data = $this->explodeRow($row); // Explode the row into a keyed array
                 $this->insertFamily($data); // Insert family data into the database
-                // Uncomment the next line to stop after the first row for testing  
             } else {
                 $this->logError("Invalid data row: " . implode(", ", $row));
             }
-            // Uncomment the next line to stop after the first row for testing  
         }
 
         fclose($file);
@@ -139,19 +136,55 @@ class CSVImporter {
     }
 }
 
-// Handle file upload
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["csv_file"])) {
-    $uploadDir = "uploads/";
-    $filePath = $uploadDir . basename($_FILES["csv_file"]["name"]);
+function handleError($message, $code) {
+    echo "<p style='color: red;'>Error $code: $message</p>";
+    exit;
+}
 
-    if (move_uploaded_file($_FILES["csv_file"]["tmp_name"], $filePath)) {
-        $importer = new CSVImporter();
-        $importer->import($filePath);
-    } else {
-        echo "<p style='color:red;'>Error: File upload failed.</p>";
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["csv_file"])) {
+    $uploadDir = "uploads/";
+    $fileName = basename($_FILES["csv_file"]["name"]);
+    $uploadFile = $uploadDir . $fileName;
+
+    // Ensure the uploads directory exists
+    if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
+        handleError("Failed to find upload directory.", 101);
     }
+
+    // Check for upload errors
+    if ($_FILES["csv_file"]["error"] !== UPLOAD_ERR_OK) {
+        handleError("File upload error. Code: " . $_FILES["csv_file"]["error"], 102);
+    }
+
+    // Move uploaded file
+    if (move_uploaded_file($_FILES["csv_file"]["tmp_name"], $uploadFile)) {
+        $importer = new CSVImporter();
+        $importer->import($uploadFile);
+    } else {
+        handleError("File save error. Code: " . $_FILES["csv_file"]["error"], 103);
+    }
+
+    echo "<p>File uploaded and imported successfully: $fileName</p>";
+
+    // Read file into memory
+    $csvData = [];
+    if (($handle = fopen($uploadFile, "r")) !== false) {
+        while (($row = fgetcsv($handle)) !== false) {
+            $csvData[] = $row;
+        }
+        fclose($handle);
+    } else {
+        handleError("Failed to read CSV file.", 104);
+    }
+
+    // This will dump it to the screen. 
+    echo "<pre>";
+    print_r($csvData);
+    echo "</pre>";
+
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -161,7 +194,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["csv_file"])) {
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h2>Upload CSV File for Import</h2>
+    <h2>Upload CSV File containing Family Import</h2>
     <form method="post" enctype="multipart/form-data">
         <label>Select CSV File:</label>
         <input type="file" name="csv_file" accept=".csv" required>
