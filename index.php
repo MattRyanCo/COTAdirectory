@@ -15,10 +15,10 @@
         <li><a href="import.php">Import CSV Data</a></li>
         <li><a href="export.php">Export Directory as CSV</a></li>
         <li><a href="display.php">Display Formatted Directory</a></li>
-        <li><a href="print.php">Print Formatted Directory</a></li>
+        <li><a href="print_booklet.php">Print Formatted Directory</a></li>
         <li><a href="search.php">Search & Edit Family</a></li>
         <li><a href="form.php">Add New Family</a></li>
-        <li><a href="reset_db.php" style="color: red;">⚠️ Reset Database</a></li>
+        <li><a href="reset_db.php" style="color: red;">⚠️ Reset Database ⚠️</a></li>
     </ul>
     </nav>
 </body>

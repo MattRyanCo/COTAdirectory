@@ -11,5 +11,8 @@
         <input type="text" name="family_name" required>
         <button type="submit">Search</button>
     </form>
+
+
+    <br><br><p><a href='index.php'>Return to main menu</a></p>
 </body>
 </html>

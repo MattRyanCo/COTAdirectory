@@ -1,0 +1,38 @@
+<?php
+require_once 'database_functions.php';
+require_once 'print.php';
+
+$printBooklet = new MembershipDirectoryPrinter();
+
+
+$introFiles = ['uploads/intro1.txt', 'uploads/intro2.txt', 'uploads/intro3.txt'];
+$outputFile = 'membership_directory.rtf';
+
+$db = new Database();
+$rtfContent = $printBooklet->generateRTFHeader();
+
+// Add intro pages
+// foreach ($introFiles as $file) {
+// 	if (file_exists($file)) {
+// 		$rtfContent .= $printBooklet->formatText(file_get_contents($file)) . "\\pard\\page\\par";
+// 	}
+// }
+$all_families = $db->readDatabase();
+
+// Add family listings
+// foreach ($all_families as $family) {
+	$rtfContent .= $printBooklet->formatFamilyListings($all_families) . "\\pard\\page\\par";
+// }
+
+$rtfContent .= "}";
+
+file_put_contents($outputFile, $rtfContent);
+
+// Closing the file 
+// fclose($output); 
+$db->closeConnection();
+
+printf("<h2>RTF file generated successfully!</h2>");
+printf("<p><a href='%s'>Download file</a></p>", $outputFile);	
+
+Printf("<p><a href='index.php'>Return to main menu.</a></p>");
