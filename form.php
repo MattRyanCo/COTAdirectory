@@ -13,7 +13,7 @@
             if (memberCount < 7) {
                 const newMember = document.createElement("div");
                 newMember.innerHTML = `
-                    <label>First Name:</label>
+                    <label>Name:</label>
                     <input type="text" name="members[first_name][]" required>
                     <label>Cell Phone:</label>
                     <input type="text" name="members[cell_phone][]">
@@ -46,12 +46,14 @@
         <label>Home Phone:</label>
         <input type="text" name="home_phone"><br>
         <label>Anniversary (MM/DD):</label>
-        <input type="text" name="anniversary"><br>
+        <input type="text" name="anniversary" title="Wedding avviversary of primary family members."><br>
 
         <h3>Members</h3>
         <div id="members">
             <div>
                 <label>First Name:</label>
+                <input type="text" name="members[first_name][]" required>
+                <label>Last Name: (if different from Family name)</label>
                 <input type="text" name="members[first_name][]" required>
                 <label>Cell Phone:</label>
                 <input type="text" name="members[cell_phone][]">
@@ -67,6 +69,6 @@
         <button type="submit">Submit</button>
     </form>
 
-    <p><a href="index.php">Return to Home</a></p>
+    <br><br><p><a href='index.php'>Return to main menu</a></p>
 </body>
 </html>

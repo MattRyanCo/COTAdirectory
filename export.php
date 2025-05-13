@@ -1,5 +1,5 @@
 <?php
-require_once 'Database.php';
+require_once 'database_functions.php';
 
 header('Content-Type: text/csv');
 header('Content-Disposition: attachment; filename="directory_export.csv"');

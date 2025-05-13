@@ -1,5 +1,5 @@
 <?php
-require_once 'Database.php';
+require_once 'database_functions.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $db = new Database();
@@ -84,6 +84,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <button type="submit" style="background-color: red;">Reset Database</button>
     </form>
 
-    <p><a href="index.php">Return to Home</a></p>
+    <br><p><a href='index.php'>Return to main menu</a></p>
 </body>
 </html>

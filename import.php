@@ -1,5 +1,5 @@
 <?php
-require_once 'Database.php';
+require_once 'database_functions.php';
 
 class CSVImporter {
     private $conn;
@@ -168,6 +168,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["csv_file"])) {
         <button type="submit">Upload & Import</button>
     </form>
 
-    <p><a href="index.php">Return to Home</a></p>
+    <p><a href='index.php'>Return to main menu</a></p>
 </body>
 </html>

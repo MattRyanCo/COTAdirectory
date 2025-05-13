@@ -1,94 +1,76 @@
 <?php
-require_once 'Database.php';
+// require_once 'database_functions.php';
+
 
 
 class MembershipDirectoryPrinter
 {
-    private $introFiles = ['intro1.txt', 'intro2.txt', 'intro3.txt'];
-    private $outputFile = 'membership_directory.rtf';
 
-    public function printDirectory($families)
-    {
-        $rtfContent = $this->generateRTFHeader();
-
-        // Add intro pages
-        foreach ($this->introFiles as $file) {
-            if (file_exists($file)) {
-                $rtfContent .= $this->formatText(file_get_contents($file)) . "\\par\\page\\par";
-            }
-        }
-
-        // Add family listings
-        foreach ($families as $family) {
-            $rtfContent .= $this->formatFamilyListing($family) . "\\par\\page\\par";
-        }
-
-        $rtfContent .= "}";
-
-        file_put_contents($this->outputFile, $rtfContent);
-    }
-
-    private function generateRTFHeader()
+    public function generateRTFHeader()
     {
         return "{\\rtf1\\ansi\\deff0\\nouicompat\\fs24 ";
     }
 
-    private function formatText($text)
+    public function formatText($text)
     {
         return str_replace("\n", "\\par ", htmlspecialchars($text));
     }
 
-    private function formatFamilyListing($family)
+    /**
+     * Undocumented function
+     *
+     * @param [type] $families all family data 
+     * @return void
+     */
+    public function formatFamilyListings($families)
     {
-        header('Content-Type: text/rtf');
-        header('Content-Disposition: attachment; filename="membership_directory.rtf"');
-
         $db = new Database();
         $conn = $db->getConnection();
-        $output = fopen('php://output', 'w');
+        $ictr = 1;
+        $listing =" ";
+        while ($ictr < $families->num_rows ) {
+            $one_family = $families->fetch_assoc();
+            // var_dump($one_family);
+            printf("Processing family: %s<br>", $one_family['family_name']);
+            $listing .= "\\par\\pard\\keepn\\b " . htmlspecialchars($one_family['family_name']) . "\\plain";
+            if ( $one_family['primary_name_2']!= "") {
+                $listing .= "\\par\\pard\\keepn " . htmlspecialchars($one_family['primary_name_1']) . " & " . htmlspecialchars($one_family['primary_name_2']);
+            } else {
+                $listing .= "\\par\\pard\\keepn " . htmlspecialchars($one_family['primary_name_1']);
+            }   
 
-        fputcsv($output, ["Family Name", "Member Name", "Address", "Address 2", "City", "State", "Zip", "Home Phone", "Cell Phone 1", "Email 1", "Birthday 1", "Cell Phone 2", "Email 2", "Birthday 2", "Anniversary"]);
+            $listing .= "\\par\\pard\\keepn " . htmlspecialchars($one_family['address']) . " " . htmlspecialchars($one_family['address_2']);
+            $listing .= "\\par\\pard\\keepn " . htmlspecialchars($one_family['city']) . ", " . htmlspecialchars($one_family['state']) . " " . htmlspecialchars($one_family['zip']);
+            if ($one_family['home_phone'] != "") {
+                $listing .= "\\par\\pard\\keepn H: " . htmlspecialchars($one_family['home_phone']);
+            }
+            if ($one_family['primary_cell_2'] != "") {
+                $listing .= "\\par\\pard\\keepn " . $one_family['primary_name_1'] . " c: " . $one_family['primary_cell_1'] . "  " . $one_family['primary_name_2'] . " c: " .  $one_family['primary_cell_2'];
+            } else {
+                $listing .= "\\par\\pard\\keepn " . $one_family['primary_name_1'] . " c: " . $one_family['primary_cell_1'];
+            }
 
-        $families = $conn->query("SELECT * FROM families");
-        while ($family = $families->fetch_assoc()) {
-
-            // Output the primary members from the families table
-            fputcsv($output, [
-                $family['family_name'], 
-                $family['primary_name_1'] . " & " . $family['primary_name_2'],
-                $family['address'] . " " . $family['address_2'],
-                $family['city'] . ", " . $family['state'] . " " . $family['zip'],
-                "Home Phone: " . $family['home_phone'],
-                $family['primary_name_1'] . " cell: " . $family['primary_cell_1'] . " email: " . $family['primary_email_1'] . " birthday: " . $family['primary_bday_1'],
-                $family['primary_name_2'] . " cell: " . $family['primary_cell_2'] . " email: " . $family['primary_email_2'] . " birthday: " . $family['primary_bday_2'],     
-                $family['anniversary']
-            ]);
-
-
-            $listing = "{\\b " . htmlspecialchars($family['family_name']) . "}\\par ";
-            $listing .= htmlspecialchars($family['primary_name_1']) . " & " . htmlspecialchars($family['primary_name_2']) . "\\par ";
-            $listing .= htmlspecialchars($family['address']) . " " . htmlspecialchars($family['address_2']) . "\\par ";
-            $listing .= htmlspecialchars($family['city']) . ", " . htmlspecialchars($family['state']) . " " . htmlspecialchars($family['zip']);
-            return $listing;
+            // Get family members
+            $individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $one_family['id'] . " ORDER BY `first_name`");
+            if ( ! $individuals->num_rows == 0) {
+                $listing .= "   \\par\\pard\\keepn\\i " . "    Family Members \\plain";
+                foreach ($individuals as $individual) {
+                    $listing .= "\\par\\pard\\keepn " . "    " . $individual['first_name'] . " DOB: " . htmlspecialchars($individual['birthday']);
+                }
+            }
+            $ictr++;
+            $listing .="\\par";
         }
+        return $listing;
     }
 }
 
-// Example usage
-// $families = [
-//     [
-//         'family_name' => 'Smith',
-//         'primary_name_1' => 'John',
-//         'primary_name_2' => 'Jane',
-//         'address' => '123 Main St',
-//         'address_2' => 'Apt 4B',
-//         'city' => 'Springfield',
-//         'state' => 'IL',
-//         'zip' => '62704'
-//     ],
-//     // Add more families as needed
-// ];
+$db = new Database();
+$conn = $db->getConnection();
+$families = $conn->query("SELECT * FROM families ORDER BY `family_name`");
+$num_families = $families->num_rows;
+$ictr = 1;
 
-// $printer = new MembershipDirectoryPrinter();
-// $printer->printDirectory($families);
+$printer = new MembershipDirectoryPrinter();
+  
 ?>

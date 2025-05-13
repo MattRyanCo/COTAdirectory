@@ -1,5 +1,5 @@
 <?php
-require_once 'Database.php';
+require_once 'database_functions.php';
 
 ?> 
 <!DOCTYPE html>
@@ -59,7 +59,7 @@ require_once 'Database.php';
 				// Get family members
 				$individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id'] . " ORDER BY `first_name`");
 				if ( ! $individuals->num_rows == 0) {
-					printf("<tr><td></td><td><strong>Family Members</strong></td><td></td></tr>");
+					printf("<tr><td></td><td><i>Family Members</i></td><td></td></tr>");
 					foreach ($individuals as $individual) {
 						printf("<tr><td></td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td></tr>",$individual['first_name'], $individual['last_name'],$individual['birthday'], $individual['cell_phone'], $individual['email']);
 					}
@@ -74,6 +74,8 @@ require_once 'Database.php';
 		echo "\n</table></body></html>"; 
 		?> 
 	</center> 
+
+	<br><p><a href='index.php'>Return to main menu</a></p>
 </body> 
 
 </html>

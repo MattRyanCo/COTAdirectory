@@ -16,5 +16,13 @@ class Database {
     public function closeConnection() {
         $this->conn->close();
     }
+
+    public function readDatabase() {
+        $families = $this->conn->query("SELECT * FROM families ORDER BY `family_name`");
+        if ($families === FALSE) {
+            die("Error: " . $this->conn->error);
+        }
+        return $families;
+    }
 }
 ?>
