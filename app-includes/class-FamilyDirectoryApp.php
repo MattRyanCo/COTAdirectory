@@ -32,6 +32,7 @@ class FamilyDirectoryApp
                 <li><a href="/app-includes/print_booklet.php">Print Formatted Directory</a></li>
                 <li><a href="/app-includes/search.php">Search & Edit Family</a></li>
                 <li><a href="/app-includes/add_family_form.php">Add New Family</a></li>
+                <li><a href="/app-includes/upcoming_anniversary_dates.php">Display/Print Upcoming Anniversaries</a></li>
                 <li><a href="/app-includes/reset_db.php" style="color: red;">⚠️ Reset Database ⚠️</a></li>
             </ul>
             </nav>
