@@ -1,4 +1,5 @@
 <?php
+// echo nl2br(__FILE__ . ' loaded' . PHP_EOL);
 class Database {
     private $conn;
     
@@ -18,7 +19,7 @@ class Database {
     }
 
     public function readDatabase() {
-        $families = $this->conn->query("SELECT * FROM families ORDER BY `family_name`");
+        $families = $this->conn->query("SELECT * FROM families ORDER BY `familyname`");
         if ($families === FALSE) {
             die("Error: " . $this->conn->error);
         }
