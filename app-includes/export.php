@@ -1,7 +1,8 @@
 <?php
+/**
+ * Export directory data to CSV
+ */
 require_once '../app-includes/database_functions.php';
-// echo nl2br(__FILE__ . ' loaded' . PHP_EOL);
-
 
 header('Content-Type: text/csv');
 header('Content-Disposition: attachment; filename="directory_export.csv"');
@@ -58,26 +59,7 @@ fputcsv($output, [
 
 $families = $conn->query("SELECT * FROM families");
 while ($family = $families->fetch_assoc()) {
-
-    // Output the primary members from the families table
-    // fputcsv($output, [
-    //     $family['familyname'],
-    //     $family['name1'],
-    //     $family['name2'],
-    //     $family['address'],
-    //     $family['address2'],
-    //     $family['city'],
-    //     $family['state'],
-    //     $family['zip'],
-    //     $family['homephone'],
-    //     $family['cellphone1'], 
-    //     $family['email1'], 
-    //     $family['bday1'],
-    //     $family['cellphone2'], 
-    //     $family['email2'], 
-    //     $family['bday2'],
-    //     $family['annday']
-    // ]);
+    // Initialize family data
     $one_family = sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", 
         $family['familyname'],
         $family['name1'],
