@@ -480,3 +480,5 @@ uploads/
 
 #Misc
 .~*
+
+app-includes/import.php

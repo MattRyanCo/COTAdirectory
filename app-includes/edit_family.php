@@ -4,12 +4,12 @@ require_once 'database_functions.php';
 $db = new Database();
 $conn = $db->getConnection();
 
-if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["family_name"])) {
-    $family_name = $_GET["family_name"];
+if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
+    $familyname = $_GET["familyname"];
     
     // Fetch family record
-    $stmt = $conn->prepare("SELECT * FROM families WHERE family_name = ?");
-    $stmt->bind_param("s", $family_name);
+    $stmt = $conn->prepare("SELECT * FROM families WHERE familyname = ?");
+    $stmt->bind_param("s", $familyname);
     $stmt->execute();
     $result = $stmt->get_result();
     $family = $result->fetch_assoc();
@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["family_name"])) {
     <form action="update_family.php" method="post">
         <input type="hidden" name="family_id" value="<?= $family['id'] ?>">
         <label>Family Name:</label>
-        <input type="text" name="family_name" value="<?= $family['family_name'] ?>" required><br>
+        <input type="text" name="familyname" value="<?= $family['familyname'] ?>" required><br>
         <label>Address:</label>
         <input type="text" name="address" value="<?= $family['address'] ?>"><br>
         <label>City:</label>
@@ -49,21 +49,23 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["family_name"])) {
         <label>Zip Code:</label>
         <input type="text" name="zip" value="<?= $family['zip'] ?>"><br>
         <label>Home Phone:</label>
-        <input type="text" name="home_phone" value="<?= $family['home_phone'] ?>"><br>
-        <label>Anniversary (MM/DD):</label>
-        <input type="text" name="anniversary" value="<?= $family['anniversary'] ?>"><br>
+        <input type="text" name="homephone" value="<?= $family['homephone'] ?>"><br>
+        <label>annday (MM/DD):</label>
+        <input type="text" name="annday" value="<?= $family['annday'] ?>"><br>
 
         <h3>Members</h3>
         <?php while ($member = $members->fetch_assoc()): ?>
             <div>
-                <label>First Name:</label>
+                <label>Name:</label>
                 <input type="text" name="members[first_name][]" value="<?= $member['first_name'] ?>">
                 <label>Cell Phone:</label>
                 <input type="text" name="members[cell_phone][]" value="<?= $member['cell_phone'] ?>">
-                <label>Email:</label>
+                <label>email:</label>
                 <input type="email" name="members[email][]" value="<?= $member['email'] ?>">
-                <label>Birthday (MM/DD):</label>
-                <input type="text" name="members[birthday][]" value="<?= $member['birthday'] ?>"><br>
+                <label>Birthday:</label>
+                <input type="text" name="members[birthday][]" value="<?= $member['birthday'] ?>">
+                <label>Baptism:</label>
+                <input type="text" name="members[baptism][]" value="<?= $member['baptism'] ?>"><br>
             </div>
         <?php endwhile; ?>
 

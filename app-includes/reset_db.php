@@ -1,5 +1,5 @@
 <?php
-require_once 'database_functions.php';
+require_once '../app-includes/database_functions.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $db = new Database();
@@ -10,38 +10,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $conn->query("DELETE FROM members");
         $conn->query("DELETE FROM families");
 
-        // Drop and recreate the families table
-        $conn->query("DROP TABLE IF EXISTS families");
-        $createFamiliesTableSQL = "
-            CREATE TABLE families (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                family_name VARCHAR(255) NOT NULL,
-                primary_name_1 VARCHAR(50),
-                primary_name_2 VARCHAR(50),
-                address VARCHAR(255),
-                address2 VARCHAR(255),
-                city VARCHAR(100),
-                state VARCHAR(10),
-                zip VARCHAR(20),
-                home_phone VARCHAR(20),
-                primary_cell_1 VARCHAR(20),
-                primary_cell_2 VARCHAR(20),
-                primary_email_1 VARCHAR(50),
-                primary_email_2 VARCHAR(50),
-                primary_bday_1 VARCHAR(5),
-                primary_bday_2 VARCHAR(5),    
-                anniversary VARCHAR(5),
-                update_info TEXT
-            )
-        ";
-        if ($conn->query($createFamiliesTableSQL) !== TRUE) {
-            echo "<p style='color: red;'>Error recreating families table: " . $conn->error . "</p>";
-            $db->closeConnection();
-            exit;
-        }
-
+        // Disable foreign key checks to avoid constraint errors
         // Drop and recreate the members table
+        $conn->query("SET FOREIGN_KEY_CHECKS=0");
         $conn->query("DROP TABLE IF EXISTS members");
+        $conn->query("SET FOREIGN_KEY_CHECKS=1"); // Re-enable constraints
         $createMembersTableSQL = "
             CREATE TABLE members (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -51,6 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 cell_phone VARCHAR(20),
                 email VARCHAR(255),
                 birthday VARCHAR(5),
+                baptism VARCHAR(5),
                 FOREIGN KEY (family_id) REFERENCES families(id) ON DELETE CASCADE
             )
         ";
@@ -59,6 +33,41 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } else {
             echo "<p style='color: red;'>Error recreating members table: " . $conn->error . "</p>";
         }
+
+        // Drop and recreate the families table
+        $conn->query("SET FOREIGN_KEY_CHECKS=0");
+        $conn->query("DROP TABLE IF EXISTS families");
+        $conn->query("SET FOREIGN_KEY_CHECKS=1"); // Re-enable constraints
+        $createFamiliesTableSQL = "
+            CREATE TABLE families (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                familyname VARCHAR(255) NOT NULL,
+                name1 VARCHAR(50),
+                name2 VARCHAR(50),
+                address VARCHAR(255),
+                address2 VARCHAR(255),
+                city VARCHAR(100),
+                state VARCHAR(10),
+                zip VARCHAR(20),
+                homephone VARCHAR(20),
+                cellphone1 VARCHAR(20),
+                cellphone2 VARCHAR(20),
+                email1 VARCHAR(50),
+                email2 VARCHAR(50),
+                bday1 VARCHAR(5),
+                bday2 VARCHAR(5),
+                bap1 VARCHAR(5),
+                bap2 VARCHAR(5),
+                annday VARCHAR(5)
+            )
+        ";
+        if ($conn->query($createFamiliesTableSQL) !== TRUE) {
+            echo "<p style='color: red;'>Error recreating families table: " . $conn->error . "</p>";
+            $db->closeConnection();
+            exit;
+        }
+
+
     } else {
         echo "<p style='color: red;'>Action canceled. No changes were made.</p>";
     }
@@ -84,6 +93,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <button type="submit" style="background-color: red;">Reset Database</button>
     </form>
 
-    <br><p><a href='index.php'>Return to main menu</a></p>
+    <br><p><a href='../index.php'>Return to main menu</a></p>
 </body>
 </html>

@@ -1,22 +1,22 @@
 <?php
-require_once 'database_functions.php';
+require_once '../app-includes/database_functions.php';
 
 $db = new Database();
 $conn = $db->getConnection();
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Sanitize & Validate Family Data
-    $family_name = sanitize($_POST["family_name"]);
+    $familyname = sanitize($_POST["familyname"]);
     $address = sanitize($_POST["address"]);
     $city = sanitize($_POST["city"]);
     $state = sanitize($_POST["state"]);
     $zip = sanitize($_POST["zip"]);
-    $home_phone = sanitize($_POST["home_phone"]);
-    $anniversary = formatDate($_POST["anniversary"]);
+    $homephone = sanitize($_POST["homephone"]);
+    $annday = formatDate($_POST["annday"]);
 
     // Insert family record using prepared statements
-    $stmt = $conn->prepare("INSERT INTO families (family_name, address, city, state, zip, home_phone, anniversary) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssss", $family_name, $address, $city, $state, $zip, $home_phone, $anniversary);
+    $stmt = $conn->prepare("INSERT INTO families (familyname, address, city, state, zip, homephone, annday) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssss", $familyname, $address, $city, $state, $zip, $homephone, $annday);
 
     if ($stmt->execute()) {
         $family_id = $stmt->insert_id;
@@ -54,9 +54,9 @@ function sanitize($data) {
     return htmlspecialchars($data, ENT_QUOTES);
 }
 
-// Validate Email Format
+// Validate email Format
 function validateEmail($email) {
-    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+    return filter_var($email, FILTER_VALIDATE_email) !== false;
 }
 
 // Format MM/DD Date Correctly
