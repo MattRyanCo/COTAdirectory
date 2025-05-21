@@ -11,21 +11,23 @@ $conn = $db->getConnection();
 $output = fopen('php://output', 'w');
 
 fputcsv($output, [
-    "Family Name",
-    "Member Name",
-    "Member Name 2",
-    "Address",
-    "Address 2",
-    "City",
-    "State",
-    "Zip",
-    "Home Phone",
-    "Cell Phone 1",
-    "email 1",
-    "Birthday 1",
-    "Cell Phone 2",
-    "email 2",
-    "Birthday 2",
+    "familyname",
+    "name1",
+    "name2",
+    "address",
+    "address2",
+    "city",
+    "state",
+    "zip",
+    "homephone",
+    "cellphone1",
+    "cellphone2",
+    "email1",
+    "email2",
+    "bday1",
+    "bday2",
+    "bap1",
+    "bap2",
     "annday",
     'othername1',
     'otherbday1',
@@ -76,7 +78,7 @@ while ($family = $families->fetch_assoc()) {
     //     $family['bday2'],
     //     $family['annday']
     // ]);
-    $one_family = sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", 
+    $one_family = sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", 
         $family['familyname'],
         $family['name1'],
         $family['name2'],
@@ -87,12 +89,12 @@ while ($family = $families->fetch_assoc()) {
         $family['zip'],
         $family['homephone'],
         $family['cellphone1'], 
+        $family['cellphone2'],
         $family['email1'], 
-        $family['bday1'],
-        $family['bap1'],
-        $family['cellphone2'], 
         $family['email2'], 
+        $family['bday1'],
         $family['bday2'],
+        $family['bap1'],
         $family['bap2'],
         $family['annday']);
 
@@ -101,18 +103,9 @@ while ($family = $families->fetch_assoc()) {
     $all_members = [];
     while ($member = $members->fetch_assoc()) {
 
-        // fputcsv($output, [
-        //     $family['familyname'], 
-        //     $member['first_name'] . ' ' . $member['last_name'],
-        //     $member['cell_phone'],
-        //     '','','','','','', 
-        //     $member['email'], 
-        //     $member['birthday']
-        // ]);
         $one_family .= sprintf("%s,%s,%s,%s,%s,%s",$member['first_name'],$member['last_name'],$member['cell_phone'],$member['email'], $member['birthday'], $member['baptism']);
     }
     // write out all data on a single csv record
-    // $full_family = $family + $one_family;
     fputcsv($output, explode(",", $one_family));
 }
 fclose($output);
