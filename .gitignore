@@ -480,8 +480,4 @@ uploads/
 
 #Misc
 .~*
-<<<<<<< HEAD
-
-app-includes/import.php
-=======
->>>>>>> bc659e4 (Display function updates.)
+*.rtf
