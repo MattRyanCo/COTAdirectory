@@ -194,6 +194,19 @@ class CSVImporter {
         return $family_id;
     }
 
+    /**
+     * Insert a member into the database
+     *
+     * Table: members will have a record for EVERY family member
+     * 
+     * @param int $family_id
+     * @param string $first_name
+     * @param string $last_name
+     * @param string $cell_phone
+     * @param string $email
+     * @param string $birthday
+     * @param string $baptism
+     */
     private function insertMember($family_id, $first_name, $last_name, $cell_phone, $email, $birthday, $baptism) {
         $stmt = $this->conn->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $cellphone  = $this->formatPhone($cell_phone);

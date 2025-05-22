@@ -9,11 +9,11 @@ require_once '../app-includes/format_family_listing.php';
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Family Directory Management</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+<meta charset="UTF-8">
+<title>Family Directory Management</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+<link rel="stylesheet" href="../app-assets/css/styles.css">
 </head>
-<body>
 
 <?php
 
@@ -23,30 +23,30 @@ require_once '../app-includes/format_family_listing.php';
         $families = $conn->query("SELECT * FROM families ORDER BY `familyname`");
 		$num_families = $families->num_rows;
 		$ictr = 1;
-
 ?>
-		<h1>COTA Directory</h1> 
-		<h3>Member Listing - <?php echo $num_families . ' Families'?></h3> 
+<body>
+<h1>COTA Directory</h1> 
+<h3>Member Listing - <?php echo $num_families . ' Families'?></h3> 
 
-		<html>
-			<body>
-				<table class="directory-table">
-					<tr><th>Family Name/Address</th><th><i>Family Members</i></th></tr>
-					<tr><th><i><td>Name</td><td>Email</td><td>Cell</td><td>DoB</td><td>DoBaptism</td></i></th></tr>
-		<?php
+<html>
+	<body>
+		<table class="directory-table">
+			<tr><th>Family Name/Address</th><th><i>Family Members</i></th></tr>
+			<tr><th><i><td>Name</td><td>Email</td><td>Cell</td><td>DoB</td><td>DoBaptism</td></i></th></tr>
+
+<?php
 		while ($ictr < $num_families ) {
 			// Get family details
 			$family = $families->fetch_assoc(); 
 			// Get all family members
-			$individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id'] . " ORDER BY `first_name`");
+			// $individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id'] . " ORDER BY `first_name`");
+			$individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id']);
 
-			$result = format_family_listing_for_display($family, $individuals);	
-			var_dump($result);
+			echo format_family_listing_for_display($family, $individuals);	
 			$ictr++;
 		} 
 
 		// Closing the file 
-		// fclose($output); 
         $db->closeConnection();
 
 		echo "\n</table></body></html>"; 

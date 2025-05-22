@@ -96,7 +96,7 @@ button {
 }
 
 table {
-    width: 50%;
+    width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
 }
@@ -112,11 +112,20 @@ body > center > table > tbody > tr > th {
 table.directory-table > tbody > tr:nth-child(2) {
     font-style: italic important;
     border-bottom: #ccc solid 1px;
+    margin-top: 1em;
 }
 
- tr.new_family {
+ tr.new-family {
     border-top: #ccc solid 1px;
+    vertical-align: text-bottom;
+    line-height: 1em;
  }
+ tr.new-family h3 {
+    margin-bottom: 0 !important;
+    margin-top: 1em !important;
+    padding-bottom: 0 !important;
+}
+
 
  /* Tooltip container */
 .tooltip {
