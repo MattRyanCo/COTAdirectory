@@ -83,6 +83,8 @@ while ($family = $families->fetch_assoc()) {
     // Fetch members of this family
     $members = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id']);
     $all_members = [];
+    $one_family .= ',';
+    // Loop through each member and append their data
     while ($member = $members->fetch_assoc()) {
 
         $one_family .= sprintf("%s,%s,%s,%s,%s,%s",$member['first_name'],$member['last_name'],$member['cell_phone'],$member['email'], $member['birthday'], $member['baptism']);
