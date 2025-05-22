@@ -3,7 +3,7 @@ body {
     background-color: #f4f4f4;
     color: #333;
     margin: 0;
-    padding: 20px;
+    /* padding: 20px; */
 }
 
 h2 {
@@ -36,6 +36,7 @@ a:hover {
     color: #3498db;
 }
 
+body > form
 form {
     background: white;
     padding: 20px 40px 20px 20px;
@@ -102,8 +103,17 @@ table {
 th {
     padding: 8px 0px;
     text-align:left;
-    font-size: 1.1em;;
+    font-size: 1.1em;
 }
+table > tr > th,
+body > center > table > tbody > tr > th {
+    text-align: left;
+}
+table.directory-table > tbody > tr:nth-child(2) {
+    font-style: italic important;
+    border-bottom: #ccc solid 1px;
+}
+
  tr.new_family {
     border-top: #ccc solid 1px;
  }
