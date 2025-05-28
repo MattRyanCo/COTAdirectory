@@ -4,6 +4,12 @@
  */
 require_once '../app-includes/database_functions.php';
 
+function getLastName($family_id, $conn) {
+    $family = $conn->query("SELECT familyname FROM families WHERE id = " . intval($family_id))->fetch_assoc();
+
+    return $family['familyname'] ?? 'Unknown';
+}
+
 function getUpcomingAnniversaries() {
     $db = new Database();
     $conn = $db->getConnection();
@@ -30,6 +36,8 @@ function getUpcomingAnniversaries() {
         return $date >= $today && $date <= $end;
     }
 
+
+
     // 1. Marriage Anniversaries (families table)
     $families = $conn->query("SELECT familyname, name1, name2, annday FROM families WHERE annday IS NOT NULL AND annday != ''");
     while ($fam = $families->fetch_assoc()) {
@@ -40,17 +48,23 @@ function getUpcomingAnniversaries() {
     }
 
     // 2. Birthdays (members table)
-    $members = $conn->query("SELECT first_name, last_name, birthday FROM members WHERE birthday IS NOT NULL AND birthday != ''");
+    $members = $conn->query("SELECT family_id, first_name, last_name, birthday FROM members WHERE birthday IS NOT NULL AND birthday != ''");
     while ($mem = $members->fetch_assoc()) {
         if (isUpcoming($mem['birthday'], $today, $end)) {
+            if ( $mem['last_name'] === '' ) {
+                $mem['last_name'] = getLastName($mem['family_id'], $conn);
+            }
             $results['Birthdays'][] = "{$mem['birthday']} - {$mem['first_name']} {$mem['last_name']}";
         }
     }
 
     // 3. Baptisms (members table)
-    $members = $conn->query("SELECT first_name, last_name, baptism FROM members WHERE baptism IS NOT NULL AND baptism != ''");
+    $members = $conn->query("SELECT family_id, first_name, last_name, baptism FROM members WHERE baptism IS NOT NULL AND baptism != ''");
     while ($mem = $members->fetch_assoc()) {
         if (isUpcoming($mem['baptism'], $today, $end)) {
+            if ( $mem['last_name'] === '' ) {
+                $mem['last_name'] = getLastName($mem['family_id'], $conn);
+            }
             $results['Baptisms'][] = " {$mem['baptism']} - {$mem['first_name']} {$mem['last_name']}";
         }
     }
@@ -64,7 +78,7 @@ function getUpcomingAnniversaries() {
 <head>
     <meta charset="UTF-8">
     <title>Import CSV Data</title>
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../app-assets/css/styles.css">
 </head>
 <body>
     <h2>Upcoming Anniversaries</h2>

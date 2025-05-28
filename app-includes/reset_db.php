@@ -81,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Reset Database</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../app-assets/css/styles.css">
 </head>
 <body>
     <h2>⚠️ Reset Database ⚠️</h2>

@@ -1,9 +1,21 @@
+html {
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    html {
+        font-size: 14px;
+    }
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     color: #333;
     margin: 0;
-    /* padding: 20px; */
+    padding: 20px;
+    font-size: 1rem;
 }
 
 h2 {
@@ -101,7 +113,7 @@ table {
     margin-top: 20px;
 }
 th {
-    padding: 8px 0px;
+    padding: 8px 0px 0px;
     text-align:left;
     font-size: 1.1em;
 }
@@ -110,7 +122,6 @@ body > center > table > tbody > tr > th {
     text-align: left;
 }
 table.directory-table > tbody > tr:nth-child(2) {
-    font-style: italic important;
     border-bottom: #ccc solid 1px;
     margin-top: 1em;
 }

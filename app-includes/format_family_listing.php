@@ -1,4 +1,8 @@
 <?php
+
+function format_family_listing_for_print($family, $members) {
+    return TRUE;
+}
 /**
  * format_family_listing_for_display
  *
@@ -6,152 +10,169 @@
  * @param [type] $members - Result of database query of all members of a specified family ID
  * @return string | null
  */
-function format_family_listing_for_display($family, $members) {
-
+function format_family_listing_for_display($family, $members) { 
     // Set key logicals
     $num_members = $members->num_rows;
-    // var_dump($num_members);
     $ictr = 1;
     $addr1 = (isset($family['address']) && $family['address'] !== "") ? $family['address'] : false;
     $addr2 = (isset($family['address2']) && $family['address2'] !== "") ? $family['address2'] : false;
     $city = (isset($family['city']) && $family['city'] !== "") ? $family['city'] : false;
     $homephone = (isset($family['homephone']) && $family['homephone'] !== "") ? $family['homephone'] : false;
-
-    if ( $addr1 || $city || $homephone ) {
-        $got_left = TRUE;  // Some data for left side of display
-    } else {
-        $got_left = FALSE;  // No data for left side of display
-    }
     $placeholder = '';
-   
-    // Format for 1st row of family listing - bolded Family name,  first, last, email, cell, birthday, baptism
-    $format_string_row_class = "<tr class='new-family' ><td><h3>%s</h3></td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
+
+        // Format for 1st row of family listing - bolded Family name,  first, last, email, cell, birthday, baptism
+    $format_string_row_1 = "<tr class='new-family' ><td><h3>%s</h3></td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
 
     // Secondary format for family listing - Address component, first, last, email, cell, birthday, baptism
     $format_string = "<tr><td>%s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
+    $format_string_city = "<tr><td>%s, %s %s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
+    $format_string_homephone = "<tr><td>Home: %s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
 
-    // Get 1st member of family
-    $individual = $members->fetch_assoc();
-    if ($individual) {
-        $formatted_family = sprintf($format_string_row_class, $family['familyname'],
+
+    // Outer loop through left side of display - $lctr is line in left side
+    for ( $lctr = 1; $lctr <= 4; $lctr++ ) {
+        if ( $lctr == 1 ) {
+                // Get 1st member of family
+            $individual = $members->fetch_assoc();
+            if ($individual) {
+                $formatted_family = sprintf(
+                    $format_string_row_1, 
+                    $family['familyname'],
+                    $individual['first_name'] ?? '',
+                    $individual['last_name'] ?? '',
+                    $individual['email'] ?? '',
+                    $individual['cell_phone'] ?? '',
+                    $individual['birthday'] ?? '',
+                    $individual['baptism'] ?? ''
+                );
+            } else {
+                // No members found
+                break;
+            }
+ 
+        } elseif ( $lctr == 2 ) {
+            // Get next member of family
+            $individual = get_next_member($members);
+            if ( $addr1 ) {
+                $left_side = sprintf("%s", $family['address']);
+                $addr1 = false;
+                if ( $addr2 ) {
+                    $left_side .= sprintf(", %s", $family['address2']);
+                    $addr2 = false;
+                }
+            } elseif ( $homephone ){
+                $left_side = sprintf(
+                    "<tr><td>Home: %s</td>", 
+                    $family['homephone']
+                );
+                $addr2 = false;
+                $city = false;
+                $homephone = false;
+            } else {
+                // If no address, use placeholder. 
+                // Remaining left side address will be blank. 
+                $left_side = $placeholder;
+                $addr2 = false;
+                $city = false;
+            }
+            $formatted_family .= sprintf(
+                $format_string, 
+                $left_side,
+                $individual['first_name'] ?? '',
+                $individual['last_name'] ?? '',
+                $individual['email'] ?? '',
+                $individual['cell_phone'] ?? '',
+                $individual['birthday'] ?? '',
+                $individual['baptism'] ?? ''
+            );
+        } elseif ( $lctr == 3 ) {
+            // Get next member of family
+            $individual = get_next_member($members);
+                if ( $addr2 ) {
+                    $left_side = sprintf("%s", $family['address2']);
+                    $addr2 = false;
+                } elseif ( $city ) {
+                    $left_side = sprintf(
+                        "<tr><td>%s, %s %s</td>", 
+                        $family['city'], 
+                        $family['state'], 
+                        $family['zip']);
+                    $city = false;
+                } else {
+                    // If no address, use placeholder. 
+                    // Remaining left side address will be blank. 
+                    $left_side = $placeholder;
+                }
+                $formatted_family .= sprintf(
+                    $format_string, 
+                    $left_side,
+                    $individual['first_name'] ?? '',
+                    $individual['last_name'] ?? '',
+                    $individual['email'] ?? '',
+                    $individual['cell_phone'] ?? '',
+                    $individual['birthday'] ?? '',
+                    $individual['baptism'] ?? ''
+                );
+        } elseif ( $lctr == 4 ) {
+            if ( $homephone ) {
+                $left_side = sprintf(
+                    "<tr><td>Home: %s</td>", 
+                    $family['homephone']
+                );
+                $addr2 = false;
+                $city = false;
+                $homephone = false;
+            } else {
+                // If no address or phone, use placeholder. 
+                $left_side = $placeholder;
+            }
+            $formatted_family .= sprintf($format_string, $left_side,
+                $individual['first_name'] ?? '',
+                $individual['last_name'] ?? '',
+                $individual['email'] ?? '',
+                $individual['cell_phone'] ?? '',
+                $individual['birthday'] ?? '',
+                $individual['baptism'] ?? ''
+            );
+        } else {
+            // No data for left side of display
+
+        }
+    }
+    $left_side = $placeholder;
+    // Loop through rest of family members
+    while ($member = $members->fetch_assoc()) {
+        $individual = get_next_member($members);
+        $formatted_family .= sprintf(
+            $format_string, 
+            $left_side,
             $individual['first_name'] ?? '',
             $individual['last_name'] ?? '',
             $individual['email'] ?? '',
             $individual['cell_phone'] ?? '',
+            $individual['birthday'] ?? '',
+            $individual['baptism'] ?? ''
+        );
+    }
+    return $formatted_family;
+}
+
+function get_next_member($members) {
+
+    $individual = $members->fetch_assoc();
+    if ($individual) {
+        $formatted_family_member = sprintf(
+            "<tr><td>%s %s %s %s %s %s</td></tr>", 
+            $individual['first_name'] ?? '',
+            $individual['last_name'] ?? '',
+            $individual['cell_phone'] ?? '',
+            $individual['email'] ?? '',
             $individual['birthday'] ?? '',
             $individual['baptism'] ?? ''
         );
     } else {
-        // No members found
-        return '';
+        // No more members found
+        return false;
     }
-
-    // Loop through remaining members
-    while ($ictr <= $num_members) {
-        $individual = $members->fetch_assoc();
-        // if (!$individual) break;
-
-        // Get address components for left side of display
-        if ($addr1) {
-            $left_side = $family['address'];
-            $formatted_family .= sprintf($format_string, $left_side,
-                $individual['first_name'] ?? '',
-                $individual['last_name'] ?? '',
-                $individual['email'] ?? '',
-                $individual['cell_phone'] ?? '',
-                $individual['birthday'] ?? '',
-                $individual['baptism'] ?? ''
-            );
-            $addr1 = false;
-        } elseif ($addr2) {
-            $left_side = $family['address2'];
-            $formatted_family .= sprintf($format_string, $left_side,
-                $individual['first_name'] ?? '',
-                $individual['last_name'] ?? '',
-                $individual['email'] ?? '',
-                $individual['cell_phone'] ?? '',
-                $individual['birthday'] ?? '',
-                $individual['baptism'] ?? ''
-            );
-            $addr2 = false;
-        } elseif ($city) {
-            $left_side = sprintf("%s, %s %s", $family['city'], $family['state'], $family['zip']);
-            $formatted_family .= sprintf($format_string, $left_side,
-                $individual['first_name'] ?? '',
-                $individual['last_name'] ?? '',
-                $individual['email'] ?? '',
-                $individual['cell_phone'] ?? '',
-                $individual['birthday'] ?? '',
-                $individual['baptism'] ?? ''
-            );
-            $city = false;
-        } elseif ($homephone) {
-            $left_side = sprintf("Home: %s", $family['homephone']);
-            $formatted_family .= sprintf($format_string, $left_side,
-                $individual['first_name'] ?? '',
-                $individual['last_name'] ?? '',
-                $individual['email'] ?? '',
-                $individual['cell_phone'] ?? '',
-                $individual['birthday'] ?? '',
-                $individual['baptism'] ?? ''
-            );
-            $homephone = false;
-        } else {
-            $left_side = $placeholder;
-            $formatted_family .= sprintf($format_string, $left_side,
-                $individual['first_name'] ?? '',
-                $individual['last_name'] ?? '',
-                $individual['email'] ?? '',
-                $individual['cell_phone'] ?? '',
-                $individual['birthday'] ?? '',
-                $individual['baptism'] ?? ''
-            );
-        }
-
-        $ictr++;
-    }
-    if ( !$addr1 && !$addr2 && $city)  {
-    $left_side = sprintf("%s, %s %s", $family['city'], $family['state'], $family['zip']);
-    $formatted_family .= sprintf($format_string, $left_side,
-            $individual['first_name'] ?? '',
-            $individual['last_name'] ?? '',
-            $individual['email'] ?? '',
-            $individual['cell_phone'] ?? '',
-            $individual['birthday'] ?? '',
-            $individual['baptism'] ?? ''
-        );
-        $city = false;
-    }
-    if ( !$addr1 && $addr2 && $city) {
-    $left_side = sprintf("%s, %s %s", $family['city'], $family['state'], $family['zip']);
-    $formatted_family .= sprintf($format_string, $left_side,
-            $individual['first_name'] ?? '',
-            $individual['last_name'] ?? '',
-            $individual['email'] ?? '',
-            $individual['cell_phone'] ?? '',
-            $individual['birthday'] ?? '',
-            $individual['baptism'] ?? ''
-        );
-        $city = false;
-        $addr2 = false;
-    }
-    if ( !$addr1 && !$addr2 && !$city && $homephone) {
-    $left_side = sprintf("Home: %s", $family['homephone']);
-    $formatted_family .= sprintf($format_string, $left_side,
-            $individual['first_name'] ?? '',
-            $individual['last_name'] ?? '',
-            $individual['email'] ?? '',
-            $individual['cell_phone'] ?? '',
-            $individual['birthday'] ?? '',
-            $individual['baptism'] ?? ''
-        );
-        $homephone = false;
-    }
-
-
-    return $formatted_family;
-}
-
-function format_family_listing_for_print($family, $members) {
-    return TRUE;
+    return $individual;
 }

@@ -32,15 +32,16 @@ require_once '../app-includes/format_family_listing.php';
 	<body>
 		<table class="directory-table">
 			<tr><th>Family Name/Address</th><th><i>Family Members</i></th></tr>
-			<tr><th><i><td>Name</td><td>Email</td><td>Cell</td><td>DoB</td><td>DoBaptism</td></i></th></tr>
+			<tr><th>Home Phone<td><i>Name</i></td><td><i>Email</i></td><td><i>Cell</i></td><td><i>DoB</i></td><td><i>DoBaptism</i></td></th></tr>
 
 <?php
 		while ($ictr < $num_families ) {
 			// Get family details
-			$family = $families->fetch_assoc(); 
+			$family = $families->fetch_assoc();
+
 			// Get all family members
 			// $individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id'] . " ORDER BY `first_name`");
-			$individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id']);
+			$individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id']);  // no ordering
 
 			echo format_family_listing_for_display($family, $individuals);	
 			$ictr++;

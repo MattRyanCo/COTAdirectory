@@ -11,7 +11,8 @@ $db = new Database();
 $conn = $db->getConnection();
 $output = fopen('php://output', 'w');
 
-fputcsv($output, [
+// Static columns before dynamic member columns
+$header = [
     "familyname",
     "name1",
     "name2",
@@ -29,33 +30,23 @@ fputcsv($output, [
     "bday2",
     "bap1",
     "bap2",
-    "annday",
-    'othername1',
-    'otherbday1',
-    'otherbap1',
-    'othercell1',
-    'otherem1',
-    'othername2',
-    'otherbday2',
-    'otherbap2',
-    'othercell2',
-    'otherem2',
-    'othername3',
-    'otherbday3',
-    'otherbap3',
-    'othercell3',
-    'otherem3',
-    'othername4',
-    'otherbday4',
-    'otherbap4',
-    'othercell4',
-    'otherem4',
-    'othername5',
-    'otherbday5',
-    'otherbap5',
-    'othercell5',
-    'otherem5' 
-]);
+    "annday"
+];
+
+// Get maxFamilyMembers from class-FamilyDirectoryApp.php
+require_once '../app-includes/class-FamilyDirectoryApp.php';
+$maxMembers = FamilyDirectoryApp::maxFamilyMembers;
+
+// Add dynamic member columns
+for ($i = 1; $i <= $maxMembers; $i++) {
+    $header[] = "othername{$i}";
+    $header[] = "otherbday{$i}";
+    $header[] = "otherbap{$i}";
+    $header[] = "othercell{$i}";
+    $header[] = "otherem{$i}";
+}
+
+fputcsv($output, $header);
 
 $families = $conn->query("SELECT * FROM families");
 while ($family = $families->fetch_assoc()) {
@@ -87,7 +78,7 @@ while ($family = $families->fetch_assoc()) {
     // Loop through each member and append their data
     while ($member = $members->fetch_assoc()) {
 
-        $one_family .= sprintf("%s,%s,%s,%s,%s,%s",$member['first_name'],$member['last_name'],$member['cell_phone'],$member['email'], $member['birthday'], $member['baptism']);
+        $one_family .= sprintf("%s %s,%s,%s,%s,%s,",$member['first_name'],$member['last_name'], $member['birthday'], $member['baptism'] ,$member['cell_phone'],$member['email']);
     }
     // write out all data on a single csv record
     fputcsv($output, explode(",", $one_family));

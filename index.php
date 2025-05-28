@@ -8,7 +8,7 @@
  * @link      https://github.com/mattryanco/cotafamilydirecotry
  * 
  * Description: A simple family directory management system.
- * Version:     1.1.0
+ * Version:     1.1.1
  * 
  */
 

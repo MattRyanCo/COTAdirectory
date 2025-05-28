@@ -61,7 +61,9 @@ class CSVImporter {
             }
 
             // Insert other members (children, etc.)
-            for ($i = 1; $i <= 5; $i++) {
+            // Get maxFamilyMembers from class-FamilyDirectoryApp.php
+            require_once '../app-includes/class-FamilyDirectoryApp.php';
+            for ($i = 1; $i <= FamilyDirectoryApp::maxFamilyMembers; $i++) {
                 $name = $row["othername$i"] ?? '';
                 if (!empty($name)) {
                     $this->insertMember(
@@ -269,7 +271,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["csv_file"])) {
 <head>
     <meta charset="UTF-8">
     <title>Import CSV Data</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../app-assets/css/styles.css">
 </head>
 <body>
     <h2>Upload CSV File containing Family Import</h2>
