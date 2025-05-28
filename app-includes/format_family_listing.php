@@ -1,6 +1,38 @@
 <?php
 
-function format_family_listing_for_print($family, $members) {
+function format_family_listing_for_print($pdfobj, $family, $members) {
+    $num_members = $members->num_rows;
+    $ictr = 1;
+    $addr1 = (isset($family['address']) && $family['address'] !== "") ? $family['address'] : false;
+    $addr2 = (isset($family['address2']) && $family['address2'] !== "") ? $family['address2'] : false;
+    $city = (isset($family['city']) && $family['city'] !== "") ? $family['city'] : false;
+    $homephone = (isset($family['homephone']) && $family['homephone'] !== "") ? $family['homephone'] : false;
+    $placeholder = '';
+
+
+    for ( $lctr = 1; $lctr <= 4; $lctr++ ) {
+        if ( $lctr == 1 ) {
+                // Get 1st member of family
+            $individual = $members->fetch_assoc();
+            if ($individual) {
+                // $formatted_family = sprintf(
+                //     $format_string_row_1, 
+                //     $family['familyname'],
+                //     $individual['first_name'] ?? '',
+                //     $individual['last_name'] ?? '',
+                //     $individual['email'] ?? '',
+                //     $individual['cell_phone'] ?? '',
+                //     $individual['birthday'] ?? '',
+                //     $individual['baptism'] ?? ''
+                // );
+                $pdfobj->MultiCell(0, 0.5, "{$family['familyname']}\n{$individual['first_name']} {$individual['last_name']} {$individual['email']} {$individual['cell_phone']} {$individual['birthday']} {$individual['baptism']}", 0, 1);
+            } else {
+                // No members found
+                break;
+            }
+        }
+    }
+
     return TRUE;
 }
 /**
