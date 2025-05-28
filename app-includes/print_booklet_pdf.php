@@ -50,6 +50,10 @@ $ictr = 1;
 
 $pageEntries = 0;
 while ($family = $families->fetch_assoc()) {
+
+
+
+
 	// Get family members
 	$individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id']);  // no ordering
 
@@ -58,7 +62,7 @@ while ($family = $families->fetch_assoc()) {
 		$pdf->Ln(0.5); // Add some space between entries
 	}
     $pdf->SetFont('Arial', '', 12);
-    $pdf->MultiCell(0, 0.5, "{$family['familyname']}\n{$family['address']}", 0, 1);
+    // $pdf->MultiCell(0, 0.5, "{$family['familyname']}\n{$family['address']}", 0, 1);
 	format_family_listing_for_print($pdf, $family, $individuals);
 
     $pageEntries++;
@@ -74,7 +78,7 @@ $pdf->MultiCell(0, 1, "Church of the Ascension, Parkesburg, PA\nPrinted " . date
 
 // Output the PDF
 $pdf->Output('F', '../uploads/membership_directory.pdf'); // Save to server
-// $pdf->Output('I'); // Still display in browser if you want
+$pdf->Output('I'); // Still display in browser if you want
 
 
 
