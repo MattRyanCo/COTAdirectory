@@ -7,10 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2025-05-23
+
 ### Added
 
-- v1.1.0 - Revise CSV export to one line per family
-- v1.1.1 - Add Date of Baptism metadata for all members - DoBap
+- Add Date of Baptism metadata for all members - DoBap
+- Added encoding function to ensure special characters in phone numages and email address display correctly. 
+- Added dynamic column heading for data export permitting up to specified number of family members. 
+- Add maxFamilyMembers constant in class-FamilyDirectoryApp.php to define max size of members db entry. 
+
+### Changed
+
+- Completed development of Display function with styling.
+- Revise CSV export to one line per family
 
 ## [1.0.0] - 2025-0513
 

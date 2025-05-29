@@ -5,7 +5,7 @@ require_once '../app-includes/print.php';
 $printBooklet = new MembershipDirectoryPrinter();
 
 
-$introFiles = ['../../uploads/intro1.txt', 'uploads/intro2.txt', 'uploads/intro3.txt'];
+$introFiles = ['../uploads/intro1.txt', '../uploads/intro2.txt', '../uploads/intro3.txt'];
 $outputFile = 'membership_directory.rtf';
 
 $db = new Database();

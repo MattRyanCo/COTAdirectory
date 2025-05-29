@@ -23,15 +23,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->close();
 
         // Insert members with validation
-        foreach ($_POST["members"]["first_name"] as $key => $first_name) {
+        $first_names = $_POST["members"]["first_name"];
+        // if (!is_array($first_names)) {
+        //     $first_names = [$first_names];
+        //     // Repeat for other member fields as well
+        // }
+        foreach ($first_names as $key => $first_name) {
             $first_name = sanitize($first_name);
+            $last_name = sanitize($_POST["members"]["last_name"][$key]);
             $cell_phone = sanitize($_POST["members"]["cell_phone"][$key]);
             $email = sanitize($_POST["members"]["email"][$key]);
             $birthday = formatDate($_POST["members"]["birthday"][$key]);
+            $baptism = formatDate($_POST["members"]["baptism"][$key]);
 
             if (!empty($first_name) && validateEmail($email) && validateDate($birthday)) {
-                $stmt = $conn->prepare("INSERT INTO members (family_id, first_name, cell_phone, email, birthday) VALUES (?, ?, ?, ?, ?)");
-                $stmt->bind_param("issss", $family_id, $first_name, $cell_phone, $email, $birthday);
+                $stmt = $conn->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $stmt->bind_param("issssss", $family_id, $first_name, $last_name, $cell_phone, $email, $birthday, $baptism);
                 $stmt->execute();
                 $stmt->close();
             } else {
@@ -40,6 +47,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
         echo "Family added successfully!";
+        ?>
+        <br><p><a href='index.php'>Return to main menu</a></p>
+        <?php
     } else {
         logError("SQL Error (execute): " . $stmt->error);
     }
@@ -56,7 +66,7 @@ function sanitize($data) {
 
 // Validate email Format
 function validateEmail($email) {
-    return filter_var($email, FILTER_VALIDATE_email) !== false;
+    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
 }
 
 // Format MM/DD Date Correctly
