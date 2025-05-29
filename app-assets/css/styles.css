@@ -31,7 +31,7 @@ ul > li {
 
 li > a {
     display: block;
-    width: 260px;
+    width: 300px;
 }
 li > a:hover {
     background-color: #3498db;
@@ -48,9 +48,8 @@ a:hover {
     color: #3498db;
 }
 
-body > form
-form {
-    background: white;
+form.family_entry {
+    background: lightgray;
     padding: 20px 40px 20px 20px;
     border-radius: 5px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
@@ -89,7 +88,8 @@ label {
     font-weight: bold;
 }
 
-input[type="text"], input[type="email"] {
+input[type="text"], 
+input[type="email"] {
     width: 100%;
     padding: 8px;
     margin-top: 5px;
@@ -98,17 +98,38 @@ input[type="text"], input[type="email"] {
 }
 
 button {
-    background-color: #2ecc71;
     color: white;
+    background-color: darkgrey;
     padding: 10px 15px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    margin-top: 10px;
+    margin: 10px auto;
+    font-size: 1em;
+    width: 20vh;
+}
+button.add_another {
+    background-color: #2ecc71;
+    width: 50%;
 }
 
-table {
-    width: 100%;
+button.submit {
+    background-color: #3498db;
+    width: 75%;
+    font-size: 1.5em;
+    font-weight: bolder;
+}
+
+button.main_menu {
+    background-color: red;
+    /* width: 75%; */
+    font-size: 1.5em;
+    font-weight: bolder;
+}
+
+
+table.directory-table {
+    width: 65%;
     border-collapse: collapse;
     margin-top: 20px;
 }

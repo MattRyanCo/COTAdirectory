@@ -16,8 +16,16 @@ function format_family_listing_for_print($pdfobj, $family, $members) {
         if ( $lctr == 1 ) {
             // Build the family header (name and address, other column headings)
             // Get 1st member of family
-            $pdfobj->multicell(0,0.5,"Family Name/Address Family Members\n",0,1);
-            $pdfobj->MultiCell(0, 0.5, "Home Phone   Name   Email   Cell   DoB   DoBaptism\n", 0, 1);
+            // $pdfobj->multicell(2,0.5,"Family Name/Address Family Members\n",0,1);
+            $pdfobj->cell(2,0.5,"Family Name/Address",0,0, 'L',false);
+            $pdfobj->cell(2,0.5,"Family Members",0,1, 'L',false);
+            $pdfobj->cell(2,0.25,"Home Phone",0,0, 'L',false);
+            // $pdfobj->MultiCell(2, 0.5, "Home Phone   Name   Email   Cell   DoB   DoBaptism\n", 0, 1);
+            $pdfobj->cell(1,0.25,"Name",0,0, 'L',false);
+            $pdfobj->cell(1,0.25,"Email",0,0, 'L',false);
+            $pdfobj->cell(1,0.25,"Cell",0,0, 'L',false);
+            $pdfobj->cell(1,0.25,"DoB",0,0, 'L',false);
+            $pdfobj->cell(1,0.25,"DoBaptism",0,1, 'L',false);
 
             $individual = $members->fetch_assoc();
             if (!$individual) {
@@ -127,9 +135,9 @@ function format_family_listing_for_print($pdfobj, $family, $members) {
 
 
     // Output all lines for this family as a block in the PDF
-    $pdfobj->SetFont('Arial', '', 11);
-    $pdfobj->MultiCell(0, 0.22, implode("\n", $lines), 0, 1);
-    $pdfobj->Ln(0.2); // Small space after each family
+    $pdfobj->SetFont('Arial', '', 10);
+    $pdfobj->MultiCell(0, 0.22, implode("\n", $lines), 1, 1);
+    // $pdfobj->Ln(0.1); // Small space after each family
 
     return true; // Indicate success
 }
@@ -148,7 +156,7 @@ function format_family_listing_for_display($family, $members) {
     $addr2 = (isset($family['address2']) && $family['address2'] !== "") ? $family['address2'] : false;
     $city = (isset($family['city']) && $family['city'] !== "") ? $family['city'] : false;
     $homephone = (isset($family['homephone']) && $family['homephone'] !== "") ? $family['homephone'] : false;
-    $placeholder = '';
+    $placeholder = $formatted_family = '';
 
         // Format for 1st row of family listing - bolded Family name,  first, last, email, cell, birthday, baptism
     $format_string_row_1 = "<tr class='new-family' ><td><h3>%s</h3></td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
