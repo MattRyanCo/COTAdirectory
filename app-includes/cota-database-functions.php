@@ -1,6 +1,6 @@
 <?php
 // echo nl2br(__FILE__ . ' loaded' . PHP_EOL);
-class Database {
+class COTA_Database {
     private $conn;
     
     public function __construct() {
@@ -10,15 +10,15 @@ class Database {
         }
     }
 
-    public function getConnection() {
+    public function get_connection() {
         return $this->conn;
     }
 
-    public function closeConnection() {
+    public function close_connection() {
         $this->conn->close();
     }
 
-    public function readDatabase() {
+    public function read_database() {
         $families = $this->conn->query("SELECT * FROM families ORDER BY `familyname`");
         if ($families === FALSE) {
             die("Error: " . $this->conn->error);

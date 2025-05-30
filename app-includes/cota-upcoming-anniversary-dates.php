@@ -2,17 +2,17 @@
 /**
  * Get upcoming anniversary dates within the next 15 days.
  */
-require_once '../app-includes/database_functions.php';
+require_once '../app-includes/cota-database-functions.php';
 
-function getLastName($family_id, $conn) {
+function cota_get_last_name($family_id, $conn) {
     $family = $conn->query("SELECT familyname FROM families WHERE id = " . intval($family_id))->fetch_assoc();
 
     return $family['familyname'] ?? 'Unknown';
 }
 
-function getUpcomingAnniversaries() {
-    $db = new Database();
-    $conn = $db->getConnection();
+function cota_get_upcoming_anniversaries() {
+    $db = new COTA_Database();
+    $conn = $db->get_connection();
 
     $today = new DateTime();
     $end = (clone $today)->modify('+15 days');
@@ -25,7 +25,7 @@ function getUpcomingAnniversaries() {
     ];
 
     // Helper to check if MM/DD is in the next 14 days
-    function isUpcoming($mmdd, $today, $end) {
+    function cota_is_upcoming($mmdd, $today, $end) {
         if (!$mmdd || !preg_match('/^\d{2}\/\d{2}$/', $mmdd)) return false;
         $date = DateTime::createFromFormat('m/d/Y', $mmdd . '/' . $today->format('Y'));
         if (!$date) return false;
@@ -41,7 +41,7 @@ function getUpcomingAnniversaries() {
     // 1. Marriage Anniversaries (families table)
     $families = $conn->query("SELECT familyname, name1, name2, annday FROM families WHERE annday IS NOT NULL AND annday != ''");
     while ($fam = $families->fetch_assoc()) {
-        if (isUpcoming($fam['annday'], $today, $end)) {
+        if (cota_is_upcoming($fam['annday'], $today, $end)) {
             $names = trim($fam['name1'] . ' & ' . $fam['name2'], ' &');
             $results['Marriage Anniversaries'][] = "{$fam['annday']} - {$names} {$fam['familyname']}";
         }
@@ -50,9 +50,9 @@ function getUpcomingAnniversaries() {
     // 2. Birthdays (members table)
     $members = $conn->query("SELECT family_id, first_name, last_name, birthday FROM members WHERE birthday IS NOT NULL AND birthday != ''");
     while ($mem = $members->fetch_assoc()) {
-        if (isUpcoming($mem['birthday'], $today, $end)) {
+        if (cota_is_upcoming($mem['birthday'], $today, $end)) {
             if ( $mem['last_name'] === '' ) {
-                $mem['last_name'] = getLastName($mem['family_id'], $conn);
+                $mem['last_name'] = cota_get_last_name($mem['family_id'], $conn);
             }
             $results['Birthdays'][] = "{$mem['birthday']} - {$mem['first_name']} {$mem['last_name']}";
         }
@@ -61,9 +61,9 @@ function getUpcomingAnniversaries() {
     // 3. Baptisms (members table)
     $members = $conn->query("SELECT family_id, first_name, last_name, baptism FROM members WHERE baptism IS NOT NULL AND baptism != ''");
     while ($mem = $members->fetch_assoc()) {
-        if (isUpcoming($mem['baptism'], $today, $end)) {
+        if (cota_is_upcoming($mem['baptism'], $today, $end)) {
             if ( $mem['last_name'] === '' ) {
-                $mem['last_name'] = getLastName($mem['family_id'], $conn);
+                $mem['last_name'] = cota_get_last_name($mem['family_id'], $conn);
             }
             $results['Baptisms'][] = " {$mem['baptism']} - {$mem['first_name']} {$mem['last_name']}";
         }
@@ -84,8 +84,8 @@ function getUpcomingAnniversaries() {
     <h2>Upcoming Anniversaries</h2>
     <ul>    
         <?php
-        if (function_exists('getUpcomingAnniversaries')) {
-            $upcoming_anniversaries = getUpcomingAnniversaries();
+        if (function_exists('cota_get_upcoming_anniversaries')) {
+            $upcoming_anniversaries = cota_get_upcoming_anniversaries();
             foreach ($upcoming_anniversaries as $category => $anniversaries) {
                 echo "<strong>" . htmlspecialchars($category) . "</strong>";
                 echo "<ul>";
@@ -99,7 +99,7 @@ function getUpcomingAnniversaries() {
                 echo "</ul>";
             }
         } else {
-            echo "<li>Error: Function 'getUpcomingAnniversaries' is not defined.</li>";
+            echo "<li>Error: Function 'cota_get_upcoming_anniversaries' is not defined.</li>";
         }
         ?>
     </ul>

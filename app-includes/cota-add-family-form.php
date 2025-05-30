@@ -6,7 +6,7 @@
     <title>Add Family Entry</title>
     <link rel="stylesheet" href="../app-assets/css/styles.css">
     <script>
-        function addMember() {
+        function cota_add_member() {
             const membersDiv = document.getElementById("members");
             const memberCount = membersDiv.children.length;
 
@@ -37,7 +37,7 @@
 </head>
 <body>
     <h2 >Add Family Entry</h2>
-    <form class="family_entry" action="add_family.php" method="post">
+    <form class="cota-family-entry" action="cota-cota-add-family.php" method="post">
         <label>Family Name:</label>
         <input type="text" name="familyname" required>
         <label>Address</label>
@@ -72,7 +72,7 @@
                 <input type="text" id="members[baptism]" name="members[baptism][]" placeholder="mm/dd"><br><br><br>
             <!-- </div> -->
         </div>
-        <button class="add_another" type="button" onclick="addMember()">Add Another Member</button>
+        <button class="cota-add-another" type="button" onclick="cota_add_member()">Add Another Member</button>
         <br><br>
         <button class="submit" type="submit">Submit Updates</button>
     </form>

@@ -1,9 +1,9 @@
 <?php
-require_once '../app-includes/database_functions.php';
+require_once '../app-includes/cota-database-functions.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $db = new Database();
-    $conn = $db->getConnection();
+    $db = new COTA_Database();
+    $conn = $db->get_connection();
 
     if (isset($_POST["confirm"]) && $_POST["confirm"] === "YES") {
         // Delete all records from the members table to handle foreign key constraints
@@ -63,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         ";
         if ($conn->query($createFamiliesTableSQL) !== TRUE) {
             echo "<p style='color: red;'>Error recreating families table: " . $conn->error . "</p>";
-            $db->closeConnection();
+            $db->close_connection();
             exit;
         }
 
@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo "<p style='color: red;'>Action canceled. No changes were made.</p>";
     }
 
-    $db->closeConnection();
+    $db->close_connection();
 }
 ?>
 

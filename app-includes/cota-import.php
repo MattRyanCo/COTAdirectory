@@ -2,17 +2,17 @@
 /**
  * 
  */
-require_once '../app-includes/database_functions.php';
+require_once '../app-includes/cota-database-functions.php';
 
-class CSVImporter {
+class COTA_Csv_Importer {
     private $conn;
 
     public function __construct() {
-        $db = new Database();
-        $this->conn = $db->getConnection();
+        $db = new COTA_Database();
+        $this->conn = $db->get_connection();
     }
 
-    public function readCsvToAssocArray($filename) {
+    public function cota_read_csv_to_assoc_array($filename) {
         $data = [];
         if (($handle = fopen($filename, "r")) !== false) {
             // Remove BOM from the first line if present
@@ -26,7 +26,7 @@ class CSVImporter {
                     $value = quoted_printable_decode($value);
                     $value = trim(mb_convert_encoding($value, 'UTF-8', 'UTF-8'));  
                     $value = trim(mb_convert_encoding(quoted_printable_decode($value), 'UTF-8', 'UTF-8,ISO-8859-1,Windows-1252'));              
-                    $value = $this->fixMimeArtifacts($value); 
+                    $value = $this->cota_fix_mime_artifacts($value); 
                 }
                 $data[] = array_combine($headers, $row);
             }
@@ -35,38 +35,38 @@ class CSVImporter {
         return $data;
     }
 
-    public function import($filename) {
+    public function cota_cota_import($filename) {
         if (!file_exists($filename)) {
             die("Error: CSV file not found.");
         }
 
-        $csvData = $this->readCsvToAssocArray($filename);
+        $csvData = $this->cota_read_csv_to_assoc_array($filename);
 
         foreach ($csvData as $row) {
             // Skip if familyname is missing
             if (empty($row['familyname'])) {
-                $this->logError("Missing familyname in row: " . print_r($row, true));
+                $this->cota_log_error("Missing familyname in row: " . print_r($row, true));
                 continue;
             }
 
             // Insert family and get ID
-            $family_id = $this->insertFamilyAndGetId($row);
+            $family_id = $this->cota_insert_family_and_get_id($row);
 
             // Insert primary members (parents)
             if (!empty($row['name1'])) {
-                $this->insertMember($family_id, $row['name1'], '', $row['cellphone1'] ?? '', $row['email1'] ?? '', $row['bday1'] ?? '', $row['bap1'] ?? '');
+                $this->cota_insert_member($family_id, $row['name1'], '', $row['cellphone1'] ?? '', $row['email1'] ?? '', $row['bday1'] ?? '', $row['bap1'] ?? '');
             }
             if (!empty($row['name2'])) {
-                $this->insertMember($family_id, $row['name2'], '', $row['cellphone2'] ?? '', $row['email2'] ?? '', $row['bday2'] ?? '', $row['bap2'] ?? '');
+                $this->cota_insert_member($family_id, $row['name2'], '', $row['cellphone2'] ?? '', $row['email2'] ?? '', $row['bday2'] ?? '', $row['bap2'] ?? '');
             }
 
             // Insert other members (children, etc.)
-            // Get maxFamilyMembers from class-FamilyDirectoryApp.php
-            require_once '../app-includes/class-FamilyDirectoryApp.php';
-            for ($i = 1; $i <= FamilyDirectoryApp::maxFamilyMembers; $i++) {
+            // Get maxFamilyMembers from class-COTA_Family_Directory_App.php
+            require_once '../app-includes/class-COTA_Family_Directory_App.php';
+            for ($i = 1; $i <= COTA_Family_Directory_App::maxFamilyMembers; $i++) {
                 $name = $row["othername$i"] ?? '';
                 if (!empty($name)) {
-                    $this->insertMember(
+                    $this->cota_insert_member(
                         $family_id,
                         $name,
                         '', // last_name (optional)
@@ -80,7 +80,7 @@ class CSVImporter {
         }
     }
 
-    private function formatDate($date) {
+    private function cota_format_date($date) {
         if (empty($date)) {
             return "";
         }
@@ -90,7 +90,7 @@ class CSVImporter {
         return $date;
     }
 
-    private function formatPhone($phone) {
+    private function cota_format_phone($phone) {
         // Remove all non-digit characters
         $digits = preg_replace('/\D+/', '', $phone);
         // Format if 10 digits
@@ -109,7 +109,7 @@ class CSVImporter {
  * @param [type] $value
  * @return void
  */
-    private function fixMimeArtifacts($value) {
+    private function cota_fix_mime_artifacts($value) {
         // Replace common MIME artifacts
         $patterns = [
             '/\+AC0-/' => '-',   // hyphen
@@ -149,25 +149,25 @@ class CSVImporter {
         return preg_replace(array_keys($patterns), array_values($patterns), $value);
     }
 
-    private function logError($message) {
+    private function cota_log_error($message) {
         error_log($message . PHP_EOL, 3, "import_errors.log");
     }
 
-    private function insertFamilyAndGetId($data) {
+    private function cota_insert_family_and_get_id($data) {
         $stmt = $this->conn->prepare("INSERT INTO families (
             familyname, name1, name2, address, address2, city, state, zip, homephone,
             cellphone1, cellphone2, email1, email2, bday1, bday2,
             bap1, bap2, annday
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-        $homephone   = $this->formatPhone($data['homephone']);
-        $cellphone1  = $this->formatPhone($data['cellphone1']);
-        $cellphone2  = $this->formatPhone($data['cellphone2']);
-        $bday1       = $this->formatDate($data['bday1']);
-        $bday2       = $this->formatDate($data['bday2']);
-        $bap1        = $this->formatDate($data['bap1']);
-        $bap2        = $this->formatDate($data['bap2']);
-        $annday      = $this->formatDate($data['annday']);
+        $homephone   = $this->cota_format_phone($data['homephone']);
+        $cellphone1  = $this->cota_format_phone($data['cellphone1']);
+        $cellphone2  = $this->cota_format_phone($data['cellphone2']);
+        $bday1       = $this->cota_format_date($data['bday1']);
+        $bday2       = $this->cota_format_date($data['bday2']);
+        $bap1        = $this->cota_format_date($data['bap1']);
+        $bap2        = $this->cota_format_date($data['bap2']);
+        $annday      = $this->cota_format_date($data['annday']);
 
         $stmt->bind_param(
             "ssssssssssssssssss",
@@ -209,11 +209,11 @@ class CSVImporter {
      * @param string $birthday
      * @param string $baptism
      */
-    private function insertMember($family_id, $first_name, $last_name, $cell_phone, $email, $birthday, $baptism) {
+    private function cota_insert_member($family_id, $first_name, $last_name, $cell_phone, $email, $birthday, $baptism) {
         $stmt = $this->conn->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $cellphone  = $this->formatPhone($cell_phone);
-        $bday       = $this->formatDate($birthday);
-        $bap        = $this->formatDate($baptism);
+        $cellphone  = $this->cota_format_phone($cell_phone);
+        $bday       = $this->cota_format_date($birthday);
+        $bap        = $this->cota_format_date($baptism);
 
         $stmt->bind_param(
             "issssss", 
@@ -230,12 +230,12 @@ class CSVImporter {
     }
 }
 
-function handleError($message, $code) {
+function cota_handle_error($message, $code) {
     echo "<p style='color: red;'>Error $code: $message</p>";
     exit;
 }
 
-$importAll = new CSVImporter();
+$importAll = new COTA_Csv_Importer();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["csv_file"])) {
     $uploadDir = "uploads/";
@@ -244,25 +244,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["csv_file"])) {
 
     // Ensure the uploads directory exists
     if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
-        handleError("Failed to find upload directory.", 101);
+        cota_handle_error("Failed to find upload directory.", 101);
     }
 
     // Check for upload errors
     if ($_FILES["csv_file"]["error"] !== UPLOAD_ERR_OK) {
-        handleError("File upload error. Code: " . $_FILES["csv_file"]["error"], 102);
+        cota_handle_error("File upload error. Code: " . $_FILES["csv_file"]["error"], 102);
     }
 
     // Move uploaded file
     if (move_uploaded_file($_FILES["csv_file"]["tmp_name"], $uploadFile)) {
-        $importer = new CSVImporter();
-        $importer->import($uploadFile);
+        $importer = new COTA_Csv_Importer();
+        $importer->cota_import($uploadFile);
     } else {
-        handleError("File save error. Code: " . $_FILES["csv_file"]["error"], 103);
+        cota_handle_error("File save error. Code: " . $_FILES["csv_file"]["error"], 103);
     }
 
     echo "<h3 style='color:green;'>CSV imported successfully! " . $uploadFile . "</h3>";
 
-    $importAll->readCsvToAssocArray($uploadFile);
+    $importAll->cota_read_csv_to_assoc_array($uploadFile);
 }
 ?>
 

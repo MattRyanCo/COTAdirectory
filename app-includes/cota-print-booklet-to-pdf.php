@@ -1,7 +1,7 @@
 <?php
-require_once '../app-includes/database_functions.php';
-require_once '../app-includes/format_family_listing.php';
-require_once '../app-includes/print.php';
+require_once '../app-includes/cota-database-functions.php';
+require_once '../app-includes/cota-format-family-listing.php';
+require_once '../app-includes/cota-print.php';
 require_once '../libraries/fpdf/fpdf.php';
 
 $pdf = new FPDF('L', 'in', [8.5, 11]); // Landscape, Inches, Letter Size
@@ -39,8 +39,8 @@ for ($i = 1; $i <= 3; $i++) {
 // 4. Retrieve and Format Membership Entries
 // Fetch data from your MySQL database and format it into an address label style layout
 
-$db = new Database();
-$conn = $db->getConnection();
+$db = new COTA_Database();
+$conn = $db->get_connection();
                
 $families = $conn->query("SELECT * FROM families ORDER BY `familyname`");
 $num_families = $families->num_rows;
@@ -63,7 +63,7 @@ while ($family = $families->fetch_assoc()) {
 	}
     $pdf->SetFont('Arial', '', 12);
     // $pdf->MultiCell(0, 0.5, "{$family['familyname']}\n{$family['address']}", 0, 1);
-	format_family_listing_for_print($pdf, $family, $individuals);
+	cota_format_family_listing_for_print($pdf, $family, $individuals);
 
     $pageEntries++;
 }
@@ -82,7 +82,7 @@ $pdf->Output('I'); // Still display in browser if you want
 
 
 
-$db->closeConnection();
+$db->close_connection();
 
 echo "<h2>PDF file generated successfully!</h2>";
 echo "<p><a href='../uploads/membership_directory.pdf' download>Download PDF Directory</a></p>";

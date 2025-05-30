@@ -1,8 +1,8 @@
 <?php
-require_once 'database_functions.php';
+require_once 'cota-database-functions.php';
 
-$db = new Database();
-$conn = $db->getConnection();
+$db = new COTA_Database();
+$conn = $db->get_connection();
 
 if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
     $familyname = $_GET["familyname"];
@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
 </head>
 <body>
     <h2>Edit Family</h2>
-    <form action="update_family.php" method="post">
+    <form action="cota-update-family.php" method="post">
         <input type="hidden" name="family_id" value="<?= $family['id'] ?>">
         <label>Family Name:</label>
         <input type="text" name="familyname" value="<?= htmlspecialchars($family['familyname']) ?>" required><br>

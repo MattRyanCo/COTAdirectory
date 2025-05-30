@@ -2,13 +2,13 @@
 /**
  * Export directory data to CSV
  */
-require_once '../app-includes/database_functions.php';
+require_once '../app-includes/cota-database-functions.php';
 
 header('Content-Type: text/csv');
 header('Content-Disposition: attachment; filename="directory_export.csv"');
 
-$db = new Database();
-$conn = $db->getConnection();
+$db = new COTA_Database();
+$conn = $db->get_connection();
 $output = fopen('php://output', 'w');
 
 // Static columns before dynamic member columns
@@ -33,9 +33,9 @@ $header = [
     "annday"
 ];
 
-// Get maxFamilyMembers from class-FamilyDirectoryApp.php
-require_once '../app-includes/class-FamilyDirectoryApp.php';
-$maxMembers = FamilyDirectoryApp::maxFamilyMembers;
+// Get maxFamilyMembers from class-COTA_Family_Directory_App.php
+require_once '../app-includes/class-COTA_Family_Directory_App.php';
+$maxMembers = COTA_Family_Directory_App::maxFamilyMembers;
 
 // Add dynamic member columns
 for ($i = 1; $i <= $maxMembers; $i++) {
@@ -84,6 +84,6 @@ while ($family = $families->fetch_assoc()) {
     fputcsv($output, explode(",", $one_family));
 }
 fclose($output);
-$db->closeConnection();
+$db->close_connection();
 
 ?>
