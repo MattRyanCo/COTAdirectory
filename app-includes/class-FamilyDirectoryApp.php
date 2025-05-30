@@ -34,6 +34,7 @@ class FamilyDirectoryApp
                 <li><a href="/app-includes/export.php">Export Directory as CSV</a></li>
                 <li><a href="/app-includes/display.php">Display Formatted Directory</a></li>
                 <li><a href="/app-includes/print_booklet.php">Print Formatted Directory</a></li>
+                <li><a href="/app-includes/print_booklet_pdf.php">Print PDF Directory</a></li>
                 <li><a href="/app-includes/search.php">Search & Edit Family</a></li>
                 <li><a href="/app-includes/add_family_form.php">Add New Family</a></li>
                 <li><a href="/app-includes/upcoming_anniversary_dates.php">Display/Print Upcoming Anniversaries</a></li>

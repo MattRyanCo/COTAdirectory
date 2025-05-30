@@ -36,8 +36,8 @@
     </script>
 </head>
 <body>
-    <h2>Add Family Entry</h2>
-    <form action="add_family.php" method="post">
+    <h2 >Add Family Entry</h2>
+    <form class="family_entry" action="add_family.php" method="post">
         <label>Family Name:</label>
         <input type="text" name="familyname" required>
         <label>Address</label>
@@ -55,11 +55,11 @@
         <label>Anniversary of Marriage</label>
         <input type="text" name="annday" title="Wedding anniversary of primary family members." placeholder="mm/dd"><br>
 
-        <h3>Members</h3>
+        <h3>Family Members</h3>
         <div id="members">
-            <div>
+            <!-- <div> -->
                 <label >First Name</label>
-                <input type="text" name="members[first_name]" required>
+                <input type="text" name="members[first_name][]" required>
                 <label for="members[last_name][]">Last Name <smaller>(if different)</smaller></label>
                 <input type="text" id="members[last_name][]" name="members[last_name][]"><br>
                 <label for="members[cell_phone][]">Cell Phone</label>
@@ -70,13 +70,14 @@
                 <input type="text" id="members[birthday][]" name="members[birthday][]" placeholder="mm/dd"><br>
                 <label for="members[baptism][]">Anniversary of Baptism</label>
                 <input type="text" id="members[baptism]" name="members[baptism][]" placeholder="mm/dd"><br><br><br>
-            </div>
+            <!-- </div> -->
         </div>
-        <button type="button" onclick="addMember()">Add Another Member</button>
+        <button class="add_another" type="button" onclick="addMember()">Add Another Member</button>
         <br><br>
-        <button type="submit">Submit</button>
+        <button class="submit" type="submit">Submit Updates</button>
     </form>
 
-    <br><br><p><a href='index.php'>Return to main menu</a></p>
+    <br><br><button class="main_menu" type="button" ><a href='index.php'>Return to Main Menu</a></button>
+
 </body>
 </html>
