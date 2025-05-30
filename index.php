@@ -22,14 +22,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  */
 
-define( 'APPINC', 'app-includes' );
-define( 'APPASSETS', 'app-assets' );
-define( 'APPINCLUDES', 'app-includes' );
+define( 'COTA_APPINC', 'app-includes' );
+define( 'COTA_APPASSETS', 'app-assets' );
+define( 'COTA_APPINCLUDES', 'app-includes' );
 
 /** Sets up the app vars and included files. */
-require_once APPINCLUDES . '/settings.php';
-require_once APPINCLUDES . '/database_functions.php';
+require_once COTA_APPINCLUDES . '/cota-settings.php';
+require_once COTA_APPINCLUDES . '/cota-database-functions.php';
 
 // phpinfo(); // For debugging purposes, remove in production
-$app = new FamilyDirectoryApp();
-$app->render();
+$app = new COTA_Family_Directory_App();
+$app->cota_render();

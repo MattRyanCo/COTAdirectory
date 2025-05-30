@@ -1,6 +1,6 @@
 <?php
 
-function format_family_listing_for_print($pdfobj, $family, $members) {
+function cota_format_family_listing_for_print($pdfobj, $family, $members) {
 
     // Set key logicals
     $num_members = $members->num_rows;
@@ -142,13 +142,13 @@ function format_family_listing_for_print($pdfobj, $family, $members) {
     return true; // Indicate success
 }
 /**
- * format_family_listing_for_display
+ * cota_cota_format_family_listing_for_display
  *
  * @param [type] $family - Result of database query of all data for a specified family ID
- * @param [type] $members - Result of database query of all members of a specified family ID
+ * @param [type] $members - Result of COTA_Database query of all members of a specified family ID
  * @return string | null
  */
-function format_family_listing_for_display($family, $members) { 
+function cota_cota_format_family_listing_for_display($family, $members) { 
     // Set key logicals
     $num_members = $members->num_rows;
     $ictr = 1;
@@ -159,7 +159,7 @@ function format_family_listing_for_display($family, $members) {
     $placeholder = $formatted_family = '';
 
         // Format for 1st row of family listing - bolded Family name,  first, last, email, cell, birthday, baptism
-    $format_string_row_1 = "<tr class='new-family' ><td><h3>%s</h3></td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
+    $format_string_row_1 = "<tr class='cota-new-family' ><td><h3>%s</h3></td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
 
     // Secondary format for family listing - Address component, first, last, email, cell, birthday, baptism
     $format_string = "<tr><td>%s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";

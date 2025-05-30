@@ -7,5 +7,5 @@
 
 
 /** Sets up the main directory class */
-require_once ABSPATH . APPINC . '/class-FamilyDirectoryApp.php';
+require_once ABSPATH . COTA_APPINC . '/cota-class-family-directory-app.php';
 

@@ -1,6 +1,6 @@
 <?php
-require_once '../app-includes/database_functions.php';
-require_once '../app-includes/format_family_listing.php';
+require_once '../app-includes/cota-database-functions.php';
+require_once '../app-includes/cota-format-family-listing.php';
 
 // echo nl2br(__FILE__ . ' loaded' . PHP_EOL);
 
@@ -17,8 +17,8 @@ require_once '../app-includes/format_family_listing.php';
 
 <?php
 
-        $db = new Database();
-        $conn = $db->getConnection();
+        $db = new COTA_Database();
+        $conn = $db->get_connection();
                
         $families = $conn->query("SELECT * FROM families ORDER BY `familyname`");
 		$num_families = $families->num_rows;
@@ -43,12 +43,12 @@ require_once '../app-includes/format_family_listing.php';
 			// $individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id'] . " ORDER BY `first_name`");
 			$individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id']);  // no ordering
 
-			echo format_family_listing_for_display($family, $individuals);	
+			echo cota_cota_format_family_listing_for_display($family, $individuals);	
 			$ictr++;
 		} 
 
 		// Closing the file 
-        $db->closeConnection();
+        $db->close_connection();
 
 		echo "\n</table></body></html>"; 
 		?> 

@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Date of Baptism metadata for all members - DoBap
 - Added encoding function to ensure special characters in phone numages and email address display correctly. 
 - Added dynamic column heading for data export permitting up to specified number of family members. 
-- Add maxFamilyMembers constant in class-FamilyDirectoryApp.php to define max size of members db entry. 
+- Add maxFamilyMembers constant in class-COTA_Family_Directory_App.php to define max size of members db entry. 
 
 ### Changed
 

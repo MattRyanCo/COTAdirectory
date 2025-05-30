@@ -1,6 +1,6 @@
 <?php
-require_once '../app-includes/database_functions.php';
-require_once '../app-includes/print.php';
+require_once '../app-includes/cota-database-functions.php';
+require_once '../app-includes/cota-print.php';
 
 $printBooklet = new MembershipDirectoryPrinter();
 
@@ -8,7 +8,7 @@ $printBooklet = new MembershipDirectoryPrinter();
 $introFiles = ['../uploads/intro1.txt', '../uploads/intro2.txt', '../uploads/intro3.txt'];
 $outputFile = 'membership_directory.rtf';
 
-$db = new Database();
+$db = new COTA_Database();
 $rtfContent = $printBooklet->generateRTFHeader();
 
 // Add intro pages
@@ -17,7 +17,7 @@ foreach ($introFiles as $file) {
 		$rtfContent .= $printBooklet->formatText(file_get_contents($file)) . "\\pard\\page\\par";
 	}
 }
-$all_families = $db->readDatabase();
+$all_families = $db->read_database();
 
 // Add family listings
 // foreach ($all_families as $family) {
@@ -30,7 +30,7 @@ file_put_contents($outputFile, $rtfContent);
 
 // Closing the file 
 // fclose($output); 
-$db->closeConnection();
+$db->close_connection();
 
 printf("<h2>RTF file generated successfully!</h2>");
 printf("<p><a href='%s'>Download file</a></p>", $outputFile);	

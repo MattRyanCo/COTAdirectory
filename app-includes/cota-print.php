@@ -1,5 +1,5 @@
 <?php
-// require_once 'database_functions.php';
+// require_once 'cota-database-functions.php';
 
 
 
@@ -24,8 +24,8 @@ class MembershipDirectoryPrinter
      */
     public function formatFamilyListings($families)
     {
-        $db = new Database();
-        $conn = $db->getConnection();
+        $db = new COTA_Database();
+        $conn = $db->get_connection();
         $ictr = 1;
         $listing =" ";
         while ($ictr < $families->num_rows ) {
@@ -72,8 +72,8 @@ class MembershipDirectoryPrinter
     }
 }
 
-$db = new Database();
-$conn = $db->getConnection();
+$db = new COTA_Database();
+$conn = $db->get_connection();
 $families = $conn->query("SELECT * FROM families ORDER BY `familyname`");
 $num_families = $families->num_rows;
 $ictr = 1;
