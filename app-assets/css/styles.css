@@ -37,6 +37,17 @@ li > a:hover {
     background-color: #3498db;
     color: white;
 }
+ul.cota-anniversary-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 50px 20px;
+}
+
+ul.cota-anniversary-sublist {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 30px 10px;
+}
 
 a, a:visited {
     text-decoration: underline;
@@ -48,7 +59,9 @@ a:hover {
     color: #3498db;
 }
 
-form.cota-family-entry {
+form.cota-family-entry,
+form.cota-search,
+form.cota-family-edit {
     background: lightgray;
     padding: 20px 40px 20px 20px;
     border-radius: 5px;
@@ -57,7 +70,19 @@ form.cota-family-entry {
     grid-template-columns: 180px 1fr;
     gap: 10px 20px;
     align-items: center;
-    width: 60%;
+    width: 60vw;
+}
+
+form.cota-reset-db {
+    background: lightgray;
+    padding: 20px 40px 20px 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 10px 20px;
+    align-items: center;
+    width: 40%;
 }
 
 form label {
@@ -65,9 +90,16 @@ form label {
     margin-top: 0;
     text-align: right;
 }
+form.cota-reset-db > label,
+form.cota-search > label,
+form.cota-family-edit > div > label,
+form.cota-family-entry > div > label {
+    text-align: left;
+}
 
 form input[type="text"],
-form input[type="email"] {
+form input[type="email"],
+form input[type="tel"] {
     grid-column: 2;
     margin-top: 0;
 }
@@ -78,8 +110,24 @@ form br {
     grid-column: 1 / -1;
 }
 
-#members > div {
-    display: contents;
+#members > div > label {
+    /* display: contents; */
+    text-align: left;
+    padding-top: .5em   ;
+}
+.member-header,
+.member-row {
+    display:flex; 
+    flex-direction: row;
+    gap:10px; 
+    margin-bottom:4px;
+    font-weight: normal;
+}
+.member-header {
+    font-weight:bold; 
+}
+.member-header > span {
+    align-self: flex-start;
 }
 
 label {
@@ -89,6 +137,7 @@ label {
 }
 
 input[type="text"], 
+input[type="tel"],
 input[type="email"] {
     width: 100%;
     padding: 8px;
@@ -113,18 +162,22 @@ button.cota-add-another {
     width: 50%;
 }
 
-button.submit {
+button.cota-submit-family {
     background-color: #3498db;
-    width: 75%;
+    width: 50vw;
     font-size: 1.5em;
-    font-weight: bolder;
+    font-weight: 700;
 }
 
-button.main_menu {
+button.main-menu-return {
     background-color: red;
-    /* width: 75%; */
+    width: 60vw;
     font-size: 1.5em;
-    font-weight: bolder;
+    font-weight: 700;
+}
+button.main-menu-return > a {
+    color: white;
+    text-decoration: none;
 }
 
 
