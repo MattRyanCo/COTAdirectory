@@ -30,7 +30,7 @@ class MembershipDirectoryPrinter
         $listing =" ";
         while ($ictr < $families->num_rows ) {
             $one_family = $families->fetch_assoc();
-            printf("Processing family: %s<br>", $one_family['familyname']);
+            // printf("Processing family: %s<br>", $one_family['familyname']);
             $listing .= "\\par\\pard\\keepn\\b " . htmlspecialchars($one_family['familyname']) . "\\plain";
             if ( $one_family['name2']!= "") {
                 $listing .= "\\par\\pard\\keepn " . htmlspecialchars($one_family['name1']) . " & " . htmlspecialchars($one_family['name2']);

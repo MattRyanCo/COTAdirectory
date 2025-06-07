@@ -46,9 +46,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
         }
 
-        echo "Family added successfully!";
+        echo $familyname . " Family added successfully!";
         ?>
         <br><p><a href='index.php'>Return to main menu</a></p>
+        <button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>
         <?php
     } else {
         cota_log_error("SQL Error (execute): " . $stmt->error);

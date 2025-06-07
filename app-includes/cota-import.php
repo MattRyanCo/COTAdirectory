@@ -29,17 +29,17 @@ class COTA_Csv_Importer {
                     $value = $this->cota_fix_mime_artifacts($value); 
                 }
                 $data[] = array_combine($headers, $row);
+                // var_dump($data);
             }
             fclose($handle);
         }
         return $data;
     }
 
-    public function cota_cota_import($filename) {
+    public function cota_import($filename ) {
         if (!file_exists($filename)) {
             die("Error: CSV file not found.");
         }
-
         $csvData = $this->cota_read_csv_to_assoc_array($filename);
 
         foreach ($csvData as $row) {
@@ -61,8 +61,8 @@ class COTA_Csv_Importer {
             }
 
             // Insert other members (children, etc.)
-            // Get maxFamilyMembers from class-COTA_Family_Directory_App.php
-            require_once '../app-includes/class-COTA_Family_Directory_App.php';
+            // Get maxFamilyMembers from cota-class-family-directory-app.php
+            require_once '../app-includes/cota-class-family-directory-app.php';
             for ($i = 1; $i <= COTA_Family_Directory_App::maxFamilyMembers; $i++) {
                 $name = $row["othername$i"] ?? '';
                 if (!empty($name)) {
@@ -78,6 +78,8 @@ class COTA_Csv_Importer {
                 }
             }
         }
+        return;
+
     }
 
     private function cota_format_date($date) {
@@ -235,7 +237,9 @@ function cota_handle_error($message, $code) {
     exit;
 }
 
+// echo "About to instantiate COTA_Csv_Importer class" . PHP_EOL;
 $importAll = new COTA_Csv_Importer();
+// var_dump($importAll);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["csv_file"])) {
     $uploadDir = "uploads/";
@@ -255,7 +259,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["csv_file"])) {
     // Move uploaded file
     if (move_uploaded_file($_FILES["csv_file"]["tmp_name"], $uploadFile)) {
         $importer = new COTA_Csv_Importer();
-        $importer->cota_import($uploadFile);
+        $importer->cota_import($uploadFile );
     } else {
         cota_handle_error("File save error. Code: " . $_FILES["csv_file"]["error"], 103);
     }
@@ -281,6 +285,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["csv_file"])) {
         <button type="submit">Upload & Import</button>
     </form>
 
-    <p><a href='index.php'>Return to main menu</a></p>
+    <button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>
+
 </body>
 </html>

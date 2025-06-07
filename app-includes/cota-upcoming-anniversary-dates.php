@@ -82,13 +82,13 @@ function cota_get_upcoming_anniversaries() {
 </head>
 <body>
     <h2>Upcoming Anniversaries</h2>
-    <ul>    
+    <ul class='cota-anniversary-list'>
         <?php
         if (function_exists('cota_get_upcoming_anniversaries')) {
             $upcoming_anniversaries = cota_get_upcoming_anniversaries();
             foreach ($upcoming_anniversaries as $category => $anniversaries) {
                 echo "<strong>" . htmlspecialchars($category) . "</strong>";
-                echo "<ul>";
+                echo "<ul class='cota-anniversary-sublist'>";
                 if (empty($anniversaries)) {
                     echo "<li>No upcoming anniversaries on record.</li>";
                 } else {
@@ -105,6 +105,7 @@ function cota_get_upcoming_anniversaries() {
     </ul>
 
 
-    <p><a href='index.php'>Return to main menu</a></p>
+    <button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>
+
 </body>
 </html>

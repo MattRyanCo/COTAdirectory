@@ -32,7 +32,23 @@ file_put_contents($outputFile, $rtfContent);
 // fclose($output); 
 $db->close_connection();
 
-printf("<h2>RTF file generated successfully!</h2>");
-printf("<p><a href='%s'>Download file</a></p>", $outputFile);	
+// printf("<h2>RTF file generated successfully!</h2>");
+// printf("<p><a href='%s'>Download file</a></p>", $outputFile);	
 
-Printf("<p><a href='../../index.php'>Return to main menu.</a></p>");
+// Printf("<p><a href='../../index.php'>Return to main menu.</a></p>");
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Import CSV Data</title>
+    <link rel="stylesheet" href="../app-assets/css/styles.css">
+</head>
+<body>
+    <h2>RTF file generated successfully!</h2>
+	<p><button class="button" type="button" ><a href='<?php echo $outputFile; ?>'>Download file</a></button></p>
+    <button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>
+
+</body>
+</html>

@@ -2,38 +2,26 @@
 require_once '../app-includes/cota-database-functions.php';
 require_once '../app-includes/cota-format-family-listing.php';
 require_once '../app-includes/cota-print.php';
-require_once '../libraries/fpdf/fpdf.php';
+require_once '../app-includes/cota-class-print-booklet.php';
 
-$pdf = new FPDF('L', 'in', [8.5, 11]); // Landscape, Inches, Letter Size
-$pdf->SetAutoPageBreak(true, 0.5); // Ensure margins
-
-class PDF extends FPDF
-{
-    function Footer()
-    {
-        // Go to 1.5 cm from bottom
-        $this->SetY(-1);
-        // Select Arial italic 10
-        $this->SetFont('Arial', 'I', 10);
-        // Print centered page number
-        $this->Cell(0, 0.3, "Page {$pdf->PageNo()} - " . date('F j, Y'), 0, 0, 'C');
-    }
-}
-
+// Create a new PDF instance
+// $pdf = new FPDF('L', 'in', [8.5, 11]); // Landscape, Inches, Letter Size
+// $pdf = new PDF('L', 'in', [8.5, 5.5]); // Landscape, Inches, Half-page Letter Size
+$pdf = new PDF(); // Landscape, Inches, Half-page Letter Size
 
 // Add the cover
-$pdf->AddPage();
-$pdf->SetFont('Arial', 'B', 24);
-$pdf->MultiCell(0, 1, "Church of the Ascension\nMembership Directory\n2025", 0, 'C');
-
+// $pdf->AddPage();
+// $pdf->SetFont('Arial', 'B', 24);
+// // $pdf->Cell(0,10,' - '.$i,0,1);  // Line number for debugging
+// $pdf->SetY(2); // Set Y position for the title
+// $pdf->SetFont('Arial', 'B', 20);    
+// $pdf->MultiCell(0, 1, "Church of the Ascension\nMembership Directory\n2025", 0, 'C');
 
 
 // Load and insert pages
 for ($i = 1; $i <= 3; $i++) {
-    $pdf->AddPage();
-    $pdf->SetFont('Arial', '', 12);
-    $text = file_get_contents("../uploads/intro{$i}.txt");
-    $pdf->MultiCell(0, 0.3, $text);
+    $pdf->PrintChapter($i,'intro'.$i.'.txt','../uploads/intro'.$i.'.txt');
+    // $pdf->MultiCell(0, 0.3, $text);
 }
 
 // 4. Retrieve and Format Membership Entries
@@ -46,24 +34,19 @@ $families = $conn->query("SELECT * FROM families ORDER BY `familyname`");
 $num_families = $families->num_rows;
 $ictr = 1;
 
-
-
+$pdf->AddPage(); // Start the alpha listing on a new page
 $pageEntries = 0;
 while ($family = $families->fetch_assoc()) {
+    // Get family members
+    $individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id']);
 
-
-
-
-	// Get family members
-	$individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id']);  // no ordering
-
-    if ($pageEntries % 4 == 0) $pdf->AddPage(); // New page every 4 entries
-	if ($pageEntries > 0 && $pageEntries % 4 == 0) {
-		$pdf->Ln(0.5); // Add some space between entries
-	}
-    $pdf->SetFont('Arial', '', 12);
-    // $pdf->MultiCell(0, 0.5, "{$family['familyname']}\n{$family['address']}", 0, 1);
-	cota_format_family_listing_for_print($pdf, $family, $individuals);
+    // Build the family string using the new method
+    // $familyString = $pdf->BuildFamilyString($family, $individuals);
+    $familyString = cota_format_family_listing_for_print($family, $individuals);
+    echo nl2br($familyString); // Debugging output
+    // $familyString = $pdf->BuildFamilyString($family, $individuals);
+    // Print the family string, avoiding page breaks within a family entry
+    $pdf->PrintFamilyString($familyString);
 
     $pageEntries++;
 }
@@ -71,10 +54,10 @@ while ($family = $families->fetch_assoc()) {
 
 
 // Add the rear cover
-$pdf->SetY(-1);
-$pdf->SetFont('Arial', 'I', 20);
-$pdf->MultiCell(0, 1, "Church of the Ascension, Parkesburg, PA\nPrinted " . date('F j, Y'), 0, 'C');
-
+// $pdf->SetY(-1);
+// $pdf->SetFont('Arial', 'I', 20);
+// $pdf->MultiCell(0, 1, "Church of the Ascension, Parkesburg, PA\nPrinted " . date('F j, Y'), 0, 'C');
+$pdf->cota_back_cover(1, 'Back Cover');
 
 // Output the PDF
 $pdf->Output('F', '../uploads/membership_directory.pdf'); // Save to server

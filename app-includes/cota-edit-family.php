@@ -33,46 +33,58 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
 <head>
     <meta charset="UTF-8">
     <title>Edit Family</title>
+    <link rel="stylesheet" href="../app-assets/css/styles.css">
 </head>
 <body>
     <h2>Edit Family</h2>
-    <form action="cota-update-family.php" method="post">
+    <form class="cota-family-edit" action="cota-update-family.php" method="post">
         <input type="hidden" name="family_id" value="<?= $family['id'] ?>">
-        <label>Family Name:</label>
-        <input type="text" name="familyname" value="<?= htmlspecialchars($family['familyname']) ?>" required><br>
-        <label>Address:</label>
-        <input type="text" name="address" value="<?= htmlspecialchars($family['address']) ?>"><br>
-        <label>City:</label>
-        <input type="text" name="city" value="<?= htmlspecialchars($family['city']) ?>"><br>
-        <label>State:</label>
-        <input type="text" name="state" value="<?= htmlspecialchars($family['state']) ?>"><br>
-        <label>Zip Code:</label>
-        <input type="text" name="zip" value="<?= htmlspecialchars($family['zip']) ?>"><br>
-        <label>Home Phone:</label>
-        <input type="text" name="homephone" value="<?= htmlspecialchars($family['homephone']) ?>"><br>
-        <label>annday (MM/DD):</label>
-        <input type="text" name="annday" value="<?= htmlspecialchars($family['annday']) ?>"><br>
+        <label>Family Name</label>
+        <input type="text" name="familyname" value="<?= htmlspecialchars($family['familyname']) ?>" required>
+        <label>Address</label>
+        <input type="text" name="address" value="<?= htmlspecialchars($family['address']) ?>">
+        <label>City</label>
+        <input type="text" name="city" value="<?= htmlspecialchars($family['city']) ?>">
+        <label>State</label>
+        <input type="text" name="state" value="<?= htmlspecialchars($family['state']) ?>">
+        <label>Zip</label>
+        <input type="text" name="zip" value="<?= htmlspecialchars($family['zip']) ?>">
+        <label>Home Phone</label>
+        <input type="text" name="homephone" value="<?= htmlspecialchars($family['homephone']) ?>">
+        <label>Anniversary</label>
+        <input type="text" name="annday" value="<?= htmlspecialchars($family['annday']) ?>">
 
-        <h3>Members</h3>
-        <?php while ($member = $members->fetch_assoc()): ?>
-            <div>
+        <h3>Family Members</h3>
+        <div id="members">
+            <?php
+            $first = true;
+            while ($member = $members->fetch_assoc()):
+            ?>
+            <?php if ($first): ?>
+                <div class="member-header" >
+                <span style="min-width:120px;">First</span>
+                <span style="min-width:120px;">Last</span>
+                <span style="min-width:120px;">Cell</span>
+                <span style="min-width:180px;">Email</span>
+                <span style="min-width:100px;">Birthday</span>
+                <span style="min-width:100px;">Baptism</span>
+                </div>
+            <?php $first = false; endif; ?>
+            <div class="member-row">
                 <input type="hidden" name="members[id][]" value="<?= $member['id'] ?>">
-                <label>Name: </label>
-                <input type="text" name="members[first_name][]" value="<?= htmlspecialchars($member['first_name']) ?>">
-                <input type="text" name="members[last_name][]" value="<?= !empty($member['last_name']) ? htmlspecialchars($member['last_name']) : htmlspecialchars($family['familyname'] ?? '') ?>">
-                <label>Cell: </label>
-                <input type="text" name="members[cell_phone][]" value="<?= htmlspecialchars($member['cell_phone']) ?>">
-                <label>Email:</label>
-                <input type="email" name="members[email][]" value="<?= htmlspecialchars($member['email']) ?>">
-                <label>Birthday:</label>
-                <input type="text" name="members[birthday][]" value="<?= htmlspecialchars($member['birthday']) ?>">
-                <label>Baptism:</label>
-                <input type="text" name="members[baptism][]" value="<?= htmlspecialchars($member['baptism']) ?>"><br>
+                <input type="text" name="members[first_name][]" value="<?= htmlspecialchars($member['first_name']) ?>" style="width:120px;">
+                <input type="text" name="members[last_name][]" value="<?= !empty($member['last_name']) ? htmlspecialchars($member['last_name']) : htmlspecialchars($family['familyname'] ?? '') ?>" style="width:120px;">
+                <input type="tel" name="members[cell_phone][]" value="<?= htmlspecialchars($member['cell_phone']) ?>" style="width:120px;">
+                <input type="email" name="members[email][]" value="<?= htmlspecialchars($member['email']) ?>" style="width:180px;">
+                <input type="text" name="members[birthday][]" value="<?= htmlspecialchars($member['birthday']) ?>" style="width:100px;">
+                <input type="text" name="members[baptism][]" value="<?= htmlspecialchars($member['baptism']) ?>" style="width:100px;">
             </div>
-        <?php endwhile; ?>
+            <?php endwhile; ?>
+        </div>
 
         <button type="submit">Update</button>
     </form>
-    <br><p><a href='index.php'>Return to main menu</a></p>
+    <!-- <br><p><a href='index.php'>Return to main menu</a></p> -->
+    <button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>
 </body>
 </html>

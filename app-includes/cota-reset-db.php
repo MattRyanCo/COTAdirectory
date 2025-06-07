@@ -87,12 +87,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <h2>⚠️ Reset Database ⚠️</h2>
     <p style="color: red;">WARNING: This will delete **all data** from the database. Proceed with caution!</p>
 
-    <form method="post">
+    <form class="cota-reset-db" method="post">
         <label>Type "YES" to confirm:</label>
         <input type="text" name="confirm" required>
         <button type="submit" style="background-color: red;">Reset Database</button>
     </form>
 
-    <br><p><a href='../index.php'>Return to main menu</a></p>
+        <!-- <br><p><a href='../index.php'>Return to main menu</a></p> -->
+    <button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>
+
 </body>
 </html>

@@ -34,7 +34,7 @@ $header = [
 ];
 
 // Get maxFamilyMembers from class-COTA_Family_Directory_App.php
-require_once '../app-includes/class-COTA_Family_Directory_App.php';
+require_once '../app-includes/cota-class-family-directory-app.php';
 $maxMembers = COTA_Family_Directory_App::maxFamilyMembers;
 
 // Add dynamic member columns
@@ -85,5 +85,3 @@ while ($family = $families->fetch_assoc()) {
 }
 fclose($output);
 $db->close_connection();
-
-?>

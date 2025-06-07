@@ -48,13 +48,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
     }
 
     echo "<h2>Family updated successfully!</h2>";
-    echo "<br><br><p><a href='cota-edit-family.php?familyname=" . urlencode($familyname) . "'>Edit this family again</a></p>";
-    echo "<p><a href='cota-search.php'>Edit Another Family</a></p>";
+    echo "<br><br><p><button class='cota-edit-family' type='button'><a href='cota-edit-family.php?familyname=" . urlencode($familyname) . "'>Edit this family again</a></button></p>";
+    echo "<p><button class='cota-search-family' type='button'><a href='cota-search.php'>Edit Another Family</a></button></p>";
 } else {
     echo "<h2>Error: Invalid request.</h2>";
-    echo "<p><a href='index.php'>Return to Directory</a></p>";
+    echo "<p>Please try again or return to the <a href='index.php'>main menu</a>.</p>";
+    echo "<button class='main-menu-return' type='button' ><a href='index.php'>Return to Main Menu</a></button>";
 }
 
 $db->close_connection();
 ?>
-<br><p><a href='index.php'>Return to main menu</a></p>
+<button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>

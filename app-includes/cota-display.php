@@ -43,7 +43,7 @@ require_once '../app-includes/cota-format-family-listing.php';
 			// $individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id'] . " ORDER BY `first_name`");
 			$individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id']);  // no ordering
 
-			echo cota_cota_format_family_listing_for_display($family, $individuals);	
+			echo cota_format_family_listing_for_display($family, $individuals);	
 			$ictr++;
 		} 
 
@@ -53,7 +53,8 @@ require_once '../app-includes/cota-format-family-listing.php';
 		echo "\n</table></body></html>"; 
 		?> 
 
-	<br><p><a href='index.php'>Return to main menu</a></p>
+	<!-- <br><p><a href='index.php'>Return to main menu</a></p> -->
+	<button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>
 </body> 
 
 </html>

@@ -1,6 +1,7 @@
 <?php
 
-function cota_format_family_listing_for_print($pdfobj, $family, $members) {
+// function cota_format_family_listing_for_print($pdfobj, $family, $members) {
+function cota_format_family_listing_for_print($family, $members) {
 
     // Set key logicals
     $num_members = $members->num_rows;
@@ -10,6 +11,7 @@ function cota_format_family_listing_for_print($pdfobj, $family, $members) {
     $city = (isset($family['city']) && $family['city'] !== "") ? $family['city'] : false;
     $homephone = (isset($family['homephone']) && $family['homephone'] !== "") ? $family['homephone'] : false;
     $placeholder = '';
+    $familystringlines = '';
     
     // Outer loop through left side of printed entry block
     for ( $lctr = 1; $lctr <= 4; $lctr++ ) {
@@ -17,29 +19,31 @@ function cota_format_family_listing_for_print($pdfobj, $family, $members) {
             // Build the family header (name and address, other column headings)
             // Get 1st member of family
             // $pdfobj->multicell(2,0.5,"Family Name/Address Family Members\n",0,1);
-            $pdfobj->cell(2,0.5,"Family Name/Address",0,0, 'L',false);
-            $pdfobj->cell(2,0.5,"Family Members",0,1, 'L',false);
-            $pdfobj->cell(2,0.25,"Home Phone",0,0, 'L',false);
-            // $pdfobj->MultiCell(2, 0.5, "Home Phone   Name   Email   Cell   DoB   DoBaptism\n", 0, 1);
-            $pdfobj->cell(1,0.25,"Name",0,0, 'L',false);
-            $pdfobj->cell(1,0.25,"Email",0,0, 'L',false);
-            $pdfobj->cell(1,0.25,"Cell",0,0, 'L',false);
-            $pdfobj->cell(1,0.25,"DoB",0,0, 'L',false);
-            $pdfobj->cell(1,0.25,"DoBaptism",0,1, 'L',false);
+            // $pdfobj->cell(2,0.5,"Family Name/Address",0,0, 'L',false);
+            // $pdfobj->cell(2,0.5,"Family Members",0,1, 'L',false);
+            // $pdfobj->cell(2,0.25,"Home Phone",0,0, 'L',false);
+            // // $pdfobj->MultiCell(2, 0.5, "Home Phone   Name   Email   Cell   DoB   DoBaptism\n", 0, 1);
+            // $pdfobj->cell(1,0.25,"Name",0,0, 'L',false);
+            // $pdfobj->cell(1,0.25,"Email",0,0, 'L',false);
+            // $pdfobj->cell(1,0.25,"Cell",0,0, 'L',false);
+            // $pdfobj->cell(1,0.25,"DoB",0,0, 'L',false);
+            // $pdfobj->cell(1,0.25,"DoBaptism",0,1, 'L',false);
+            // $familystringlines = "Family Name/Address Family Members\n";
+            // $familystringlines .= "Home Phone   Name   Email   Cell   DoB   DoBaptism\n";
 
             $individual = $members->fetch_assoc();
             if (!$individual) {
                 // No members found
                 break;
             }
-            $lines = [];
-            $lines[] = $family['familyname'] . ' ' . 
+            // $familystringlines = [];
+            $familystringlines .= $family['familyname'] . ' ' . 
                 ($individual['first_name'] ?? '') .  ' ' . 
                 ($individual['last_name'] ?? '' ).  ' ' . 
                 ($individual['email'] ?? '' ).  ' ' . 
                 ($individual['cell_phone'] ?? '') .  ' ' . 
-                ($individual['birthday']??' ' .  ' ' . 
-                ($individual['baptism'] ?? ' '));
+                ($individual['birthday']??'') .  ' ' . 
+                ($individual['baptism'] ?? '') . "\n";
         } elseif ( $lctr == 2 ) {
             $individual = get_next_member_to_print($members);
             if ( $addr1 ) {
@@ -61,13 +65,13 @@ function cota_format_family_listing_for_print($pdfobj, $family, $members) {
                 $addr2 = false;
                 $city = false;
             }
-            $lines[] = $left_side . ' ' . 
+            $familystringlines .= $left_side . ' ' . 
                 ($individual['first_name'] ?? '') .  ' ' . 
                 ($individual['last_name'] ?? '' ).  ' ' . 
                 ($individual['email'] ?? '' ).  ' ' . 
                 ($individual['cell_phone'] ?? '') .  ' ' . 
-                ($individual['birthday']??' ' .  ' ' . 
-                ($individual['baptism'] ?? ' '));
+                ($individual['birthday']??'') .  ' ' . 
+                ($individual['baptism'] ?? '') . "\n";
 
         } elseif ( $lctr == 3 ) {
             $individual = get_next_member_to_print($members);
@@ -84,13 +88,13 @@ function cota_format_family_listing_for_print($pdfobj, $family, $members) {
                 // Remaining left side address will be blank. 
                 $left_side = $placeholder;
             }
-            $lines[] = $left_side . ' ' . 
+            $familystringlines .= $left_side . ' ' . 
                 ($individual['first_name'] ?? '') .  ' ' . 
                 ($individual['last_name'] ?? '' ).  ' ' . 
                 ($individual['email'] ?? '' ).  ' ' . 
                 ($individual['cell_phone'] ?? '') .  ' ' . 
-                ($individual['birthday']??' ' .  ' ' . 
-                ($individual['baptism'] ?? ' '));
+                ($individual['birthday']??'') .  ' ' . 
+                ($individual['baptism'] ?? '') . "\n";
 
         } elseif ( $lctr == 4 ) {
             $individual = get_next_member_to_print($members);
@@ -107,13 +111,13 @@ function cota_format_family_listing_for_print($pdfobj, $family, $members) {
                 // If no address or phone, use placeholder. 
                 $left_side = $placeholder;
             }
-            $lines[] = $left_side . ' ' . 
+            $familystringlines .= $left_side . ' ' . 
                 ($individual['first_name'] ?? '') .  ' ' . 
                 ($individual['last_name'] ?? '' ).  ' ' . 
                 ($individual['email'] ?? '' ).  ' ' . 
                 ($individual['cell_phone'] ?? '') .  ' ' . 
-                ($individual['birthday']??' ' .  ' ' . 
-                ($individual['baptism'] ?? ' '));
+                ($individual['birthday']??'') .  ' ' . 
+                ($individual['baptism'] ?? '') . "\n";
         } else {
             // No data for left side of display
         }
@@ -123,32 +127,32 @@ function cota_format_family_listing_for_print($pdfobj, $family, $members) {
     // Loop through rest of family members
     while ($ictr <= $num_members) {
         $individual = get_next_member_to_print($members);
-        $lines[] = $left_side . ' ' . 
+        $familystringlines .= $left_side . ' ' . 
             ($individual['first_name'] ?? '') . ' ' .
             ($individual['last_name'] ?? '') . ' ' .
             ($individual['email'] ?? '') . ' ' .
             ($individual['cell_phone'] ?? '') . ' ' .
-            ($individual['birthday'] ?? '') . ' ' .
-            ($individual['baptism'] ?? ''   );
+                ($individual['birthday']??'') .  ' ' . 
+                ($individual['baptism'] ?? '') . "\n";
         $ictr++;
     }
 
 
     // Output all lines for this family as a block in the PDF
-    $pdfobj->SetFont('Arial', '', 10);
-    $pdfobj->MultiCell(0, 0.22, implode("\n", $lines), 1, 1);
+    // $pdfobj->SetFont('Arial', '', 10);
+    // $pdfobj->MultiCell(0, 0.22, implode("\n", $familystringlines), 1, 1);
     // $pdfobj->Ln(0.1); // Small space after each family
 
-    return true; // Indicate success
+    return $familystringlines; // Indicate success
 }
 /**
- * cota_cota_format_family_listing_for_display
+ * cota_format_family_listing_for_display
  *
  * @param [type] $family - Result of database query of all data for a specified family ID
  * @param [type] $members - Result of COTA_Database query of all members of a specified family ID
  * @return string | null
  */
-function cota_cota_format_family_listing_for_display($family, $members) { 
+function cota_format_family_listing_for_display($family, $members) { 
     // Set key logicals
     $num_members = $members->num_rows;
     $ictr = 1;
