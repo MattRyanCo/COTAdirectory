@@ -32,9 +32,11 @@ class COTA_Family_Directory_App
             <ul>
                 <li><a href="/app-includes/cota-import.php">Import CSV Data</a></li>
                 <li><a href="/app-includes/cota-export.php">Export Directory as CSV</a></li>
-                <li><a href="/app-includes/cota-display.php">Display Formatted Directory</a></li>
-                <li><a href="/app-includes/cota-print-booklet.php">Print Formatted Directory</a></li>
-                <li><a href="/app-includes/cota-print-booklet-to-pdf.php">Print PDF Directory</a></li>
+                <li><a href="/app-includes/cota-export-sample.php">Export Sample Directory as CSV</a></li>
+                <li><a href="/app-includes/cota-display.php">Display Formatted Directory on Screen</a></li>
+                <li><a href="/app-includes/cota-print-booklet.php">Download Formatted Directory Listing</a></li>
+                <li><a href="/app-includes/cota-print-booklet-to-pdf.php">Generate PDF Directory for Hardcopy</a></li>
+                <li><a href="/app-includes/cota-build-booklet.php">Build Booklet Sample</a></li>
                 <li><a href="/app-includes/cota-search.php">Search & Edit Family</a></li>
                 <li><a href="/app-includes/cota-add-family-form.php">Add New Family</a></li>
                 <li><a href="/app-includes/cota-upcoming-anniversary-dates.php">Display/Print Upcoming Anniversaries</a></li>
