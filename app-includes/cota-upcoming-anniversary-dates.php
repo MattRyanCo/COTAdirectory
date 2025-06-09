@@ -9,14 +9,27 @@ function cota_get_last_name($family_id, $conn) {
 
     return $family['familyname'] ?? 'Unknown';
 }
+function cota_get_next_sunday_date($fromDate = null) {
+    // If no date is provided, use today
+    $date = $fromDate ? new DateTime($fromDate) : new DateTime();
+    $dayOfWeek = $date->format('w'); // 0 (Sunday) to 6 (Saturday)
+    if (!$dayOfWeek == 0) {
+        // Add days to get to next Sunday
+        $daysToAdd = 7 - $dayOfWeek;
+        $date->modify("+$daysToAdd days");
+    }
+    return $date;
+}
 
 function cota_get_upcoming_anniversaries() {
     $db = new COTA_Database();
     $conn = $db->get_connection();
 
-    $today = new DateTime();
-    $end = (clone $today)->modify('+15 days');
-    $currentYear = $today->format('Y');
+    $upcoming_sunday = cota_get_next_sunday_date();
+    $end = (clone $upcoming_sunday)->modify('+15 days');
+    $currentYear = $upcoming_sunday->format('Y');
+
+    $today = $upcoming_sunday;
 
     $results = [
         'Marriage Anniversaries' => [],
@@ -82,6 +95,7 @@ function cota_get_upcoming_anniversaries() {
 </head>
 <body>
     <h2>Upcoming Anniversaries</h2>
+    <p><?php echo "Effective: " . cota_get_next_sunday_date()->format('m/d'); ?></p>
     <ul class='cota-anniversary-list'>
         <?php
         if (function_exists('cota_get_upcoming_anniversaries')) {
