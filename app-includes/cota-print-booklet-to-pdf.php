@@ -43,7 +43,7 @@ while ($family = $families->fetch_assoc()) {
     // Build the family string using the new method
     // $familyString = $pdf->BuildFamilyString($family, $individuals);
     $familyString = cota_format_family_listing_for_print($family, $individuals);
-    echo nl2br($familyString); // Debugging output
+    // echo nl2br($familyString); // Debugging output
     // $familyString = $pdf->BuildFamilyString($family, $individuals);
     // Print the family string, avoiding page breaks within a family entry
     $pdf->PrintFamilyString($familyString);
