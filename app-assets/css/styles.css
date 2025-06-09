@@ -61,7 +61,8 @@ a:hover {
 
 form.cota-family-entry,
 form.cota-search,
-form.cota-family-edit {
+form.cota-family-edit,
+form.cota-family-delete {
     background: lightgray;
     padding: 20px 40px 20px 20px;
     border-radius: 5px;
@@ -93,7 +94,8 @@ form label {
 form.cota-reset-db > label,
 form.cota-search > label,
 form.cota-family-edit > div > label,
-form.cota-family-entry > div > label {
+form.cota-family-entry > div > label,
+form.cota-family-delete > div > label {
     text-align: left;
 }
 

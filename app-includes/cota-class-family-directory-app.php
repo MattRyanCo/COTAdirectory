@@ -36,15 +36,30 @@ class COTA_Family_Directory_App
                 <li><a href="/app-includes/cota-display.php">Display Formatted Directory on Screen</a></li>
                 <li><a href="/app-includes/cota-print-booklet.php">Download Formatted Directory Listing</a></li>
                 <li><a href="/app-includes/cota-print-booklet-to-pdf.php">Generate PDF Directory for Hardcopy</a></li>
-                <li><a href="/app-includes/cota-build-booklet.php">Build Booklet Sample</a></li>
-                <li><a href="/app-includes/cota-search.php">Search & Edit Family</a></li>
+                <li><a href="/app-includes/cota-build-booklet.php">Build Booklet Sample for Print</a></li>
                 <li><a href="/app-includes/cota-add-family-form.php">Add New Family</a></li>
+                <li><a href="/app-includes/cota-search-edit.php">Search & Edit Family</a></li>
+                <li><a href="/app-includes/cota-search-delete.php">Delete Family or Family Member</a></li>
                 <li><a href="/app-includes/cota-upcoming-anniversary-dates.php">Display/Print Upcoming Anniversaries</a></li>
-                <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSd9ZMiaeO6btCJo2BQ7lgBlOYsJwNBC4aPLRYdr4m90pwN7wA/viewform?usp=header">Form Based Family Entry</a></li>
+                <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSd9ZMiaeO6btCJo2BQ7lgBlOYsJwNBC4aPLRYdr4m90pwN7wA/viewform?usp=header" target="_blank">Google Form Based Family Entry</a></li>
+                <li><a href="https://docs.google.com/spreadsheets/d/1anupShYGmySUjrA16yGC5HQ3uucfi6HdMm-CujOqHxc/edit?usp=sharing" target="_blank">Google Form Sheet</a></li>
                 <li><a href="/app-includes/cota-reset-db.php" style="color: red;">⚠️ Reset Database ⚠️</a></li>
             </ul>
             </nav>
         </body>
         </html>';
+    }
+
+    private function cota_get_head_only()
+    {
+        return '
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Family Directory Management</title>
+            <!-- <link rel="icon" type="image/x-icon" href="/app-assets/images/favicon.ico"> -->
+            <link rel="icon" type="image/x-icon" href="/app-assets/images/favicon-white.ico">
+            <link rel="stylesheet" href="/app-assets/css/styles.css">
+        </head>';
     }
 }
