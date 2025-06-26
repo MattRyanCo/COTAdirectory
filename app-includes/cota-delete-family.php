@@ -75,14 +75,14 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
             <?php $first = false; endif; ?>
             <div class="member-row">
                 <input type="hidden" name="members[id][]" value="<?= $member['id'] ?>" readonly>
+                <input type="checkbox" name="delete_member[]" value="<?= $member['id'] ?>">
                 <input type="text" name="members[first_name][]" value="<?= htmlspecialchars($member['first_name']) ?>" style="width:120px;" readonly>
                 <input type="text" name="members[last_name][]" value="<?= !empty($member['last_name']) ? htmlspecialchars($member['last_name']) : htmlspecialchars($family['familyname'] ?? '') ?>" style="width:120px;" readonly>
                 <input type="tel" name="members[cell_phone][]" value="<?= htmlspecialchars($member['cell_phone']) ?>" style="width:120px;" readonly>
                 <input type="email" name="members[email][]" value="<?= htmlspecialchars($member['email']) ?>" style="width:180px;" readonly>
                 <input type="text" name="members[birthday][]" value="<?= htmlspecialchars($member['birthday']) ?>" style="width:100px;" readonly>
                 <input type="text" name="members[baptism][]" value="<?= htmlspecialchars($member['baptism']) ?>" style="width:100px;" readonly>
-                <!-- <input type="checkbox" id="delete_member" name="delete_member"> -->
-                <input type="checkbox" name="delete_member[]" value="<?= $member['id'] ?>">
+
 
             </div>
             <?php endwhile; ?>

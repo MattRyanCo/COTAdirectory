@@ -26,6 +26,8 @@ define( 'COTA_APPINC', 'app-includes' );
 define( 'COTA_APPASSETS', 'app-assets' );
 define( 'COTA_APPINCLUDES', 'app-includes' );
 
+
+
 /** Sets up the app vars and included files. */
 require_once COTA_APPINCLUDES . '/cota-settings.php';
 require_once COTA_APPINCLUDES . '/cota-database-functions.php';

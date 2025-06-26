@@ -48,28 +48,28 @@
         <label>State</label>
         <input type="text" name="state" value="PA" maxlength="2" style="text-transform:uppercase">
         <label>Zip Code</label>
-        <input type="text" name="zip" placeholder="xxxxx" pattern="\d{5}" title="Format: xxxxx"<br>
+        <input type="text" name="zip" placeholder="xxxxx-xxxx" title="Format: xxxxx-xxxx"<br>
         <label>Home Phone</label>
-        <input type="tel" name="homephone" placeholder="xxx-xxx-xxxx" pattern="\d{3}-\d{3}-\d{4}" title="Format: xxx-xxx-xxxx">
+        <input type="tel" name="homephone" placeholder="xxx-xxx-xxxx" title="Format: xxx-xxx-xxxx">
         <label>Anniversary of Marriage</label>
-        <input type="text" name="annday" title="Wedding anniversary of primary family members." placeholder="mm/dd"><br>
+        <input type="text" name="annday" title="Wedding anniversary of primary family members." placeholder="mm/dd/yyyy"><br>
 
         <h3>Family Members</h3>
         <p>Enter the primary family member first, then add additional family members and information as desired.</p>
         <div id="members">
             <div>
-                <label >First Name</label>
-                <input type="text" name="members[first_name][]" style="text-transform:capitalize;" required>
-                <label for="members[last_name][]">Last Name (if different than family name)</label>
-                <input type="text" id="members[last_name][]" name="members[last_name][]" style="text-transform:capitalize;"><br>
+                <label >Name</label>
+                <input type="text" name="members[first_name][]" style="text-transform:capitalize;" placeholder="First"required>
+                <label for="members[last_name][]">Last (only needed if different from family name)</label>
+                <input type="text" id="members[last_name][]" name="members[last_name][]" style="text-transform:capitalize;" placeholder="Last"><br>
                 <label for="members[cell_phone][]">Cell Phone</label>
-                <input type="tel" id="members[cell_phone][]" name="members[cell_phone][]" placeholder="xxx-xxx-xxxx" pattern="\d{3}-\d{3}-\d{4}" title="Format: xxx-xxx-xxxx"><br>
+                <input type="tel" id="members[cell_phone][]" name="members[cell_phone][]" placeholder="xxx-xxx-xxxx" title="Format: xxx-xxx-xxxx"><br>
                 <label for="members[email][]">Email</label>
                 <input type="email" id="members[email][]" name="members[email][]"><br>
                 <label for="members[birthday][]">Birthday</label>
-                <input type="text" id="members[birthday][]" name="members[birthday][]" placeholder="mm/dd"><br>
+                <input type="text" id="members[birthday][]" name="members[birthday][]" placeholder="mm/dd/yyyy"><br>
                 <label for="members[baptism][]">Anniversary of Baptism</label>
-                <input type="text" id="members[baptism]" name="members[baptism][]" placeholder="mm/dd"><br><br><br>
+                <input type="text" id="members[baptism]" name="members[baptism][]" placeholder="mm/dd/yyyy"><br><br><br>
             </div>
         </div>
         <button class="cota-add-another" type="button" onclick="cota_add_member()">Add Another Family Member</button>

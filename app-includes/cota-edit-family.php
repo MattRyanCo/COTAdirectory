@@ -63,6 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
             <?php if ($first): ?>
                 <div class="member-header" >
                 <span style="min-width:120px;">First</span>
+                <span style="min-width:120px;">Middle</span>
                 <span style="min-width:120px;">Last</span>
                 <span style="min-width:120px;">Cell</span>
                 <span style="min-width:180px;">Email</span>
