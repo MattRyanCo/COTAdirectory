@@ -1,10 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Family Entry</title>
-    <link rel="stylesheet" href="../app-assets/css/styles.css">
+<?php
+require_once '../app-includes/database-functions.php';
+require_once '../app-includes/format-family-listing.php';
+require_once '../app-includes/settings.php';
+
+// Echo page header
+echo cota_page_header();
+
+// Dump out remainder of import page. 
+?>
+    <div class="cota-add-entry-container">
+
     <script>
         function cota_add_member() {
             const membersDiv = document.getElementById("members");
@@ -36,7 +41,7 @@
 </head>
 <body>
     <h2 >Add Family Entry</h2>
-    <form class="cota-family-entry" action="cota-add-family.php" method="post">
+    <form class="cota-family-entry" action="add-family.php" method="post">
         <label>Family Name</label>
         <input type="text" name="familyname" style="text-transform:capitalize;" required>
         <label>Address</label>
@@ -50,7 +55,7 @@
         <label>Zip Code</label>
         <input type="text" name="zip" placeholder="xxxxx-xxxx" title="Format: xxxxx-xxxx"<br>
         <label>Home Phone</label>
-        <input type="tel" name="homephone" placeholder="xxx-xxx-xxxx" title="Format: xxx-xxx-xxxx">
+        <input type="tel" name="homephone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="xxx-xxx-xxxx">
         <label>Anniversary of Marriage</label>
         <input type="text" name="annday" title="Wedding anniversary of primary family members." placeholder="mm/dd/yyyy"><br>
 
@@ -59,11 +64,11 @@
         <div id="members">
             <div>
                 <label >Name</label>
-                <input type="text" name="members[first_name][]" style="text-transform:capitalize;" placeholder="First"required>
+                <input type="text" name="members[first_name][]" style="text-transform:capitalize;" placeholder="First" required>
                 <label for="members[last_name][]">Last (only needed if different from family name)</label>
                 <input type="text" id="members[last_name][]" name="members[last_name][]" style="text-transform:capitalize;" placeholder="Last"><br>
                 <label for="members[cell_phone][]">Cell Phone</label>
-                <input type="tel" id="members[cell_phone][]" name="members[cell_phone][]" placeholder="xxx-xxx-xxxx" title="Format: xxx-xxx-xxxx"><br>
+                <input type="tel" id="members[cell_phone][]" name="members[cell_phone][]" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="xxx-xxx-xxxx"><br>
                 <label for="members[email][]">Email</label>
                 <input type="email" id="members[email][]" name="members[email][]"><br>
                 <label for="members[birthday][]">Birthday</label>
@@ -77,7 +82,6 @@
         <button class="cota-submit-family" type="submit">Submit Family Update</button>
     </form>
 
-    <button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>
 
 </body>
 </html>

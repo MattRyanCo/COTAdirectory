@@ -26,12 +26,15 @@ define( 'COTA_APPINC', 'app-includes' );
 define( 'COTA_APPASSETS', 'app-assets' );
 define( 'COTA_APPINCLUDES', 'app-includes' );
 
+// Set as cosnt since using inside a class later on. 
+const MAX_FAMILY_MEMBERS = 10;
+
 
 
 /** Sets up the app vars and included files. */
-require_once COTA_APPINCLUDES . '/cota-settings.php';
-require_once COTA_APPINCLUDES . '/cota-database-functions.php';
+require_once COTA_APPINCLUDES . '/settings.php';
+require_once COTA_APPINCLUDES . '/database-functions.php';
 
-// phpinfo(); // For debugging purposes, remove in production
-$app = new COTA_Family_Directory_App();
-$app->cota_render();
+
+// Echo page header
+echo cota_page_header();

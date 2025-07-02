@@ -29,5 +29,10 @@ class COTA_Database {
         }
         return $families;
     }
+
+    public function activate_reporting() {
+        $this->report_mode = MYSQLI_REPORT_ALL;
+        return;
+    }
 }
 ?>

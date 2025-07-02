@@ -2,7 +2,8 @@
 /**
  * 
  */
-require_once '../app-includes/cota-database-functions.php';
+require_once '../app-includes/database-functions.php';
+require_once '../app-includes/settings.php';
 
 class COTA_Csv_Importer {
     private $conn;
@@ -61,9 +62,7 @@ class COTA_Csv_Importer {
             }
 
             // Insert other members (children, etc.)
-            // Get maxFamilyMembers from cota-class-family-directory-app.php
-            require_once '../app-includes/cota-class-family-directory-app.php';
-            for ($i = 1; $i <= COTA_Family_Directory_App::maxFamilyMembers; $i++) {
+            for ($i = 1; $i <= Constants::MAX_FAMILY_MEMBERS; $i++) {
                 $name = $row["othername$i"] ?? '';
                 if (!empty($name)) {
                     $this->cota_insert_member(
@@ -268,24 +267,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["csv_file"])) {
 
     $importAll->cota_read_csv_to_assoc_array($uploadFile);
 }
+
+// Echo header
+echo cota_page_header();
+
+// Dump out remainder of import page. 
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Import CSV Data</title>
-    <link rel="stylesheet" href="../app-assets/css/styles.css">
-</head>
-<body>
-    <h2>Upload CSV File containing Family Import</h2>
-    <form method="post" enctype="multipart/form-data">
-        <label>Select CSV File:</label>
-        <input type="file" name="csv_file" accept=".csv" required>
-        <button type="submit">Upload & Import</button>
-    </form>
-
-    <button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>
-
+    <div class="cota-import-container">
+        <h2>Upload CSV File containing Family Import</h2>
+        <form class="cota-import" method="post" enctype="multipart/form-data">
+            <label>Select CSV File:</label>
+            <input type="file" name="csv_file" accept=".csv" required>
+            <button type="submit">Upload & Import</button>
+        </form>
+    </div>
 </body>
 </html>

@@ -1,8 +1,13 @@
 <?php
-require_once 'cota-database-functions.php';
+require_once '../app-includes/database-functions.php';
+require_once '../app-includes/settings.php';
 
 $db = new COTA_Database();
 $conn = $db->get_connection();
+
+// Get ful URL with query string
+$full_url = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+// echo "<p>Full URL: " . htmlspecialchars($full_url) . "</p>"; 
 
 if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
     $familyname = $_GET["familyname"];
@@ -16,7 +21,15 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
     $stmt->close();
 
     if (!$family) {
-        die("Family not found. Try again or Return to the <a href='index.php'>main menu</a>.");
+        // Echo header
+        echo cota_page_header();
+        ?>
+        <div id="delete-family" class="cota-delete-container">
+            <h2>Delete Family</h2>
+            <div class="container error-message"><?php echo $familyname;?> family not found<br>
+            <a href="../app-includes/search-delete.php">Try again with a different spelling</a></div>
+            <?php die();
+
     }
 
     // Fetch members
@@ -26,18 +39,17 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
     $members = $stmt->get_result();
     $stmt->close();
 }
+
+
+// Echo header
+echo cota_page_header();
+
+// Dump out remainder of page. 
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Delete Family or Family Member</title>
-    <link rel="stylesheet" href="../app-assets/css/styles.css">
-</head>
-<body>
+    <div id="delete-family" class="cota-import-container">
     <h2>Delete Family</h2>
-    <form class="cota-family-delete" action="cota-delete-family-form-handler.php" method="post">
+    <form class="cota-family-delete" action="delete-family-form-handler.php" method="post">
         <input type="hidden" name="family_id" value="<?= $family['id'] ?>">
         <label>Family Name</label>
         <input type="text" name="familyname" value="<?= htmlspecialchars($family['familyname']) ?>" readonly>
@@ -54,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
         <label>Anniversary</label>
         <input type="text" name="annday" value="<?= htmlspecialchars($family['annday']) ?>" readonly>
 
-        <button type="submit" name="delall" >Delete Family From Directory-Submit</button>
+        <button class="delall" type="submit" name="delall" >Delete Entire Family From Directory</button>
 
         <h3>Family Members</h3>
         <div id="members">
@@ -88,10 +100,10 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
             <?php endwhile; ?>
         </div>
 
-        <button type="submit" name="delselected">Delete Selected Members From Family</button>
+        <button class="delselected" type="submit" name="delselected">Delete Selected Members From Family</button>
     </form>
-    
-    <button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>
+            </div>
+    <!-- <button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button> -->
 </body>
 </html>
   

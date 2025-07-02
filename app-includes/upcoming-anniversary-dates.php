@@ -2,7 +2,8 @@
 /**
  * Get upcoming anniversary dates within the next 15 days.
  */
-require_once '../app-includes/cota-database-functions.php';
+require_once '../app-includes/database-functions.php';
+require_once '../app-includes/settings.php';
 
 function cota_get_last_name($family_id, $conn) {
     $family = $conn->query("SELECT familyname FROM families WHERE id = " . intval($family_id))->fetch_assoc();
@@ -85,16 +86,16 @@ function cota_get_upcoming_anniversaries() {
     $conn->close();
     return $results;
 }
+
+
+// Echo header
+echo cota_page_header();
+
+// Dump out remainder of import page. 
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Import CSV Data</title>
-    <link rel="stylesheet" href="../app-assets/css/styles.css">
-</head>
-<body>
+    <div id="cota-anniversary" class="container">
     <h2>Upcoming Anniversaries</h2>
+
     <p><?php echo "Effective: " . cota_get_next_sunday_date()->format('m/d'); ?></p>
     <ul class='cota-anniversary-list'>
         <?php
@@ -117,9 +118,6 @@ function cota_get_upcoming_anniversaries() {
         }
         ?>
     </ul>
-
-
-    <button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>
-
+    </div>
 </body>
 </html>

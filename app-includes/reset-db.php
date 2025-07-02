@@ -1,5 +1,7 @@
 <?php
-require_once '../app-includes/cota-database-functions.php';
+require_once '../app-includes/database-functions.php';
+require_once '../app-includes/settings.php';
+
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $db = new COTA_Database();
@@ -74,27 +76,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $db->close_connection();
 }
+
+
+// Echo header
+echo cota_page_header();
+
+// Dump out remainder of page.
+
 ?>
+<!-- 
+    <br><br><br><br><h3>⚠️ Reset Database ⚠️</h3><br><br><br><br>
+    <p style="color: red;">WARNING: This will delete **all data** from the database. Proceed with caution!</p> -->
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Reset Database</title>
-    <link rel="stylesheet" href="../app-assets/css/styles.css">
-</head>
-<body>
-    <h2>⚠️ Reset Database ⚠️</h2>
-    <p style="color: red;">WARNING: This will delete **all data** from the database. Proceed with caution!</p>
-
-    <form class="cota-reset-db" method="post">
-        <label>Type "YES" to confirm:</label>
-        <input type="text" name="confirm" required>
-        <button type="submit" style="background-color: red;">Reset Database</button>
-    </form>
-
-        <!-- <br><p><a href='../index.php'>Return to main menu</a></p> -->
-    <button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>
+    <div class="cota-reset-db-container">
+        <h3>⚠️ Reset Database ⚠️</h3><br><br>
+        <p class="warning">WARNING: This will delete **all data** from the database.<br>Proceed with caution!</p>
+        <form class="cota-reset-db" method="post">
+            <label>Type "YES" to confirm:</label>
+            <input type="text" name="confirm" required>
+            <button type="submit" style="background-color: red;">Reset Database</button>
+        </form>
+    </div>
 
 </body>
 </html>

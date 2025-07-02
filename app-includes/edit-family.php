@@ -1,5 +1,7 @@
 <?php
-require_once 'cota-database-functions.php';
+require_once '../app-includes/database-functions.php';
+require_once '../app-includes/settings.php';
+
 
 $db = new COTA_Database();
 $conn = $db->get_connection();
@@ -26,17 +28,14 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
     $members = $stmt->get_result();
     $stmt->close();
 }
+
+// Echo header
+echo cota_page_header();
+
+// Dump out remainder of import page. 
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Family</title>
-    <link rel="stylesheet" href="../app-assets/css/styles.css">
-</head>
-<body>
-    <h2>Edit Family</h2>
+    <h2>Edit / Review Family</h2>
     <form class="cota-family-edit" action="cota-update-family.php" method="post">
         <input type="hidden" name="family_id" value="<?= $family['id'] ?>">
         <label>Family Name</label>
@@ -83,9 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
             <?php endwhile; ?>
         </div>
 
-        <button type="submit">Update</button>
+        <button type="submit">Apply Updates</button>
     </form>
-    <!-- <br><p><a href='index.php'>Return to main menu</a></p> -->
-    <button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>
 </body>
 </html>

@@ -2,7 +2,9 @@
 /**
  * Export directory data to CSV
  */
-require_once '../app-includes/cota-database-functions.php';
+require_once '../app-includes/database-functions.php';
+require_once '../app-includes/settings.php';
+
 
 header('Content-Type: text/csv');
 header('Content-Disposition: attachment; filename="directory_export.csv"');
@@ -33,12 +35,12 @@ $header = [
     "annday"
 ];
 
-// Get maxFamilyMembers from class-COTA_Family_Directory_App.php
-require_once '../app-includes/cota-class-family-directory-app.php';
-$maxMembers = COTA_Family_Directory_App::maxFamilyMembers;
+// Get MAX_FAMILY_MEMBERS from class-COTA_Family_Directory_App.php
+// require_once '../app-includes/class-family-directory-app.php';
+// $maxMembers = MAX_FAMILY_MEMBERS;
 
 // Add dynamic member columns
-for ($i = 1; $i <= $maxMembers; $i++) {
+for ($i = 1; $i <= Constants::MAX_FAMILY_MEMBERS; $i++) {
     $header[] = "othername{$i}";
     $header[] = "otherbday{$i}";
     $header[] = "otherbap{$i}";

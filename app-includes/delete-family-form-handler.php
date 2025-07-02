@@ -1,10 +1,16 @@
 <?php
-require_once 'cota-database-functions.php';
+require_once '../app-includes/database-functions.php';
+require_once '../app-includes/settings.php';
 
 $db = new COTA_Database();
 $conn = $db->get_connection();
 
     // global $conn;
+// GEt ful URL with query string
+$full_url = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+// echo "<p>Full URL: " . htmlspecialchars($full_url) . "</p>"; 
+
+
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
     $family_id = intval($_POST["family_id"]);
@@ -22,7 +28,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
         $stmt->execute();
         $stmt->close();
 
+        // Echo header
+        echo cota_page_header();
+        // Dump out remainder of import page. 
+        echo "<div class='cota-delete-container'>";
         echo "<h2>Family deleted successfully!</h2>";
+        echo "</div>";
+
     }
     if (isset($_POST['delselected']) && !empty($_POST['delete_member'])) {
         // Delete only selected members
@@ -33,15 +45,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
             $stmt->execute();
             $stmt->close();
         }
+
+        // Echo header
+        echo cota_page_header();
+        // Dump out remainder of import page. 
+        echo "<div class='cota-delete-container'>";
         echo "<h2>Selected member(s) deleted successfully!</h2>";
+        echo "</div>";
+
     } else if (isset($_POST['delselected'])) {
         echo "<h2>No members selected for deletion.</h2>";
     }
     // echo "<h2>Error: Invalid request.</h2>";
     // echo "<p>Please try again or return to the <a href='index.php'>main menu</a>.</p>";
-    echo "<button class='main-menu-return' type='button' ><a href='index.php'>Return to Main Menu</a></button>";
 }
 
 $db->close_connection();
-?>
-<button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>

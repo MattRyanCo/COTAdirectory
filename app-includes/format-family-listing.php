@@ -20,11 +20,6 @@ function cota_format_family_listing_for_print($family, $members) {
     $familystringlines = '';
 
     $formatted_family_array = []; // Initialize the formatted family array
-    // for ( $i=1; $i <= 10; $i++) {
-    //     for ($j=1; $j <= 9; $j++) {
-    //         $formatted_family_array[$i][$j] = " ";
-    //     }
-    // }
     $left_side_array = [];
     $print_it = true; // Set to false to not print the formatted family array
 
@@ -95,6 +90,7 @@ function cota_format_family_listing_for_print($family, $members) {
                     $formatted_family_array[$lctr][8] = $individual['birthday'] ?? '';
                     $formatted_family_array[$lctr][9] = $individual['baptism'] ?? '';
             }
+
         } elseif ( $lctr == 3 ) {
             $individual = get_next_member_to_print($members);
             if ( $addr2 ) {
@@ -139,7 +135,7 @@ function cota_format_family_listing_for_print($family, $members) {
                 // No more members found
                 // break;
             }
-            if ( isset($homephone ) ) {
+            if ( $homephone ) {
                 $left_side = 'Home: ' . $family['homephone'] . ' ';
                 if ($print_it) $formatted_family_array[$lctr][1] = 'Home: ' . $family['homephone'];
                 $addr2 = false;
@@ -148,7 +144,7 @@ function cota_format_family_listing_for_print($family, $members) {
             } else {
                 // If no address or phone, use placeholder. 
                 $left_side = $placeholder;
-                If ($print_it) $formatted_family_array[$lctr][1] = ' ';
+                If ($print_it) $formatted_family_array[$lctr][1] = '';
             }
             $familystringlines .= $left_side . ' ' . 
                 ($individual['first_name'] ?? '') .  ' ' . 
@@ -167,17 +163,6 @@ function cota_format_family_listing_for_print($family, $members) {
                 $formatted_family_array[$lctr][9] = $individual['baptism'] ?? '';
             }
         }
-        // print_r('lctr is ' . $lctr . '   rctr is ' . $rctr . '   mctr is ' . $mctr);echo '<br>';
-        // print_r($formatted_family_array[1]);echo '<br>';
-        // print_r($formatted_family_array[2]);echo '<br>';
-        // print_r($formatted_family_array[3]);echo '<br>';
-        // print_r($formatted_family_array[4]);echo '<br>';
-        // print_r($formatted_family_array[5]);echo '<br>';
-        // print_r($formatted_family_array[6]);echo '<br>';
-        // print_r($formatted_family_array[7]);echo '<br>';
-        // print_r($formatted_family_array[8]);echo '<br>';
-        // print_r($formatted_family_array[9]);echo '<br>';
-        // echo '=======================================<br>';
         $rctr+=1;  // Next line on right side. 
     }
 
@@ -205,29 +190,20 @@ function cota_format_family_listing_for_print($family, $members) {
             $formatted_family_array[$lctr][8] = $individual['birthday'] ?? '';
             $formatted_family_array[$lctr][9] = $individual['baptism'] ?? '';
         }
-        // print_r('lctr is ' . $lctr . '   rctr is ' . $rctr . '   mctr is ' . $mctr);
-        // echo '<br>';
-        // print_r($formatted_family_array[1]);echo '<br>';
-        // print_r($formatted_family_array[2]);echo '<br>';
-        // print_r($formatted_family_array[3]);echo '<br>';
-        // print_r($formatted_family_array[4]);echo '<br>';
-        // print_r($formatted_family_array[5]);echo '<br>';
-        // print_r($formatted_family_array[6]);echo '<br>';
-        // print_r($formatted_family_array[7]);echo '<br>';
-        // print_r($formatted_family_array[8]);echo '<br>';
-        // print_r($formatted_family_array[9]);echo '<br>';
-        // echo '<br>=======================================<br>';
         $mctr++;
         $lctr+=1;
     }
-
-
-    // Output all lines for this family as a block in the PDF
-    // $pdfobj->SetFont('Arial', '', 10);
-    // $pdfobj->MultiCell(0, 0.22, implode("\n", $familystringlines), 1, 1);
-    // $pdfobj->Ln(0.1); // Small space after each family
-
-    // return $familystringlines; // Indicate success
+// print_r('lctr is ' . $lctr . '   rctr is ' . $rctr . '   mctr is ' . $mctr);echo '<br>';
+// print_r($formatted_family_array[1]);echo '<br>';
+// print_r($formatted_family_array[2]);echo '<br>';
+// print_r($formatted_family_array[3]);echo '<br>';
+// print_r($formatted_family_array[4]);echo '<br>';
+// print_r($formatted_family_array[5]);echo '<br>';
+// print_r($formatted_family_array[6]);echo '<br>';
+// print_r($formatted_family_array[7]);echo '<br>';
+// print_r($formatted_family_array[8]);echo '<br>';
+// print_r($formatted_family_array[9]);echo '<br>';
+// echo '=======================================<br>';
     return $formatted_family_array; // Indicate success
 }
 /**
@@ -398,7 +374,6 @@ function cota_format_family_listing_for_display($family, $members) {
 
         $mctr++;
     }
-    // return [$formatted_family, $formatted_family_array]; // Return formatted family string and array for printing
     return $formatted_family; // Indicate success
 }
 
@@ -430,19 +405,7 @@ function get_next_member($members) {
 function get_next_member_to_print($members) {
 
     $individual = $members->fetch_assoc();
-    $formatted_family_member = '';
-    // Fetch the next member from the result set
-    if ($individual) {
-        $formatted_family_member = 
-            ($individual['first_name'] ?? '') . ' ' .
-            ($individual['last_name'] ?? '') . ' ' .
-            ($individual['cell_phone'] ?? '') . ' ' .
-            ($individual['email'] ?? '') . ' ' .
-            ($individual['birthday'] ?? '') . ' ' .
-            ($individual['baptism'] ?? '');
-    } else {
-        // No more members found
-        return false;
-    }
+
+    if (!$individual) return false;
     return $individual;
 }
