@@ -1,19 +1,17 @@
 <?php
-require_once '../app-includes/cota-database-functions.php';
-require_once '../app-includes/cota-format-family-listing.php';
+require_once '../app-includes/database-functions.php';
+require_once '../app-includes/format-family-listing.php';
+require_once '../app-includes/settings.php';
 
-// echo nl2br(__FILE__ . ' loaded' . PHP_EOL);
+// Echo page header
+echo cota_page_header();
 
+// Dump out remainder of import page. 
+?>
+    <div class="cota-display-container">
+        <h2>Upload CSV File containing Family Import</h2>
+		<h3>COTA Directory - Member Listing</h3>
 
-?> 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Family Directory Management</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
-<link rel="stylesheet" href="../app-assets/css/styles.css">
-</head>
 
 <?php
 
@@ -24,12 +22,9 @@ require_once '../app-includes/cota-format-family-listing.php';
 		$num_families = $families->num_rows;
 		$ictr = 1;
 ?>
-<body>
-<h1>COTA Directory</h1> 
-<h3>Member Listing - <?php echo $num_families . ' Families'?></h3> 
 
-<html>
-	<body>
+<h3><?php echo $num_families . ' Families'?></h3> 
+
 		<table class="directory-table">
 			<tr><th>Family Name/Address</th><th><i>Family Members</i></th></tr>
 			<tr><th>Home Phone<td><i>Name</i></td><td><i>Email</i></td><td><i>Cell</i></td><td><i>DoB</i></td><td><i>DoBaptism</i></td></th></tr>
@@ -54,7 +49,7 @@ require_once '../app-includes/cota-format-family-listing.php';
 		?> 
 
 	<!-- <br><p><a href='index.php'>Return to main menu</a></p> -->
-	<button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>
+	<!-- <button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button> -->
 </body> 
 
 </html>

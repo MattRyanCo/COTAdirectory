@@ -1,8 +1,11 @@
 <?php
-require_once '../app-includes/cota-database-functions.php';
+require_once '../app-includes/database-functions.php';
+require_once '../app-includes/settings.php';
+
 
 $db = new COTA_Database();
 $conn = $db->get_connection();
+// $conn->activate_reporting();
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Sanitize & Validate Family Data
@@ -28,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         //     $first_names = [$first_names];
         //     // Repeat for other member fields as well
         // }
+
         foreach ($first_names as $key => $first_name) {
             $first_name = cota_sanitize($first_name);
             $last_name = cota_sanitize($_POST["members"]["last_name"][$key]);
@@ -37,20 +41,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $baptism = cota_format_date($_POST["members"]["baptism"][$key]);
 
             if (!empty($first_name) && cota_validate_email($email) && cota_validate_date($birthday)) {
+                var_dump($first_name,$last_name,$cell_phone,$email,$birthday,$baptism);
                 $stmt = $conn->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 $stmt->bind_param("issssss", $family_id, $first_name, $last_name, $cell_phone, $email, $birthday, $baptism);
                 $stmt->execute();
+                // Store results immediately 
+                $stmt->store_result();
                 $stmt->close();
+                cota_log_error("SQL Status (execute): " . $stmt->error);
             } else {
                 cota_log_error("Invalid member data: " . $first_name . " - " . $email . " - " . $birthday);
             }
+
         }
 
-        echo $familyname . " Family added successfully!";
-        ?>
-        <br><p><a href='index.php'>Return to main menu</a></p>
-        <button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>
-        <?php
+        // Echo header
+        echo cota_page_header();
+        // Dump out remainder of import page. 
+        echo "<div class='cota-add-container'>";
+        echo "<h2>" . $familyname . " family added successfully!</h2>";
+        echo "</div>";
+
+        // echo $familyname . " Family added successfully!";
+
     } else {
         cota_log_error("SQL Error (execute): " . $stmt->error);
     }

@@ -8,6 +8,10 @@ class COTA_Database {
         if ($this->conn->connect_error) {
             die("Connection failed: " . $this->conn->connect_error);
         }
+        // $this->conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+        // if ($this->conn->connect_error) {
+        //     die("Connection failed: " . $this->conn->connect_error);
+        // }
     }
 
     public function get_connection() {
@@ -24,6 +28,11 @@ class COTA_Database {
             die("Error: " . $this->conn->error);
         }
         return $families;
+    }
+
+    public function activate_reporting() {
+        $this->report_mode = MYSQLI_REPORT_ALL;
+        return;
     }
 }
 ?>

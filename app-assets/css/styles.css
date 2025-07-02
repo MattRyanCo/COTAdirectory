@@ -18,25 +18,46 @@ body {
     font-size: 1rem;
 }
 
-h2 {
+h1, h2,
+#cota-anniversary > h2,
+.cota-display-container > h3 {
     color: #2c3e50;
+    text-align: center;
 }
 
+/* containers */
+#cota-anniversary,
+#cota-print,
+#cota-display-container,
+#cota-delete-container,
+#cota-edit-container,
+#cota-add-container {
+    text-align: center;
+    width: 95vh;
+    margin: auto;
+}
 
 ul > li {
-    list-style-type: square;
-    padding: 0;
-    color: #2980b9
+    list-style-type: none;
+    padding: 0 10px;
+    color: #2980b9;
+    background-color: #fff;
 }
 
-li > a {
+#main-menu > ul > li {
+    font-size: 1rem;
+    margin-left: 20px;
+    padding-right: 3px;
+}
+
+/* li > a {
     display: block;
     width: 300px;
-}
-li > a:hover {
+} */
+/* li > a:hover {
     background-color: #3498db;
     color: white;
-}
+} */
 ul.cota-anniversary-list {
     list-style-type: none;
     padding: 0;
@@ -45,44 +66,62 @@ ul.cota-anniversary-list {
 
 ul.cota-anniversary-sublist {
     list-style-type: none;
-    padding: 0;
+    padding: 10px 0;
     margin: 0 30px 10px;
 }
-
+#cota-anniversary > ul > ul > li:nth-child(1) {
+    padding-top: 5px;
+}
+#cota-anniversary > ul > ul > li:last-child {
+    padding-bottom: 5px;
+}
 a, a:visited {
     text-decoration: underline;
     color: #2980b9;
     padding: 10px 0px;
+}
+#cota-print > button > a {
+    color: white;
+    font-weight:bold;
 }
 
 a:hover {
     color: #3498db;
 }
 
-form.cota-family-entry,
-form.cota-search,
-form.cota-family-edit {
-    background: lightgray;
-    padding: 20px 40px 20px 20px;
-    border-radius: 5px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    display: grid;
-    grid-template-columns: 180px 1fr;
-    gap: 10px 20px;
-    align-items: center;
-    width: 60vw;
+p.warning {
+    color: red;
+    font-weight: bold;
 }
 
+/* Form Styles */
+form {
+  max-width: 80vw;
+  min-width: 10vw;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50vw;
+}
+
+form.cota-import,
+form.cota-family-entry,
+form.cota-search,
+form.cota-family-edit,
+form.cota-family-delete,
 form.cota-reset-db {
     background: lightgray;
     padding: 20px 40px 20px 20px;
     border-radius: 5px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     display: grid;
-    grid-template-columns: 180px 1fr;
+    grid-template-columns: 210px 1fr;
     gap: 10px 20px;
     align-items: center;
-    width: 40%;
+    width: 56vw;
+}
+
+form.cota-reset-db {
+    width: 40vw;
 }
 
 form label {
@@ -90,10 +129,12 @@ form label {
     margin-top: 0;
     text-align: right;
 }
+form.cota-import > label,
 form.cota-reset-db > label,
 form.cota-search > label,
 form.cota-family-edit > div > label,
-form.cota-family-entry > div > label {
+form.cota-family-entry > div > label,
+form.cota-family-delete > div > label {
     text-align: left;
 }
 
@@ -109,6 +150,30 @@ form button,
 form br {
     grid-column: 1 / -1;
 }
+
+.form-container {
+  width: 50vh;
+  clear: both;
+}
+
+#delete-family .error-message {
+    text-align: center;
+    padding: 20px 0px;
+    color: red;
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.cota-reset-db-container,
+.cota-import-container {
+    text-align:center;
+    padding-top: 50px;
+}
+
+/* .form-container input {
+  width: 100%;
+  clear: both;
+} */
 
 #members > div > label {
     /* display: contents; */
@@ -179,7 +244,16 @@ button.main-menu-return > a {
     color: white;
     text-decoration: none;
 }
+#delete-family > form > button.delall,
+#delete-family > form > button.delselected {
+    width: 30vw;
+    background-color: red;
+    color: white;
 
+}
+#delete-family > form > button.delall {
+    width: 50vw;
+}
 
 table.cota-directory-table {
     width: 65%;
@@ -240,3 +314,98 @@ table.cota-directory-table > tbody > tr:nth-child(2) {
     opacity: 0;
     transition: opacity 0.3s;
   }
+
+
+  .left {
+    text-align: left;
+    text-indent: 0;
+}
+
+
+/* Nav Styles */
+nav#main-menu {
+    background-color: #fff;
+    display: block;
+    list-style: none;
+    margin: auto;
+    width: 95vh;
+}
+
+nav#main-menu ul {
+    background-color: #fff;
+    font: bold 12px Verdana;
+    line-height: 3em;
+    list-style: none;
+    margin: 0;
+    padding: 5px 20px;
+    text-align: center;
+}
+nav#main-menu li {
+    background-color: #fff;
+    display: inline;
+}
+nav#main-menu a, 
+nav#main-menu a:visited {
+    color: #2980b9;
+    font-weight: bold;
+    margin: 0;
+    /* padding: 0 8px; */
+    text-decoration: none;
+}
+nav#main-menu a.down, 
+nav#main-menu a.down:hover {
+    background-image: url("/app-assets/images/navdown_red.gif");
+    background-position: right center;
+    background-repeat: no-repeat;
+    padding-right: 14px;
+}
+.flexdropdownmenu li a {
+    color: #2980b9;
+    display: block;
+    text-decoration: none;
+    padding: 2px;
+}
+
+.flexdropdownmenu {
+    /* background-color: #009; */
+    display: none;
+    font-weight: bold;
+    left: 0;
+    line-height: 3em;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 0;
+    visibility: hidden;
+}
+
+@media screen and (max-width:500px) {
+.flexdropdownmenu {
+    background-color: #009;
+    display: none;
+    font-weight: bold;
+    left: 0;
+    line-height: 3em;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 0;
+    visibility: hidden;
+}
+.flexdropdownmenu li {
+    margin: 5px;
+    position: relative;
+}
+.flexdropdownmenu li a {
+    color: white;
+    display: block;
+    text-decoration: none;
+    padding: 2px 5px;
+}
+.flexdropdownmenu li a:hover, .flexdropdownmenu li.selected>a {
+    background-color: #b2b5ff;
+    color: black;
+}
+}

@@ -2,7 +2,7 @@
 /**
  * Export sample directory data to CSV
  */
-// require_once '../app-includes/cota-database-functions.php';
+// require_once '../app-includes/database-functions.php';
 
 header('Content-Type: text/csv');
 header('Content-Disposition: attachment; filename="directory_export_sample.csv"');

@@ -1,7 +1,4 @@
 <?php
-// require_once 'cota-database-functions.php';
-
-
 
 class MembershipDirectoryPrinter
 {
