@@ -65,6 +65,7 @@ function cota_page_header() {
 		<li class="left"><a href="/app-includes/import.php">Import CSV Data</a></li>
 		<li class="left"><a href="/app-includes/export.php">Export Directory as CSV</a></li>
 		<li class="left"><a href="/app-includes/export-sample.php" target="_blank">Export Sample Directory as CSV</a></li>
+		<li class="left"><a href="/app-includes/database-details.php">Database Details</a></li>
 		<li class="left"><a href="/app-includes/reset-db.php" style="color: red;">⚠️ Reset Database ⚠️</a></li>
 	</ul>
 	<ul id="drop_print" class="flexdropdownmenu">
