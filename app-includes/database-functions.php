@@ -5,10 +5,6 @@ class COTA_Database {
     
     public function __construct() {
         // echo nl2br(' Method ' . __METHOD__ . ' loaded' . PHP_EOL);
-        // $this->conn = new mysqli("localhost", "root", "", "cotadirectory");
-        // if ($this->conn->connect_error) {
-        //     die("Connection failed: " . $this->conn->connect_error);
-        // }
         $this->conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
         // var_dump($this->conn);
         if ($this->conn->connect_error) {
@@ -17,7 +13,6 @@ class COTA_Database {
     }
 
     public function get_connection() {
-        echo nl2br(' Method ' . __METHOD__ . ' loaded' . PHP_EOL);
         return $this->conn;
     }
 
