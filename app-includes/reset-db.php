@@ -2,21 +2,29 @@
 require_once '../app-includes/database-functions.php';
 require_once '../app-includes/settings.php';
 
-
+$db = new COTA_Database();
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $db = new COTA_Database();
-    $conn = $db->get_connection();
 
+    $db->show_structure();
     if (isset($_POST["confirm"]) && $_POST["confirm"] === "YES") {
-        // Delete all records from the members table to handle foreign key constraints
-        $conn->query("DELETE FROM members");
-        $conn->query("DELETE FROM families");
+
+        // Check if the members table exists before deleting rows
+        $result = $db->query("SHOW TABLES LIKE 'members'");
+        if ($result && $result->num_rows > 0) {
+            $db->query("DELETE FROM members");
+        }
+
+        // Check if the families table exists before deleting rows
+        $result = $db->query("SHOW TABLES LIKE 'families'");
+        if ($result && $result->num_rows > 0) {
+            $db->query("DELETE FROM families");
+        }
 
         // Disable foreign key checks to avoid constraint errors
         // Drop and recreate the members table
-        $conn->query("SET FOREIGN_KEY_CHECKS=0");
-        $conn->query("DROP TABLE IF EXISTS members");
-        $conn->query("SET FOREIGN_KEY_CHECKS=1"); // Re-enable constraints
+        $db->query("SET FOREIGN_KEY_CHECKS=0");
+        $db->query("DROP TABLE IF EXISTS members");
+        $db->query("SET FOREIGN_KEY_CHECKS=1"); // Re-enable constraints
         $createMembersTableSQL = "
             CREATE TABLE members (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -30,16 +38,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 FOREIGN KEY (family_id) REFERENCES families(id) ON DELETE CASCADE
             )
         ";
-        if ($conn->query($createMembersTableSQL) === TRUE) {
+        if ($db->query($createMembersTableSQL) === TRUE) {
             echo "<p style='color: red;'>Database has been reset and tables recreated successfully!</p>";
         } else {
-            echo "<p style='color: red;'>Error recreating members table: " . $conn->error . "</p>";
+            echo "<p style='color: red;'>Error recreating members table: " . $db->conn->error . "</p>";
         }
 
         // Drop and recreate the families table
-        $conn->query("SET FOREIGN_KEY_CHECKS=0");
-        $conn->query("DROP TABLE IF EXISTS families");
-        $conn->query("SET FOREIGN_KEY_CHECKS=1"); // Re-enable constraints
+        $db->query("SET FOREIGN_KEY_CHECKS=0");
+        $db->query("DROP TABLE IF EXISTS families");
+        $db->query("SET FOREIGN_KEY_CHECKS=1"); // Re-enable constraints
         $createFamiliesTableSQL = "
             CREATE TABLE families (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -63,8 +71,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 annday VARCHAR(5)
             )
         ";
-        if ($conn->query($createFamiliesTableSQL) !== TRUE) {
-            echo "<p style='color: red;'>Error recreating families table: " . $conn->error . "</p>";
+        if ($db->query($createFamiliesTableSQL) !== TRUE) {
+            echo "<p style='color: red;'>Error recreating families table: " . $db->conn->error . "</p>";
             $db->close_connection();
             exit;
         }

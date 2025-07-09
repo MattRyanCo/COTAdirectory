@@ -238,11 +238,10 @@ function cota_handle_error($message, $code) {
 
 // echo "About to instantiate COTA_Csv_Importer class" . PHP_EOL;
 $importAll = new COTA_Csv_Importer();
-// var_dump($importAll);
-
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["csv_file"])) {
     $uploadDir = "uploads/";
-    $fileName = basename($_FILES["csv_file"]["name"]);
+    // Sanitize filename: remove dangerous chars, allow only safe chars
+    $fileName = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', basename($_FILES["csv_file"]["name"]));
     $uploadFile = $uploadDir . $fileName;
 
     // Ensure the uploads directory exists
@@ -256,12 +255,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["csv_file"])) {
     }
 
     // Move uploaded file
-    if (move_uploaded_file($_FILES["csv_file"]["tmp_name"], $uploadFile)) {
-        $importer = new COTA_Csv_Importer();
-        $importer->cota_import($uploadFile );
-    } else {
-        cota_handle_error("File save error. Code: " . $_FILES["csv_file"]["error"], 103);
-    }
+    // if (move_uploaded_file($_FILES["csv_file"]["tmp_name"], $uploadFile)) {
+        // $importer = new COTA_Csv_Importer();
+        $importAll->cota_import($uploadFile);
+    // } else {
+        // cota_handle_error("File save error. Code: " . $_FILES["csv_file"]["error"], 103);
+    // }
 
     echo "<h3 style='color:green;'>CSV imported successfully! " . $uploadFile . "</h3>";
 

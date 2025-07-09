@@ -8,18 +8,19 @@
 if ( ! defined( 'WP_ENVIRONMENT_TYPE' ) ) {
     define( 'WP_ENVIRONMENT_TYPE', 'laragon' );
 }
-if ( 'laragon' !== WP_ENVIRONMENT_TYPE ) { // Define Gridpane settings
-    define( 'DB_NAME', 'vDg_cotad_mattryan_co' );
-    define( 'DB_USER', 'vDg_cotad_mattryan_co' );
-    define( 'DB_PASSWORD', 'aYcqIqOyiJHXZxReYszNsphKU' );
-    define( 'DB_HOST', 'localhost:/var/run/mysqld/mysqld.sock' );
-} else {
+// if ( 'laragon' !== WP_ENVIRONMENT_TYPE ) { // Define Gridpane settings
+    // define( 'DB_NAME', 'cotadirectory' );
+    // define( 'DB_USER', 'cotadirectory' );
+    // define( 'DB_PASSWORD', 'xo=BqIGmfJxc!+V7LNe97K9^V4p?86Lq' );
+    // // define( 'DB_HOST', 'localhost:/var/run/mysqld/mysqld.sock' );
+    // define( 'DB_HOST', '64.176.198.28:3306' );
+// } else {
     // Define Laragon (local) settings
     define( 'DB_NAME', 'cotadirectory' );
     define( 'DB_USER', 'root' );
     define( 'DB_PASSWORD', '' );
     define( 'DB_HOST', 'Localhost' );
-}
+// }
 class Constants {
     const MAX_FAMILY_MEMBERS = 10; // Maximum number of family members
 }

@@ -24,7 +24,7 @@ foreach ($introFiles as $file) {
 		$rtfContent .= $printBooklet->formatText(file_get_contents($file)) . "\\pard\\page\\par";
 	}
 }
-$all_families = $db->read_database();
+$all_families = $db->read_family_database();
 
 // Add family listings
 // foreach ($all_families as $family) {
