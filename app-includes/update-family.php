@@ -1,6 +1,6 @@
 <?php
-// filepath: d:\laragon\www\COTAdirectory\app-includes\cota-update-family.php
-require_once 'cota-database-functions.php';
+require_once '../app-includes/database-functions.php';
+require_once '../app-includes/settings.php';
 
 $db = new COTA_Database();
 $conn = $db->get_connection();
@@ -48,8 +48,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
     }
 
     echo "<h2>Family updated successfully!</h2>";
-    echo "<br><br><p><button class='cota-edit-family' type='button'><a href='cota-edit-family.php?familyname=" . urlencode($familyname) . "'>Edit this family again</a></button></p>";
-    echo "<p><button class='cota-search-family' type='button'><a href='cota-search.php'>Edit Another Family</a></button></p>";
+    echo "<br><br><p><button class='cota-edit-family' type='button'><a href='edit-family.php?familyname=" . urlencode($familyname) . "'>Edit this family again</a></button></p>";
+    echo "<p><button class='cota-search-family' type='button'><a href='search-edit.php'>Edit Another Family</a></button></p>";
 } else {
     echo "<h2>Error: Invalid request.</h2>";
     echo "<p>Please try again or return to the <a href='index.php'>main menu</a>.</p>";

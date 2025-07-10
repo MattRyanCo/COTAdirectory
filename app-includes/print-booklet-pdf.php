@@ -40,12 +40,9 @@ for ($i = 1; $i <= 3; $i++) {
 // Fetch data from your MySQL database and format it into an address label style layout
 
 $db = new COTA_Database();
-$conn = $db->get_connection();
-               
-$families = $conn->query("SELECT * FROM families ORDER BY `familyname`");
+$families = $db->read_family_database();
 $num_families = $families->num_rows;
 $ictr = 1;
-
 
 $pdf->SetFont('Arial', 'B', 14);
 $pdf->center_this_text('Family & Members Listing', 1.5);
@@ -56,8 +53,8 @@ $pdf->AddPage(); // Start the alpha listing on a new page
 $pageEntries = 0;
 while ($family = $families->fetch_assoc()) {
     // Get family members
-    $individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id']);
-
+    // $individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id']);
+    $individuals = $db->read_members_of_family( $family['id'] );
     $family_array = cota_format_family_listing_for_print($family, $individuals);
 
 

@@ -5,12 +5,8 @@ require_once '../app-includes/settings.php';
 $db = new COTA_Database();
 $conn = $db->get_connection();
 
-    // global $conn;
 // GEt ful URL with query string
 $full_url = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-// echo "<p>Full URL: " . htmlspecialchars($full_url) . "</p>"; 
-
-
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
     $family_id = intval($_POST["family_id"]);
@@ -56,8 +52,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
     } else if (isset($_POST['delselected'])) {
         echo "<h2>No members selected for deletion.</h2>";
     }
-    // echo "<h2>Error: Invalid request.</h2>";
-    // echo "<p>Please try again or return to the <a href='index.php'>main menu</a>.</p>";
 }
 
 $db->close_connection();

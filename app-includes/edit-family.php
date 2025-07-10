@@ -36,7 +36,7 @@ echo cota_page_header();
 ?>
 
     <h2>Edit / Review Family</h2>
-    <form class="cota-family-edit" action="cota-update-family.php" method="post">
+    <form class="cota-family-edit" action="update-family.php" method="post">
         <input type="hidden" name="family_id" value="<?= $family['id'] ?>">
         <label>Family Name</label>
         <input type="text" name="familyname" value="<?= htmlspecialchars($family['familyname']) ?>" required>

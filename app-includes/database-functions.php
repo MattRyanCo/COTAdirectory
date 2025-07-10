@@ -1,5 +1,7 @@
 <?php
+require_once '../app-includes/settings.php';
 // echo nl2br(__FILE__ . ' loaded' . PHP_EOL);
+
 class COTA_Database {
     private $conn;
     
