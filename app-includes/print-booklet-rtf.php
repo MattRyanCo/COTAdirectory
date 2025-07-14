@@ -1,7 +1,12 @@
 <?php
-require_once '../app-includes/database-functions.php';
-require_once '../app-includes/print.php';
-require_once '../app-includes/settings.php';
+
+global $cotadb, $conn, $cota_constants;
+
+require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'format-family-listing.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'print.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
 $printBooklet = new MembershipDirectoryPrinter();
 
@@ -15,7 +20,7 @@ if (!is_dir($_SERVER['DOCUMENT_ROOT'] . '/downloads')) {
 $output_filename = $_SERVER['DOCUMENT_ROOT'] . $output_basename;
 
 
-$db = new COTA_Database();
+// $db = new COTA_Database();
 $rtfContent = $printBooklet->generateRTFHeader();
 
 // Add intro pages
@@ -24,7 +29,7 @@ foreach ($introFiles as $file) {
 		$rtfContent .= $printBooklet->formatText(file_get_contents($file)) . "\\pard\\page\\par";
 	}
 }
-$all_families = $db->read_family_database();
+$all_families = $cotadb->read_family_database();
 
 // Add family listings
 // foreach ($all_families as $family) {
@@ -37,7 +42,7 @@ file_put_contents($output_filename, $rtfContent);
 
 // Closing the file 
 // fclose($output); 
-$db->close_connection();
+$cotadb->close_connection();
 
 // Echo header
 echo cota_page_header();

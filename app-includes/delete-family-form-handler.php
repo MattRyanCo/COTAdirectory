@@ -2,8 +2,7 @@
 require_once '../app-includes/database-functions.php';
 require_once '../app-includes/settings.php';
 
-$db = new COTA_Database();
-$conn = $db->get_connection();
+global $cotadb, $conn;
 
 // GEt ful URL with query string
 $full_url = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
@@ -54,4 +53,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
     }
 }
 
-$db->close_connection();
+$cotadb->close_connection();

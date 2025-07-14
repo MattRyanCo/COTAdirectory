@@ -1,8 +1,9 @@
 <?php
-require_once '../app-includes/database-functions.php';
-require_once '../app-includes/settings.php';
+global $cotadb, $conn, $cota_constants;
 
-global $cotadb, $conn;
+require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
     $familyname = $_GET["familyname"];

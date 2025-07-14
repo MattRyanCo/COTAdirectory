@@ -2,7 +2,10 @@
 /**
  * 
  */
-require_once '../app-includes/settings.php';
+
+global $cotadb, $conn, $cota_constants;
+require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
 // Echo header
 echo cota_page_header();

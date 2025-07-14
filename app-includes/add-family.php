@@ -1,13 +1,8 @@
 <?php
-require_once '../app-includes/database-functions.php';
-require_once '../app-includes/settings.php';
+global $cotadb, $conn, $cota_constants;
 
-
-// $db = new COTA_Database();
-// $conn = $db->get_connection();
-// $conn->activate_reporting();
-
-global $cotadb, $conn;
+require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Sanitize & Validate Family Data

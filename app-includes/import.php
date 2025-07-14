@@ -2,9 +2,12 @@
 /**
  * 
  */
-require_once '../app-includes/database-functions.php';
-require_once '../app-includes/settings.php';
-global $cotadb, $conn;
+global $cotadb, $conn, $cota_constants;
+
+require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
+
 class COTA_Csv_Importer {
 
 
@@ -54,11 +57,11 @@ class COTA_Csv_Importer {
             $family_id = $this->cota_insert_family_and_get_id($row);
 
             // Insert primary members (parents)
-            if (!empty($row['name1'])) {
-                $this->cota_insert_member($family_id, $row['name1'], '', $row['cellphone1'] ?? '', $row['email1'] ?? '', $row['bday1'] ?? '', $row['bap1'] ?? '');
+            if (!empty($row['fname1'])) {
+                $this->cota_insert_member($family_id, $row['fname1'], '', $row['cellphone1'] ?? '', $row['email1'] ?? '', $row['bday1'] ?? '', $row['bap1'] ?? '');
             }
-            if (!empty($row['name2'])) {
-                $this->cota_insert_member($family_id, $row['name2'], '', $row['cellphone2'] ?? '', $row['email2'] ?? '', $row['bday2'] ?? '', $row['bap2'] ?? '');
+            if (!empty($row['fname2'])) {
+                $this->cota_insert_member($family_id, $row['fname2'], '', $row['cellphone2'] ?? '', $row['email2'] ?? '', $row['bday2'] ?? '', $row['bap2'] ?? '');
             }
 
             // Insert other members (children, etc.)
@@ -156,7 +159,7 @@ class COTA_Csv_Importer {
 
     private function cota_insert_family_and_get_id($data) {
         $stmt = $this->conn->prepare("INSERT INTO families (
-            familyname, name1, name2, address, address2, city, state, zip, homephone,
+            familyname, fname1, fname2, address, address2, city, state, zip, homephone,
             cellphone1, cellphone2, email1, email2, bday1, bday2,
             bap1, bap2, annday
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -173,8 +176,8 @@ class COTA_Csv_Importer {
         $stmt->bind_param(
             "ssssssssssssssssss",
             $data['familyname'],
-            $data['name1'],
-            $data['name2'],
+            $data['fname1'],
+            $data['fname2'],
             $data['address'],
             $data['address2'],
             $data['city'],

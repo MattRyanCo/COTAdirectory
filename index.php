@@ -12,27 +12,38 @@
  * 
  */
 
+global $cota_constants;
+
 /** Absolute path to the app directory. */
 if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', __DIR__ . '/' );
 }
-echo nl2br(ABSPATH . ' = ABSPATH' . PHP_EOL);
+// echo nl2br(ABSPATH . ' = ABSPATH' . PHP_EOL);
+class Constants {
+    const MAX_FAMILY_MEMBERS = 10; // Maximum number of family members
+    const ENVIRONMENT_TYPE = 'laragon';
+    const ABSPATH = __DIR__ . '/';
+    const COTA_APP_ASSETS = ABSPATH . 'app-assets/';
+    const COTA_APP_INCLUDES = ABSPATH . 'app-includes/';
+	const COTA_APP_LIBRARIES = ABSPATH . 'app-libraries/';
+}
+
+$cota_constants = new Constants();
 
 /**
  * Stores the location of the app directory of functions, classes, and core content.
  *
- * @since 1.0.0
  */
 
-// define( 'COTA_APPINC', ABSPATH . 'app-includes/' );
-define( 'COTA_APPASSETS', ABSPATH . 'app-assets/' );
-define( 'COTA_APPINCLUDES', ABSPATH . 'app-includes/' );
-echo nl2br(COTA_APPASSETS . ' = COTA_APPASSETS' . PHP_EOL);
-echo nl2br(COTA_APPINCLUDES . ' = COTA_APPINCLUDES' . PHP_EOL);
+// echo nl2br($cota_constants::COTA_APP_ASSETS . ' = COTA_APP_ASSETS' . PHP_EOL);
+// echo nl2br($cota_constants::COTA_APP_INCLUDES . ' = COTA_APP_INCLUDES' . PHP_EOL);
+// echo nl2br($cota_constants::COTA_APP_LIBRARIES . ' = COTA_APP_LIBRARIES' . PHP_EOL);
+
 
 /** Sets up the app vars and included files. */
-require_once COTA_APPINCLUDES . 'database-functions.php';
-require_once COTA_APPINCLUDES . 'settings.php';
+// require_once COTA_APPINCLUDES . 'database-functions.php';
+require_once $cota_constants::COTA_APP_INCLUDES . 'settings.php';
+require_once $cota_constants::COTA_APP_INCLUDES . 'helper-functions.php';
 
 
 // Echo page header

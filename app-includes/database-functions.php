@@ -1,8 +1,4 @@
 <?php
-// echo nl2br(__FILE__ . ' loaded' . PHP_EOL);
-// echo nl2br(__DIR__ . ' DIR' . PHP_EOL);
-// require_once __DIR__ . '/settings.php';
-// require_once COTA_APPINCLUDES . 'settings.php';
 
 class COTA_Database {
     private $conn;

@@ -1,30 +1,34 @@
 <?php
-require_once '../app-includes/database-functions.php';
-require_once '../app-includes/settings.php';
 
-$db = new COTA_Database();
+global $cotadb, $conn, $cota_constants;
+
+require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
+
+// $db = new COTA_Database();
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $db->show_structure();
+    $cotadb->show_structure();
     if (isset($_POST["confirm"]) && $_POST["confirm"] === "YES") {
 
         // Check if the members table exists before deleting rows
-        $result = $db->query("SHOW TABLES LIKE 'members'");
+        $result = $cotadb->query("SHOW TABLES LIKE 'members'");
         if ($result && $result->num_rows > 0) {
-            $db->query("DELETE FROM members");
+            $cotadb->query("DELETE FROM members");
         }
 
         // Check if the families table exists before deleting rows
-        $result = $db->query("SHOW TABLES LIKE 'families'");
+        $result = $cotadb->query("SHOW TABLES LIKE 'families'");
         if ($result && $result->num_rows > 0) {
-            $db->query("DELETE FROM families");
+            $cotadb->query("DELETE FROM families");
         }
 
         // Disable foreign key checks to avoid constraint errors
         // Drop and recreate the members table
-        $db->query("SET FOREIGN_KEY_CHECKS=0");
-        $db->query("DROP TABLE IF EXISTS members");
-        $db->query("SET FOREIGN_KEY_CHECKS=1"); // Re-enable constraints
+        $cotadb->query("SET FOREIGN_KEY_CHECKS=0");
+        $cotadb->query("DROP TABLE IF EXISTS members");
+        $cotadb->query("SET FOREIGN_KEY_CHECKS=1"); // Re-enable constraints
         $createMembersTableSQL = "
             CREATE TABLE members (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -38,22 +42,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 FOREIGN KEY (family_id) REFERENCES families(id) ON DELETE CASCADE
             )
         ";
-        if ($db->query($createMembersTableSQL) === TRUE) {
+        if ($cotadb->query($createMembersTableSQL) === TRUE) {
             echo "<p style='color: red;'>Database has been reset and tables recreated successfully!</p>";
         } else {
-            echo "<p style='color: red;'>Error recreating members table: " . $db->conn->error . "</p>";
+            echo "<p style='color: red;'>Error recreating members table: " . $cotadb->conn->error . "</p>";
         }
 
         // Drop and recreate the families table
-        $db->query("SET FOREIGN_KEY_CHECKS=0");
-        $db->query("DROP TABLE IF EXISTS families");
-        $db->query("SET FOREIGN_KEY_CHECKS=1"); // Re-enable constraints
+        $cotadb->query("SET FOREIGN_KEY_CHECKS=0");
+        $cotadb->query("DROP TABLE IF EXISTS families");
+        $cotadb->query("SET FOREIGN_KEY_CHECKS=1"); // Re-enable constraints
         $createFamiliesTableSQL = "
             CREATE TABLE families (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 familyname VARCHAR(255) NOT NULL,
-                name1 VARCHAR(50),
-                name2 VARCHAR(50),
+                fname1 VARCHAR(50),
+                fname2 VARCHAR(50),
                 address VARCHAR(255),
                 address2 VARCHAR(255),
                 city VARCHAR(100),
@@ -71,9 +75,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 annday VARCHAR(5)
             )
         ";
-        if ($db->query($createFamiliesTableSQL) !== TRUE) {
-            echo "<p style='color: red;'>Error recreating families table: " . $db->conn->error . "</p>";
-            $db->close_connection();
+        if ($cotadb->query($createFamiliesTableSQL) !== TRUE) {
+            echo "<p style='color: red;'>Error recreating families table: " . $cotadb->conn->error . "</p>";
+            $cotadb->close_connection();
             exit;
         }
 
@@ -82,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo "<p style='color: red;'>Action canceled. No changes were made.</p>";
     }
 
-    $db->close_connection();
+    $cotadb->close_connection();
 }
 
 

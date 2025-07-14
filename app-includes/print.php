@@ -21,18 +21,22 @@ class MembershipDirectoryPrinter
      */
     public function formatFamilyListings($families)
     {
-        $db = new COTA_Database();
-        $conn = $db->get_connection();
+        require_once '../app-includes/settings.php';
+
+        global $cotadb, $conn;
+
+        // $db = new COTA_Database();
+        // $conn = $db->get_connection();
         $ictr = 1;
         $listing =" ";
         while ($ictr < $families->num_rows ) {
             $one_family = $families->fetch_assoc();
             // printf("Processing family: %s<br>", $one_family['familyname']);
             $listing .= "\\par\\pard\\keepn\\b " . htmlspecialchars($one_family['familyname']) . "\\plain";
-            if ( $one_family['name2']!= "") {
-                $listing .= "\\par\\pard\\keepn " . htmlspecialchars($one_family['name1']) . " & " . htmlspecialchars($one_family['name2']);
+            if ( $one_family['fname2']!= "") {
+                $listing .= "\\par\\pard\\keepn " . htmlspecialchars($one_family['fname1']) . " & " . htmlspecialchars($one_family['name2']);
             } else {
-                $listing .= "\\par\\pard\\keepn " . htmlspecialchars($one_family['name1']);
+                $listing .= "\\par\\pard\\keepn " . htmlspecialchars($one_family['fname1']);
             }   
 
             $listing .= "\\par\\pard\\keepn " . htmlspecialchars($one_family['address']) . " " . htmlspecialchars($one_family['address2']);
@@ -45,11 +49,11 @@ class MembershipDirectoryPrinter
                 $listing .= "\\par\\pard\\keepn H: " . htmlspecialchars($one_family['homephone']);
             }
             if ($one_family['cellphone1'] != "" && $one_family['cellphone2'] != "") {
-                $listing .= "\\par\\pard\\keepn " . "c: " . $one_family['name1'] . " c: " . $one_family['cellphone1'] . "  c: " .  $one_family['cellphone2'];
+                $listing .= "\\par\\pard\\keepn " . "c: " . $one_family['fname1'] . " c: " . $one_family['cellphone1'] . "  c: " .  $one_family['cellphone2'];
             } elseif ($one_family['cellphone1'] != "") {
-                $listing .= "\\par\\pard\\keepn " .  "c: " . $one_family['name1'] ;
+                $listing .= "\\par\\pard\\keepn " .  "c: " . $one_family['fname1'] ;
             } elseif ($one_family['cellphone2'] != "") {
-                $listing .= "\\par\\pard\\keepn " . "c: " . $one_family['name2'] ;
+                $listing .= "\\par\\pard\\keepn " . "c: " . $one_family['fname2'] ;
             } else {
                 $listing .= "\\par\\pard\\keepn ";
             }
@@ -69,8 +73,12 @@ class MembershipDirectoryPrinter
     }
 }
 
-$db = new COTA_Database();
-$conn = $db->get_connection();
+global $cotadb, $conn, $cota_constants;
+
+require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
+
+// $db = new COTA_Database();
+// $conn = $db->get_connection();
 $families = $conn->query("SELECT * FROM families ORDER BY `familyname`");
 $num_families = $families->num_rows;
 $ictr = 1;

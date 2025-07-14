@@ -1,8 +1,9 @@
 <?php
-require_once '../app-includes/database-functions.php';
-require_once '../app-includes/format-family-listing.php';
-require_once '../app-includes/settings.php';
-global $cotadb, $conn;
+global $cotadb, $conn, $cota_constants;
+
+require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'format-family-listing.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
 // Echo page header
 echo cota_page_header();

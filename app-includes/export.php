@@ -2,22 +2,25 @@
 /**
  * Export directory data to CSV
  */
-require_once '../app-includes/database-functions.php';
-require_once '../app-includes/settings.php';
+global $cotadb, $conn, $cota_constants;
+
+require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
 
 header('Content-Type: text/csv');
 header('Content-Disposition: attachment; filename="directory_export.csv"');
 
-$db = new COTA_Database();
-$conn = $db->get_connection();
+// $db = new COTA_Database();
+// $conn = $db->get_connection();
 $output = fopen('php://output', 'w');
 
 // Static columns before dynamic member columns
 $header = [
     "familyname",
-    "name1",
-    "name2",
+    "fname1",
+    "fname2",
     "address",
     "address2",
     "city",
@@ -35,13 +38,13 @@ $header = [
     "annday"
 ];
 
-// Get MAX_FAMILY_MEMBERS from class-COTA_Family_Directory_App.php
-// require_once '../app-includes/class-family-directory-app.php';
-// $maxMembers = MAX_FAMILY_MEMBERS;
-
-// Add dynamic member columns
-for ($i = 1; $i <= Constants::MAX_FAMILY_MEMBERS; $i++) {
-    $header[] = "othername{$i}";
+// Add dynamic member columns to header row
+$max_members = (isset($cota_constants->MAX_FAMILY_MEMBER))
+    ? (int)$cota_constants->MAX_FAMILY_MEMBER
+    : 9;
+for ($i = 3; $i <= $max_members; $i++) {
+    $header[] = "otherfname{$i}";
+    $header[] = "otherlname{$i}";
     $header[] = "otherbday{$i}";
     $header[] = "otherbap{$i}";
     $header[] = "othercell{$i}";
@@ -55,8 +58,8 @@ while ($family = $families->fetch_assoc()) {
     // Initialize family data
     $one_family = sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", 
         $family['familyname'],
-        $family['name1'],
-        $family['name2'],
+        $family['fname1'],
+        $family['fname2'],
         $family['address'],
         $family['address2'],
         $family['city'],
@@ -86,4 +89,4 @@ while ($family = $families->fetch_assoc()) {
     fputcsv($output, explode(",", $one_family));
 }
 fclose($output);
-$db->close_connection();
+$cotadb->close_connection();

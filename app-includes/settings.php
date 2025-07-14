@@ -4,8 +4,8 @@
  * the app procedural and class library.
  *
  */
-require_once '../app-includes/helper-functions.php';
-
+// require_once '../app-includes/helper-functions.php';
+global $cota_constants;
 if ( !defined( 'ENVIRONMENT_TYPE' ) ) {
     define( 'ENVIRONMENT_TYPE', 'laragon' );
 }
@@ -22,6 +22,4 @@ if ( !defined( 'ENVIRONMENT_TYPE' ) ) {
     // define( 'DB_PASSWORD', '' );
     // define( 'DB_HOST', 'Localhost' );
 // }
-class Constants {
-    const MAX_FAMILY_MEMBERS = 10; // Maximum number of family members
-}
+

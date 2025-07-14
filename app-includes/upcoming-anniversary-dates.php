@@ -2,8 +2,12 @@
 /**
  * Get upcoming anniversary dates within the next 15 days.
  */
-require_once '../app-includes/database-functions.php';
-require_once '../app-includes/settings.php';
+
+global $cotadb, $conn, $cota_constants;
+
+require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';;
 
 function cota_get_last_name($family_id, $conn) {
     $family = $conn->query("SELECT familyname FROM families WHERE id = " . intval($family_id))->fetch_assoc();
@@ -23,8 +27,10 @@ function cota_get_next_sunday_date($fromDate = null) {
 }
 
 function cota_get_upcoming_anniversaries() {
-    $db = new COTA_Database();
-    $conn = $db->get_connection();
+    require_once '../app-includes/settings.php';
+    global $cotadb, $conn;
+    // $db = new COTA_Database();
+    // $conn = $db->get_connection();
 
     $upcoming_sunday = cota_get_next_sunday_date();
     $end = (clone $upcoming_sunday)->modify('+15 days');
@@ -53,10 +59,10 @@ function cota_get_upcoming_anniversaries() {
 
 
     // 1. Marriage Anniversaries (families table)
-    $families = $conn->query("SELECT familyname, name1, name2, annday FROM families WHERE annday IS NOT NULL AND annday != ''");
+    $families = $conn->query("SELECT familyname, fname1, fname2, annday FROM families WHERE annday IS NOT NULL AND annday != ''");
     while ($fam = $families->fetch_assoc()) {
         if (cota_is_upcoming($fam['annday'], $today, $end)) {
-            $names = trim($fam['name1'] . ' & ' . $fam['name2'], ' &');
+            $names = trim($fam['fname1'] . ' & ' . $fam['fname2'], ' &');
             $results['Marriage Anniversaries'][] = "{$fam['annday']} - {$names} {$fam['familyname']}";
         }
     }

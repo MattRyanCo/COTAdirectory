@@ -1,5 +1,16 @@
 <?php
-require_once '../libraries/fpdf/fpdf.php';
+require_once '../app-libraries/fpdf/fpdf.php';
+
+// global $cotadb, $conn, $cota_constants;
+
+
+// echo nl2br($cota_constants->COTA_APP_ASSETS . ' = COTA_APP_ASSETS' . PHP_EOL);
+// echo nl2br($cota_constants->COTA_APP_INCLUDES . ' = COTA_APP_INCLUDES' . PHP_EOL);
+// echo nl2br($cota_constants->COTA_APP_LIBRARIES . ' = COTA_APP_LIBRARIES' . PHP_EOL);
+
+
+// require_once $cota_constants->COTA_APP_LIBRARIES . 'fpdf/fpdf.php';
+// require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
 class PDF extends FPDF
 {

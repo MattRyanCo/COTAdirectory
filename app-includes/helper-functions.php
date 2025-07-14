@@ -1,4 +1,6 @@
 <?php
+
+global $cotadb, $conn, $cota_constants;
 /**
  * Helper functions.
  *
@@ -43,15 +45,17 @@ function cota_page_header() {
 		<li class="left"><a href="/app-includes/import.php">Import CSV Data</a></li>
 		<li class="left"><a href="/app-includes/export.php">Export Directory as CSV</a></li>
 		<li class="left"><a href="/app-includes/export-sample.php" target="_blank">Export Sample Directory as CSV</a></li>
+		<li class="left"><a href="/app-includes/convert-google-csv.php" target="_blank">Convert Google CSV to Directory-ready CSV</a></li>
 		<li class="left"><a href="/app-includes/database-details.php">Database Details</a></li>
 		<li class="left"><a href="/app-includes/reset-db.php" style="color: red;">⚠️ Reset Database ⚠️</a></li>
 	</ul>
 	<ul id="drop_print" class="flexdropdownmenu">
-		<li class="left"><a href="/app-includes/print-booklet-rtf.php">Generate Directory RTF - Download</a></li>
+		<li class="left"><a href="/app-includes/print-booklet-rtf.php">Generate Directory RTF</a></li>
 		<li class="left"><a href="/app-includes/print-booklet-pdf.php" >Generate Directory Booklet PDF</a></li>
-		<li class="left"><a href="/app-includes/build-booklet-sample.php" target="_blank">Build Sample Booklet</a></li>
+<!--		<li class="left"><a href="/app-includes/build-booklet-sample.php" target="_blank">Build Sample Booklet</a></li> -->
 	</ul>
 	<ul id="drop_shared" class="flexdropdownmenu">
+		<li class="left"><a href="https://forms.gle/AriY71y8gvhyNkv77" target="_blank">Google Form Based Family Entry</a></li>
 		<li class="left"><a href="https://docs.google.com/forms/d/e/1FAIpQLSd9ZMiaeO6btCJo2BQ7lgBlOYsJwNBC4aPLRYdr4m90pwN7wA/viewform?usp=header" target="_blank">Google Form Based Family Entry</a></li>
 		<li class="left"><a href="https://docs.google.com/spreadsheets/d/1anupShYGmySUjrA16yGC5HQ3uucfi6HdMm-CujOqHxc/edit?usp=sharing" target="_blank">Google Form Sheet</a></li>
 	</ul>

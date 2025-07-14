@@ -7,14 +7,15 @@
  * assuming that the PDF will then be processed by another app that will convert it to 
  * 2-sided, 4 to a page format. 
  */
-require_once '../app-includes/database-functions.php';
-require_once '../app-includes/format-family-listing.php';
-// require_once '../app-includes/format-family-listing-for-fpdf.php';
-require_once '../app-includes/print.php';
-require_once '../app-includes/class-print-booklet.php';
-require_once '../app-includes/settings.php';
 
-global $cotadb, $conn;
+global $cotadb, $conn, $cota_constants;
+
+require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'format-family-listing.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'print.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'class-print-booklet.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
 // Create a new PDF instance
 // $pdf = new PDF(); // Landscape, Inches, Half-page Letter Size

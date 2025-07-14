@@ -4,10 +4,11 @@
  * It uses the FPDF library to create a PDF file with the booklet layout.
  */
 
-require_once '../app-includes/class-print-booklet.php';
-require_once '../app-includes/settings.php';
-
+global $cotadb, $conn, $cota_constants;
 global $title;
+
+require_once $cota_constants->COTA_APP_INCLUDES . 'class-print-booklet.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
 function generateBookletOrder($totalPages) {
     // Ensure total pages is a multiple of 4, as each sheet contains 4 pages, front and back cover included 
