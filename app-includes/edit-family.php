@@ -2,9 +2,7 @@
 require_once '../app-includes/database-functions.php';
 require_once '../app-includes/settings.php';
 
-
-$db = new COTA_Database();
-$conn = $db->get_connection();
+global $cotadb, $conn;
 
 if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
     $familyname = $_GET["familyname"];
@@ -62,7 +60,6 @@ echo cota_page_header();
             <?php if ($first): ?>
                 <div class="member-header" >
                 <span style="min-width:120px;">First</span>
-                <span style="min-width:120px;">Middle</span>
                 <span style="min-width:120px;">Last</span>
                 <span style="min-width:120px;">Cell</span>
                 <span style="min-width:180px;">Email</span>
@@ -74,7 +71,7 @@ echo cota_page_header();
                 <input type="hidden" name="members[id][]" value="<?= $member['id'] ?>">
                 <input type="text" name="members[first_name][]" value="<?= htmlspecialchars($member['first_name']) ?>" style="width:120px;">
                 <input type="text" name="members[last_name][]" value="<?= !empty($member['last_name']) ? htmlspecialchars($member['last_name']) : htmlspecialchars($family['familyname'] ?? '') ?>" style="width:120px;">
-                <input type="tel" name="members[cell_phone][]" value="<?= htmlspecialchars($member['cell_phone']) ?>" style="width:120px;">
+                <input type="text" name="members[cell_phone][]" value="<?= htmlspecialchars($member['cell_phone']) ?>" style="width:120px;">
                 <input type="email" name="members[email][]" value="<?= htmlspecialchars($member['email']) ?>" style="width:180px;">
                 <input type="text" name="members[birthday][]" value="<?= htmlspecialchars($member['birthday']) ?>" style="width:100px;">
                 <input type="text" name="members[baptism][]" value="<?= htmlspecialchars($member['baptism']) ?>" style="width:100px;">

@@ -3,6 +3,8 @@ require_once '../app-includes/database-functions.php';
 require_once '../app-includes/format-family-listing.php';
 require_once '../app-includes/settings.php';
 
+global $cotadb, $conn;
+
 // Echo page header
 echo cota_page_header();
 
@@ -10,10 +12,10 @@ echo cota_page_header();
 echo '<div class="cota-display-container">';
 echo '<h3>Member Listing</h3>';
 
-$db = new COTA_Database();
-// $conn = $db->get_connection();
+// $db = new COTA_Database();
+// $conn = $cotadb->get_connection();
 		
-$families = $db->read_family_database();
+$families = $cotadb->read_family_database();
 $num_families = $families->num_rows;
 $ictr = 1;
 
@@ -26,13 +28,13 @@ echo '<table class="directory-table">';
 		// Get family details
 		$family = $families->fetch_assoc();
 		// Get all family members
-		// $individuals = $db->query("SELECT * FROM members WHERE family_id = " . $family['id'] . " ORDER BY `first_name`");
-		// $individuals = $db->query("SELECT * FROM members WHERE family_id = " . $family['id']);  // no ordering
-		$individuals = $db->read_members_of_family( $family['id'] );
+		// $individuals = $cotadb->query("SELECT * FROM members WHERE family_id = " . $family['id'] . " ORDER BY `first_name`");
+		// $individuals = $cotadb->query("SELECT * FROM members WHERE family_id = " . $family['id']);  // no ordering
+		$individuals = $cotadb->read_members_of_family( $family['id'] );
 		echo cota_format_family_listing_for_display($family, $individuals);	
 		$ictr++;
 	} 
 echo "\n</table></body></html>"; 
 
 // Close the file 
-$db->close_connection();
+$cotadb->close_connection();

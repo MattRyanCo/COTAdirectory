@@ -2,8 +2,7 @@
 require_once '../app-includes/database-functions.php';
 require_once '../app-includes/settings.php';
 
-$db = new COTA_Database();
-$conn = $db->get_connection();
+global $cotadb, $conn;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
     $family_id = intval($_POST["family_id"]);
@@ -35,10 +34,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
             $mid = intval($member_ids[$i]);
             $fname = trim($first_names[$i]);
             $lname = trim($last_names[$i]);
-            $cell = trim($cell_phones[$i]);
+            $cell = cota_validate_phone(trim($cell_phones[$i]));
             $email = trim($emails[$i]);
-            $bday = trim($birthdays[$i]);
-            $bap = trim($baptisms[$i]);
+            $bday = cota_format_date( trim($birthdays[$i]) );
+            $bap = cota_format_date( trim($baptisms[$i]) );
 
             $stmt = $conn->prepare("UPDATE members SET first_name=?, last_name=?, cell_phone=?, email=?, birthday=?, baptism=? WHERE id=? AND family_id=?");
             $stmt->bind_param("ssssssii", $fname, $lname, $cell, $email, $bday, $bap, $mid, $family_id);
@@ -47,15 +46,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
         }
     }
 
-    echo "<h2>Family updated successfully!</h2>";
-    echo "<br><br><p><button class='cota-edit-family' type='button'><a href='edit-family.php?familyname=" . urlencode($familyname) . "'>Edit this family again</a></button></p>";
-    echo "<p><button class='cota-search-family' type='button'><a href='search-edit.php'>Edit Another Family</a></button></p>";
+    // Echo header
+    echo cota_page_header();
+    // Dump out remainder of import page. 
+    echo "<div class='cota-update-container'>";
+    echo "<h2>" . $familyname . " family updated!</h2>";
+    echo "<br><br>";
+    echo "<button class='cota-edit-family' type='button'><a href='edit-family.php?familyname=" . urlencode($familyname) . "'>Edit this family again</a></button>";
+    echo "<br><br>";
+    echo "<button class='cota-search-family' type='button'><a href='search-edit.php'>Edit Another Family</a></button>";
+
+    echo "</div>";
+
 } else {
     echo "<h2>Error: Invalid request.</h2>";
     echo "<p>Please try again or return to the <a href='index.php'>main menu</a>.</p>";
     echo "<button class='main-menu-return' type='button' ><a href='index.php'>Return to Main Menu</a></button>";
 }
 
-$db->close_connection();
-?>
-<button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button>
+$cotadb->close_connection();

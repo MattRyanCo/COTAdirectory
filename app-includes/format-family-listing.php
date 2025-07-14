@@ -162,8 +162,10 @@ function cota_format_family_listing_for_print($family, $members) {
                 $formatted_family_array[$lctr][8] = $individual['birthday'] ?? '';
                 $formatted_family_array[$lctr][9] = $individual['baptism'] ?? '';
             }
+            
         }
-        $rctr+=1;  // Next line on right side. 
+        $rctr+=1;  // Next line on right side.
+        $formatted_family_array[0][0] = $lctr; // Number of left side lines 
     }
 
     $left_side = $placeholder;
@@ -193,6 +195,7 @@ function cota_format_family_listing_for_print($family, $members) {
         $mctr++;
         $lctr+=1;
     }
+    $formatted_family_array[0][1] = $mctr - $formatted_family_array[0][0];
 // print_r('lctr is ' . $lctr . '   rctr is ' . $rctr . '   mctr is ' . $mctr);echo '<br>';
 // print_r($formatted_family_array[1]);echo '<br>';
 // print_r($formatted_family_array[2]);echo '<br>';

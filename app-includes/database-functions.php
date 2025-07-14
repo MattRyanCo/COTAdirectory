@@ -1,13 +1,23 @@
 <?php
-require_once '../app-includes/settings.php';
 // echo nl2br(__FILE__ . ' loaded' . PHP_EOL);
+// echo nl2br(__DIR__ . ' DIR' . PHP_EOL);
+// require_once __DIR__ . '/settings.php';
+// require_once COTA_APPINCLUDES . 'settings.php';
 
 class COTA_Database {
     private $conn;
+
+    public const DB_NAME = 'cotadirectory';
+    public const DB_USER = 'root';
+    public const DB_PASSWORD = '';
+    public const DB_HOST = 'Localhost';
     
     public function __construct() {
-        // echo nl2br(' Method ' . __METHOD__ . ' loaded' . PHP_EOL);
-        $this->conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+        $this->conn = new mysqli(
+            self::DB_HOST, 
+            self::DB_USER, 
+            self::DB_PASSWORD, 
+            self::DB_NAME);
         // var_dump($this->conn);
         if ($this->conn->connect_error) {
             die("Connection failed: Errno " . $this->conn->connect_error . ' Error ' . $this->conn->connect_error);
@@ -126,4 +136,7 @@ class COTA_Database {
         return;
     }
 }
-?>
+global $cotadb, $conn;
+
+$cotadb = new COTA_Database();
+$conn = $cotadb->get_connection();

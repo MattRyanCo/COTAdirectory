@@ -2,6 +2,7 @@
 require_once '../app-includes/database-functions.php';
 require_once '../app-includes/format-family-listing.php';
 require_once '../app-includes/settings.php';
+global $cotadb, $conn;
 
 // Echo page header
 echo cota_page_header();
@@ -24,7 +25,7 @@ echo cota_page_header();
                 <label for="members[last_name][]">Last Name (if different than family name)</label>
                 <input type="text" id="members[last_name][]" name="members[last_name][]" style="text-transform:capitalize;"><br>
                 <label for="members[cell_phone][]">Cell Phone</label>
-                <input type="tel" id="members[cell_phone][]" name="members[cell_phone][]" placeholder="xxx-xxx-xxxx" pattern="\d{3}-\d{3}-\d{4}" title="Format: xxx-xxx-xxxx"><br>
+                <input type="text" id="members[cell_phone][]" name="members[cell_phone][]" placeholder="xxx-xxx-xxxx" ><br>
                 <label for="members[email][]">Email</label>
                 <input type="email" id="members[email][]" name="members[email][]"><br>
                 <label for="members[birthday][]">Birthday</label>
@@ -38,8 +39,7 @@ echo cota_page_header();
             }
         }
     </script>
-</head>
-<body>
+
     <h2 >Add Family Entry</h2>
     <form class="cota-family-entry" action="add-family.php" method="post">
         <label>Family Name</label>
@@ -53,9 +53,9 @@ echo cota_page_header();
         <label>State</label>
         <input type="text" name="state" value="PA" maxlength="2" style="text-transform:uppercase">
         <label>Zip Code</label>
-        <input type="text" name="zip" placeholder="xxxxx-xxxx" title="Format: xxxxx-xxxx"<br>
+        <input type="text" name="zip" placeholder="xxxxx-xxxx"><br>
         <label>Home Phone</label>
-        <input type="tel" name="homephone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="xxx-xxx-xxxx">
+        <input type="text" name="homephone" placeholder="xxx-xxx-xxxx"><br>
         <label>Anniversary of Marriage</label>
         <input type="text" name="annday" title="Wedding anniversary of primary family members." placeholder="mm/dd/yyyy"><br>
 
@@ -68,7 +68,7 @@ echo cota_page_header();
                 <label for="members[last_name][]">Last (only needed if different from family name)</label>
                 <input type="text" id="members[last_name][]" name="members[last_name][]" style="text-transform:capitalize;" placeholder="Last"><br>
                 <label for="members[cell_phone][]">Cell Phone</label>
-                <input type="tel" id="members[cell_phone][]" name="members[cell_phone][]" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="xxx-xxx-xxxx"><br>
+                <input type="text" id="members[cell_phone][]" name="members[cell_phone][]" placeholder="xxx-xxx-xxxx"><br>
                 <label for="members[email][]">Email</label>
                 <input type="email" id="members[email][]" name="members[email][]"><br>
                 <label for="members[birthday][]">Birthday</label>

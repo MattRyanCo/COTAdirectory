@@ -4,14 +4,14 @@
  */
 require_once '../app-includes/database-functions.php';
 require_once '../app-includes/settings.php';
-
+global $cotadb, $conn;
 class COTA_Csv_Importer {
-    private $conn;
 
-    public function __construct() {
-        $db = new COTA_Database();
-        $this->conn = $db->get_connection();
-    }
+
+    // public function __construct() {
+    //     $db = new COTA_Database();
+    //     $this->conn = $db->get_connection();
+    // }
 
     public function cota_read_csv_to_assoc_array($filename) {
         $data = [];

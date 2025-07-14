@@ -54,7 +54,8 @@ class PDF extends FPDF
         // Thickness of frame (1 mm)
         $this->SetLineWidth(.25);
 
-        $this->Ln(10);
+        // $this->Ln(10);
+        $this->SetY(3);   // Position cursor after header output
     }
 
     function Footer()
@@ -82,7 +83,7 @@ class PDF extends FPDF
         // Arial 12
         $this->SetFont('Arial','',12);
         // Background color
-        $this->SetFillColor(200,220,255);
+        // $this->SetFillColor(200,220,255);
 
         $chapter_title = "Chapter $num : $label";
         $this->center_this_text( $chapter_title, 1);
@@ -90,17 +91,15 @@ class PDF extends FPDF
 
     function ChapterBody($file)
     {
+        $line_height = 0.2;
         // Read text file
         $content = file_get_contents($file);
         // Ouput file contents
+        $this->SetXY(1, 2); // 1 inch from left, 2 inches from top
         if ($content !== false) {
-            // Set X and Y position
-            $this->SetXY(1, 2); // 1 inch from left, 2 inches from top
-
             // MultiCell handles text wrapping automatically
             $this->MultiCell(6.5, 0.2, $content); // 6.5" width, 0.2" height per line
         } else {
-            $this->SetXY(1, 2);
             $this->SetTextColor(255, 0, 0);
             $this->MultiCell(6.5, 0.2, 'Could not load {$file}.');
         }
@@ -108,8 +107,8 @@ class PDF extends FPDF
 
     function PrintChapter($num, $title, $file)
     {
-        $this->AddPage();
         $this->SetFont('Times','',12);
+        $this->AddPage();
         $this->ChapterTitle($num,$title);
         $this->ChapterBody($file);
     }
@@ -157,38 +156,18 @@ class PDF extends FPDF
     }
     
     /**
-     * PrintFamilyArray
+     * print_family_array
+     * 
+     * Functions assumes that we have enough space to print family array.
+     * Need for AddPage calculated before calling us. 
      *
      * @param [type] $family_array
      * @return void
      */
-    function PrintFamilyArray($family_array) {
+    function print_family_array($family_array) {
         $this->SetFont('Arial', '', 10);
-
         $line_height = 0.25;
-        $left_margin = .25;
-
-        // Figure out how many lines we need to print
-        $needed_height = count($family_array) * $line_height;
-
-
-        // Check if enough space remains, else add a new page
-        $bottom_margin = 10.5; 
-        $page_height = $this->h; 
-        // $current_y = $this->GetY();
-        // $space_needed = ($current_y + $needed_height + $bottom_margin) / 2;
-
-
-        // if ($space_needed > $page_height) {
-            // $this->AddPage();
-        // }
-
-// print_r('count l '. count($family_array)); echo '<br>';
-// print_r('need h ' .$needed_height); echo '<br>';
-// print_r('curt y ' . $current_y); echo '<br>';
-// print_r('bot marg '.$bottom_margin);echo '<br>';
-// print_r('space needed '.$space_needed);echo '<br>';
-// print_r('page h '.$page_height); echo '==============<br>';
+        $left_margin = 0.25;
 
         $large_field_width = round($this->GetStringWidth('Family Name/Address'),1);
         $wline1 = [
@@ -237,16 +216,11 @@ class PDF extends FPDF
         $current_y = $this->GetY();
         $this->line($left_margin, $current_y+$line_height, ($this->w)-$left_margin, $current_y+$line_height);
 
-
-
         // Process family listing for 1 family
         $next_row = $current_y + $line_height;
         $this->SetFont('Arial', '', 10);
 
-
-
         for ( $i=1; $i<=10; $i++) {
-
 
             $this->SetXY($left_margin, $next_row);
             $this->Cell($wline3[0], $line_height, $family_array[$i][1]);  // Left side of listing. 
@@ -269,15 +243,26 @@ class PDF extends FPDF
             $next_row = $next_row + $line_height;
         }
         // Add some spacing after each family
-        $this->Ln(2);
-
-
-
-
-
-
+        $next_row = $next_row + ( 4 * $line_height ); 
+        $this->SetXY($left_margin, $next_row);;
     }
 
+    function enough_room_for_family( $lines_to_output, $line_height=0.25, $page_break_now=8 ) {
+        if ( 0 == $lines_to_output ) {
+            return true;  // weird input. Assume okay. 
+        } else {
+            // Calculate the room required given number of lines to output
+            // Compare to where we are now
+            $start_y = $this->GetY(); // Where we are now
+            $needed_height = $lines_to_output * $line_height;
+            // var_dump($lines_to_output, $start_y, $needed_height, $page_break_now);
+            if ( $start_y + $needed_height >= $page_break_now ) {
+                return false; // not enough room
+            } else {
+                return true;  // enough room
+            }
+        }
+    }
 
 
     function dummy_up_pages( $pdfobject, $no_of_pages) {

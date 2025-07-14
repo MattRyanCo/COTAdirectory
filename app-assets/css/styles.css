@@ -28,10 +28,11 @@ h1, h2,
 /* containers */
 #cota-anniversary,
 #cota-print,
-#cota-display-container,
-#cota-delete-container,
-#cota-edit-container,
-#cota-add-container {
+cota-display-container,
+cota-delete-container,
+cota-edit-container,
+cota-add-container,
+cota-update-container {
     text-align: center;
     width: 95vh;
     margin: auto;
@@ -222,12 +223,19 @@ button {
     font-size: 1em;
     width: 20vh;
 }
-button.cota-add-another {
-    background-color: #2ecc71;
-    width: 50%;
+button.cota-edit-family > a,
+button.cota-search-family > a {
+    color: white;
 }
 
-button.cota-submit-family {
+button.cota-add-another,
+button.cota-edit-family {
+    background-color: #2ecc71;
+    width: 50vw;
+}
+
+button.cota-submit-family,
+button.cota-search-family {
     background-color: #3498db;
     width: 50vw;
     font-size: 1.5em;
