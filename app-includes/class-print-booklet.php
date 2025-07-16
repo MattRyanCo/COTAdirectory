@@ -1,16 +1,6 @@
 <?php
 require_once '../app-libraries/fpdf/fpdf.php';
 
-// global $cotadb, $conn, $cota_constants;
-
-
-// echo nl2br($cota_constants->COTA_APP_ASSETS . ' = COTA_APP_ASSETS' . PHP_EOL);
-// echo nl2br($cota_constants->COTA_APP_INCLUDES . ' = COTA_APP_INCLUDES' . PHP_EOL);
-// echo nl2br($cota_constants->COTA_APP_LIBRARIES . ' = COTA_APP_LIBRARIES' . PHP_EOL);
-
-
-// require_once $cota_constants->COTA_APP_LIBRARIES . 'fpdf/fpdf.php';
-// require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
 class PDF extends FPDF
 {
@@ -25,7 +15,7 @@ class PDF extends FPDF
         // Calculate X position to center
         $x = ($pageWidth - $textWidth) / 2;
         $this->SetXY($x, $vertical_position); // 1 inch from the top
-        $this->Cell($textWidth, 0.5, $text);
+        $this->Cell($textWidth, 0.25, $text);
     }
 
     /**
@@ -44,35 +34,28 @@ class PDF extends FPDF
             $x = $this->lMargin;
         } elseif ($align === 'R') {
             $x = $this->w - $this->rMargin - ($this->GetStringWidth($text)+.25);
-            // var_dump($this->w, $this->rMargin,$this->GetStringWidth($text));
         } else {
             // Default to center alignment
             center_this_text($text, $y);
         }
-        // var_dump($x, $y, $align, $text);
-        // $this->SetXY($x, $y);
         $this->SetX($x);
-        // $this->Cell($this->GetStringWidth($text), .25, $text, 0, 1);
-        // $this->MultiCell($this->GetStringWidth($text), 0.25, $text);
         $this->Write(0.25, $text );
     }
 
     function Header()
     {
-        global $title;
-        $this->Ln(10);  // Move heading block down from top of page. 
+        global $title, $header_height;
         $this->SetFont('Arial','B',15);  // Arial bold 15
+        $this->SetTextColor(128);;
+        $this->center_this_text( $title, 0 );
+        // $this->h  is height of document 11"
+        // $this->w  is width of document 8.5"
 
-        $this->center_this_text( $title, 0.5 );
-
-        $this->SetDrawColor(0,80,180);
-        $this->SetFillColor(230,230,0);
-        $this->SetTextColor(220,50,50);
-        // Thickness of frame (1 mm)
-        $this->SetLineWidth(.25);
-
-        // $this->Ln(10);
-        $this->SetY(3);   // Position cursor after header output
+        // var_dump($this->GetY());
+        $this->Ln(1);  // Moves 1 inch down. 
+        // $this->SetY(3);   // Position cursor 3" from top of page. 
+        $header_height = $this->GetY();
+        // var_dump($header_height);
     }
 
     function Footer()
@@ -81,7 +64,7 @@ class PDF extends FPDF
         $this->SetTextColor(128);  // Text color in gray
         $page_no = $this->PageNo();
         $footer_text = "Page " . $page_no;
-        $this->SetY(-1);  // Set position from bottom of page. 
+        $this->SetY(-0.25);  // Set position 1/4" from bottom of page. 
 
         if ( $page_no==1 ) return; // no footer on 1st page. 
 
@@ -97,9 +80,6 @@ class PDF extends FPDF
     {
         // Arial 12
         $this->SetFont('Arial','',12);
-        // Background color
-        // $this->SetFillColor(200,220,255);
-
         $chapter_title = "Chapter $num : $label";
         $this->center_this_text( $chapter_title, 1);
     }
@@ -112,7 +92,6 @@ class PDF extends FPDF
         // Ouput file contents
         $this->SetXY(1, 2); // 1 inch from left, 2 inches from top
         if ($content !== false) {
-            // MultiCell handles text wrapping automatically
             $this->MultiCell(6.5, 0.2, $content); // 6.5" width, 0.2" height per line
         } else {
             $this->SetTextColor(255, 0, 0);
@@ -128,7 +107,7 @@ class PDF extends FPDF
         $this->ChapterBody($file);
     }
 
-    function cota_back_cover($label)
+    function back_cover($label)
     {
 
         $this->AddPage();
@@ -137,9 +116,8 @@ class PDF extends FPDF
         $this->center_this_text($text, 5 );
     }
 
-    function cota_front_cover($title, $author, $logoFile )
+    function front_cover($title, $author, $logoFile )
     {
-
         // Background color
         $this->SetFillColor(200,220,255);
         // $this->AddPage();
@@ -162,14 +140,93 @@ class PDF extends FPDF
         $this->SetXY($x, 3 );  // Place it in the center 3" from top. 
         $this->Image( $logoFile );
 
-        $this->SetFontSize(8);
-
+        // $this->SetFontSize(8);
         // Center the date.
-        $datetext = "Created: " . date('F j, Y');
-        $this->center_this_text( $datetext, -1 );
+        // $datetext = "Created: " . date('F j, Y');
+        // $this->center_this_text( $datetext, -1 );
 
     }
-    
+
+/**
+ * print_family_array_headings
+ *
+ * @param [bool] $first_time
+ * @return [array] array(
+            0 => [sarray] $field_positions
+            1 => [array] $field_widths
+        )
+ */
+    function print_family_array_headings( $first_time ) {
+        global $header_height;
+
+        $line_height = .25;
+        $left_margin = $this->lMargin;
+        $start_heading = $header_height + $line_height;
+        // var_dump($start_heading);
+
+        // Do this setup only first time through
+ 
+        if ( $first_time ) {
+
+            $large_field_width = round($this->GetStringWidth('Family Name/Address'),1);
+            $wline1 = [
+                round($this->GetStringWidth('Family Name/Address'),1),  // [0]
+                round($this->GetStringWidth('Family Members'),1),       // [1]                                             // [1]
+            ];  // width of heading lables line 1. 
+            $wline2 = [
+                round($this->GetStringWidth('Home: xxx-xxx-xxxx_'),1),           // [0]
+                round($this->GetStringWidth('MyLongFirstName '),1), // [1]
+                round($this->GetStringWidth('LongEmailExample@example.com '),1),           // [2
+                round($this->GetStringWidth('###-###-####__'),1),                // [3
+                round($this->GetStringWidth('mm/dd_'),1),                // [4
+                round($this->GetStringWidth('mm/dd_'),1)                 // [5
+            ]; // width of heading lables line 2.
+            $field_widths = $wline2;
+            $large_field_width = round($this->GetStringWidth('Family Name/Address'),1) + 0.5;
+            $field_positions = [
+                $left_margin,                                         // [0] phone or blank
+                $left_margin+$large_field_width,                                            // 1 name
+                $left_margin+$large_field_width+$wline2[1],                                 // 2 em
+                $left_margin+$large_field_width+$wline2[1]+$wline2[2],                      // 3 cell
+                $left_margin+$large_field_width+$wline2[1]+$wline2[2]+$wline2[3],           // 4 DOB
+                $left_margin+$large_field_width+$wline2[1]+$wline2[2]+$wline2[3]+$wline2[4] // 5 Bap
+            ];  // X position for start of label / fields to write
+        }
+
+        // Output headings here. 
+        // Table Headers - 1st line
+        $this->SetXY($field_positions[0], $start_heading );
+        $this->Cell($wline1[0], $line_height, 'Family Name/Address');
+
+        $this->SetX($field_positions[1]);
+        $this->Cell($wline1[1], $line_height, 'Family Members');
+
+        // Table Headers - 2nd line in italics. 
+        $this->SetFont('Arial', 'I', 10);
+
+        // Print out column headings.
+            // Set x position & print content 'cell'
+        $this->SetXY($field_positions[1], $start_heading + 0.25 );
+        $this->Cell( $field_widths[1], $line_height, 'Name');
+
+        $this->SetX($field_positions[2]);
+        $this->Cell($field_widths[2], $line_height, 'Email');   //wline2[2]
+        
+        $this->SetX($field_positions[3]);
+        $this->Cell($field_widths[3], $line_height, 'Cell');
+        
+        $this->SetX($field_positions[4]);
+        $this->Cell($field_widths[4], $line_height, 'DoB' );
+        
+        $this->SetX($field_positions[5]);
+        $this->Cell($field_widths[5], $line_height, 'DoBap' );
+        
+        // $current_y = $this->GetY();
+        return array(
+            0 => $field_positions, 
+            1 => $field_widths
+        );
+    }
     /**
      * print_family_array
      * 
@@ -179,98 +236,61 @@ class PDF extends FPDF
      * @param [type] $family_array
      * @return void
      */
-    function print_family_array($family_array) {
-        $this->SetFont('Arial', '', 10);
+    function print_family_array($family_array, $field_info ) {
+        $this->SetFont('Arial', '', 10);  // Set default font. 
         $line_height = 0.25;
-        $left_margin = 0.25;
-
-        $large_field_width = round($this->GetStringWidth('Family Name/Address'),1);
-        $wline1 = [
-            round($this->GetStringWidth('Family Name/Address'),1),  // [0]
-            round($this->GetStringWidth('Family Members'),1),       // [1]                                             // [1]
-        ];  // width of heading lables line 1. 
-        $wline2 = [
-            round($this->GetStringWidth('Home: xxx-xxx-xxxx_'),1),           // [0]
-            round($this->GetStringWidth('MyLongFirstName '),1), // [1]
-            round($this->GetStringWidth('LongEmailExample@example.com '),1),           // [2
-            round($this->GetStringWidth('###-###-####__'),1),                // [3
-            round($this->GetStringWidth('mm/dd_'),1),                // [4
-            round($this->GetStringWidth('mm/dd_'),1)                 // [5
-        ]; // width of heading lables line 2.
-        $large_field_width = round($this->GetStringWidth('Family Name/Address'),1) + 0.5;
-        $wline3 = [
-            $left_margin,                                         // [0] phone or blank
-            $left_margin+$large_field_width,                                            // 1 name
-            $left_margin+$large_field_width+$wline2[1],                                 // 2 em
-            $left_margin+$large_field_width+$wline2[1]+$wline2[2],                      // 3 cell
-            $left_margin+$large_field_width+$wline2[1]+$wline2[2]+$wline2[3],           // 4 DOB
-            $left_margin+$large_field_width+$wline2[1]+$wline2[2]+$wline2[3]+$wline2[4] // 5 Bap
-        ];  // X position for start of label / fields to write
-
-
-        // Table Headers
-        $this->SetXY($left_margin,1);
-        $this->Cell($wline1[0], $line_height, 'Family Name/Address');
-
-        $this->SetX($large_field_width+0.25);
-        $this->Cell($wline3[1], $line_height, 'Family Members');
-
-        // Print out name column headings in italics. 
-        $this->SetFont('Arial', 'I', 10);
-        $this->SetXY($large_field_width+0.25, 1.25);
-        $this->Cell($wline3[1], $line_height, 'Name');
-        $this->SetX($wline3[2]);
-        $this->Cell($wline3[2], $line_height, 'Email');
-        $this->SetX($wline3[3]);
-        $this->Cell($wline3[3], $line_height, 'Cell');
-        $this->SetX($wline3[4]);
-        $this->Cell($wline3[4], $line_height, 'DoB' );
-        $this->SetX($wline3[5]);
-        $this->Cell($wline3[5], $line_height, 'DoBap' );
+        $left_margin = $this->lMargin;
+        $field_positions = $field_info[0];
+        $field_widths = $field_info[1];
+        $family_listing_height_in_lines = max($family_array[0][0], $family_array[0][1]);
         
-        $current_y = $this->GetY();
+
+        // Output a divider with a blank line above it. 
+        $this->Ln($line_height);
+        $current_y = $this->GetY();  //Where are we on the page?
         $this->line($left_margin, $current_y+$line_height, ($this->w)-$left_margin, $current_y+$line_height);
+        $next_row = $this->GetY() + $line_height;
 
         // Process family listing for 1 family
-        $next_row = $current_y + $line_height;
-        $this->SetFont('Arial', '', 10);
+        for ( $i=1; $i<=$family_listing_height_in_lines; $i++) {
 
-        for ( $i=1; $i<=10; $i++) {
+            $this->SetXY($field_positions[0], $next_row);
+            $this->Cell( $field_widths[0], $line_height, $family_array[$i][1]);  // Left side of listing. 
 
-            $this->SetXY($left_margin, $next_row);
-            $this->Cell($wline3[0], $line_height, $family_array[$i][1]);  // Left side of listing. 
+            $this->SetX($field_positions[1]);
+            $this->Cell($field_widths[1], $line_height, $family_array[$i][4] . ' ' . $family_array[$i][5]);  // Name
 
-            $this->SetX($wline3[1]);
-            $this->Cell($wline3[1], $line_height, $family_array[$i][4] . ' ' . $family_array[$i][5]);  // Name
+            $this->SetX($field_positions[2]);
+            $this->Cell($field_widths[2], $line_height, $family_array[$i][6]); // em
 
-            $this->SetX($wline3[2]);
-            $this->Cell($wline3[2], $line_height, $family_array[$i][6]); // em
+            $this->SetX($field_positions[3]);
+            $this->Cell($field_widths[3], $line_height, $family_array[$i][7]); // cell
 
-            $this->SetX($wline3[3]);
-            $this->Cell($wline3[3], $line_height, $family_array[$i][7]); // cell
+            $this->SetX($field_positions[4]);
+            $this->Cell($field_widths[4], $line_height, $family_array[$i][8]); // DoB
 
-            $this->SetX($wline3[4]);
-            $this->Cell($wline3[4], $line_height, $family_array[$i][8]); // DoB
+            $this->SetX($field_positions[5]);
+            $this->Cell($field_widths[5], $line_height, $family_array[$i][9]); // DoBap
 
-            $this->SetX($wline3[5]);
-            $this->Cell($wline3[5], $line_height, $family_array[$i][9]); // DoBap
-
-            $next_row = $next_row + $line_height;
+            $next_row = $this->GetY() + $line_height;
         }
         // Add some spacing after each family
-        $next_row = $next_row + ( 4 * $line_height ); 
-        $this->SetXY($left_margin, $next_row);;
+        // $next_row = $this->GetY() + 2 * $line_height;
+        // $this->SetXY($left_margin, $next_row);
+
+        // return where we are. 
+        return $this->GetY();
     }
 
-    function enough_room_for_family( $lines_to_output, $line_height=0.25, $page_break_now=8 ) {
+    function enough_room_for_family( $lines_to_output, $line_height=0.25 ) {
+        $page_break_now = 10;  // If we hit this, time to break to new page. 
         if ( 0 == $lines_to_output ) {
             return true;  // weird input. Assume okay. 
         } else {
             // Calculate the room required given number of lines to output
             // Compare to where we are now
             $start_y = $this->GetY(); // Where we are now
-            $needed_height = $lines_to_output * $line_height;
-            // var_dump($lines_to_output, $start_y, $needed_height, $page_break_now);
+            $needed_height = ( $lines_to_output + 1 ) * $line_height; // Add 1 to account for decorative line.
             if ( $start_y + $needed_height >= $page_break_now ) {
                 return false; // not enough room
             } else {
@@ -282,7 +302,6 @@ class PDF extends FPDF
 
     function dummy_up_pages( $pdfobject, $no_of_pages) {
         foreach ($no_of_pages as $pair) {
-            // var_dump($pair); // Debugging: Show the page pairs being processed
             $pdfobject->AddPage();
             foreach ($pair as $pageNum) {
                 if ($pageNum > $no_of_pages) {
