@@ -8,7 +8,7 @@
  * 2-sided, 4 to a page format. 
  */
 
-global $cotadb, $conn, $cota_constants;
+global $cotadb, $conn, $cota_constants, $header_height;
 
 require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'format-family-listing.php';
@@ -27,55 +27,65 @@ $author = 'Vestry & Wardens of Church of the Ascension, Parkesburg';
 $pdf->SetTitle($title);
 $pdf->SetAuthor($author);
 
-$pdf->SetMargins(0.5, 0.5, 0.5);
-$pdf->SetAutoPageBreak(true, 1);
+$left_margin = $top_margin = $right_margin = 0.5;
+$pdf->SetMargins($left_margin, $top_margin, $right_margin);
+$pdf->SetAutoPageBreak(true, 2*$top_margin);
+// $pdf->SetAutoPageBreak(false);
 $pdf->SetFont('Arial', '', 12);
-
 $logoFile = '../app-assets/images/cota-logo.png';
-$pdf->cota_front_cover( $title, $author, $logoFile, 5, 50, 200 ); // Add front cover with logo
+$pdf->front_cover( $title, $author, $logoFile ); // Add front cover with logo
+
+// Retrieve and Format Membership Entries
+$families = $cotadb->read_family_database();
+$num_families = $families->num_rows;
+$field_positions = $field_widths = $field_info = [];
 
 // Load and insert static pages.
 // for ($i = 1; $i <= 3; $i++) {
 //     $pdf->PrintChapter($i,'intro'.$i.'.txt','../uploads/intro'.$i.'.txt');
 // }
 
-// Retrieve and Format Membership Entries
-// Fetch data from your MySQL database and format it into an address label style layout
-
-// $db = new COTA_Database();
-$families = $cotadb->read_family_database();
-$num_families = $families->num_rows;
-$ictr = 1;
-
 $pdf->AddPage();
-$pdf->SetFont('Arial', 'B', 14);
-$pdf->SetAutoPageBreak(true);
-$pdf->center_this_text('Family & Members Listing - '.$num_families . ' families', 1.5);
-// $pdf->SetFont('Arial', '', 12);
-// $pdf->center_this_text('Member Listing - '.$num_families . ' families', 2);
+$pdf->SetFont('Arial', 'B', 12);
+$pdf->center_this_text('Family & Members Listing - '.$num_families . ' families', 0.75);
+$pdf->SetFont('Arial', '', 10);
+$pdf->center_this_text('Other misc info may be shared here about the membership numbers.', 3);
+
+
+$pdf->SetFont('Arial', '', 10);  // Reset to normal font
 $pdf->AddPage(); // Start the alpha listing on a new page
+$line_height = 0.25;  // Set basic line height
+
+// Get things started with headings below titles. 
+$field_info = $pdf->print_family_array_headings( TRUE );  // print headings
 
 while ($family = $families->fetch_assoc()) {
     // Get family members
     $individuals = $cotadb->read_members_of_family( $family['id'] );
     $family_array = cota_format_family_listing_for_print($family, $individuals);
 
-        // $family_array[0][0] = number of listing lines on left
-        // $family_array[0][1] = number of listing lines on right
+    // $family_array[0][0] = number of listing lines on left
+    // $family_array[0][1] = number of listing lines on right
     $family_listing_height_in_lines = max($family_array[0][0], $family_array[0][1]);
 
-    $pdf->SetFont('Arial', '', 10);
-    $line_height = 0.25;
-    $left_margin = 0.25;
-
-    If ( !$pdf->enough_room_for_family( $family_listing_height_in_lines ) ) {
+    if ( $pdf->enough_room_for_family( $family_listing_height_in_lines, $line_height ) ) {
+        // Enough space to print out this family. 
+        $pdf->SetFont('Arial', '', 10); // Ensure font is reset before headings
+        $pdf->print_family_array($family_array, $field_info );
+    } else {
+        // Not enough room for family. 
+        // Add new page. 
+        // Print out headings on new page
+        $pdf->SetFont('Arial', '', 10); // Ensure font is reset before headings
         $pdf->AddPage();
+        // $pdf->print_family_array_headings( FALSE );
+        $pdf->print_family_array($family_array, $field_info );
     }
-    $pdf->print_family_array($family_array);
+
 }
 
 // Add the rear cover
-$pdf->cota_back_cover(1, 'Back Cover');
+$pdf->back_cover(1, 'Back Cover');
 
 $output_basename = '/downloads/directory_booklet_' . date('Y-m-d') . '.pdf';
 // Ensure the downloads directory exists
@@ -85,9 +95,8 @@ if (!is_dir($_SERVER['DOCUMENT_ROOT'] . '/downloads')) {
 $output_filename = $_SERVER['DOCUMENT_ROOT'] . $output_basename;
 
 // Output the PDF
-// $pdf->Output('F', '../uploads/membership_directory.pdf'); // Save to server
-$pdf->Output('F', $output_filename); // Save to server
-// $pdf->Output('I'); // Still display in browser if you want
+// $pdf->Output('F', $output_filename); // Save to server
+$pdf->Output('I'); // Still display in browser if you want
 
 $cotadb->close_connection();
 
