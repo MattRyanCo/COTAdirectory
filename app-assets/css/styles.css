@@ -25,17 +25,24 @@ h1, h2,
     text-align: center;
 }
 
+.notice-container {
+    padding: 50px 0 20px;
+    text-align: center;
+}
+
 /* containers */
 #cota-anniversary,
 #cota-print,
-cota-display-container,
-cota-delete-container,
-cota-edit-container,
-cota-add-container,
-cota-update-container {
+.cota-delete-container,
+.cota-edit-container,
+.cota-add-container,
+.cota-update-container {
     text-align: center;
     width: 95vh;
     margin: auto;
+}
+.cota-display-container {
+    text-align: left;
 }
 
 ul > li {
