@@ -2,6 +2,7 @@
 global $cotadb, $conn, $cota_constants;
 
 require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'format-family-listing.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
