@@ -46,7 +46,7 @@ $buildpdf->SetAutoPageBreak(true, 0.5);
 $buildpdf->SetFont('Arial', '', 12);
 
 $logoFile = '../app-assets/images/cota-logo.png';
-$buildpdf->cota_front_cover( $title, $author, $logoFile ); // Add front cover with logo
+$buildpdf->front_cover( $title, $author, $logoFile ); // Add front cover with logo
 
 // $buildpdf->dummy_up_pages( $buildpdf, $pages ); // Add dummy pages based on the generated order
 
@@ -100,7 +100,7 @@ foreach ($members as $m) {
 
 $buildpdf->Ln(4);
 
-$buildpdf->cota_back_cover( 'Back Cover' );
+$buildpdf->back_cover( 'Back Cover' );
 
 // Output PDF
 
