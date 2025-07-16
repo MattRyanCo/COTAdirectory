@@ -2,6 +2,7 @@
 global $cotadb, $conn, $cota_constants;
 
 require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -24,14 +25,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         // Insert members with validation
         $first_names = $_POST["members"]["first_name"];
-        // if (!is_array($first_names)) {
-        //     $first_names = [$first_names];
-        //     // Repeat for other member fields as well
-        // }
 
+        $fname1 = $fname2 = $lname2 = '';
         foreach ($first_names as $key => $first_name) {
             $first_name = cota_sanitize($first_name);
             $last_name = cota_sanitize($_POST["members"]["last_name"][$key]);
+
+            // Save off 1st 2 names to add back to Families table later.
+            if ( '' == $fname1 ) {
+                $fname1 = $firstname;
+            } elseif ( '' == $fname2 ) {
+                $fname2 = $firstname;
+                $lname2 = $lastname;
+            }
+
             $cell_phone = cota_validate_phone($_POST["members"]["cell_phone"][$key]);
             $email = cota_sanitize($_POST["members"]["email"][$key]);
             $birthday = cota_format_date($_POST["members"]["birthday"][$key]);
@@ -51,6 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
 
         }
+        // @todo Add $fname1, $fname2, $lname2 to family table
 
         // Echo header
         echo cota_page_header();
@@ -58,9 +66,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo "<div class='cota-add-container'>";
         echo "<h2>" . $familyname . " family added successfully!</h2>";
         echo "</div>";
-
-        // echo $familyname . " Family added successfully!";
-
     } else {
         cota_log_error("SQL Error (execute): " . $stmt->error);
     }
