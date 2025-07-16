@@ -32,6 +32,7 @@ class PDF extends FPDF
      * just_this_text
      * 
      * Justify text at the left or right margin. 
+     * Move along the x axis.
      *
      * @param [type] $text
      * @param string $align
@@ -42,13 +43,18 @@ class PDF extends FPDF
         if ($align === 'L') {
             $x = $this->lMargin;
         } elseif ($align === 'R') {
-            $x = $this->w - $this->rMargin - $this->GetStringWidth($text);
+            $x = $this->w - $this->rMargin - ($this->GetStringWidth($text)+.25);
+            // var_dump($this->w, $this->rMargin,$this->GetStringWidth($text));
         } else {
             // Default to center alignment
-            $x = ($this->w - $this->GetStringWidth($text)) / 2;
+            center_this_text($text, $y);
         }
-        $this->SetXY($x, $y);
-        $this->Cell($this->GetStringWidth($text), 10, $text, 0, 1);
+        // var_dump($x, $y, $align, $text);
+        // $this->SetXY($x, $y);
+        $this->SetX($x);
+        // $this->Cell($this->GetStringWidth($text), .25, $text, 0, 1);
+        // $this->MultiCell($this->GetStringWidth($text), 0.25, $text);
+        $this->Write(0.25, $text );
     }
 
     function Header()
@@ -71,19 +77,17 @@ class PDF extends FPDF
 
     function Footer()
     {
-
-        // $this->SetY(-10);  // Set position from bottom of page. 
         $this->SetFont('Arial', 'I', 8);  // Select Arial italic 8
         $this->SetTextColor(128);  // Text color in gray
         $page_no = $this->PageNo();
-        $footer_text = "Page {$page_no}";
+        $footer_text = "Page " . $page_no;
+        $this->SetY(-1);  // Set position from bottom of page. 
 
-        if ( $page_no==1 ) return;
-        // $this->center_this_text( $footer_text, -0.5 );
+        if ( $page_no==1 ) return; // no footer on 1st page. 
 
-        if ( $page_no % 2 == 0 ) {  // even number page, left just the footer. 
+        if ( $page_no % 2 == 0 ) {  // even number page, left justify the footer. 
             $this->just_this_text($footer_text, $align='L');
-        } else { // odd number page, right just the footer
+        } else { // odd number page, right justify the footer
             $this->just_this_text($footer_text, $align='R');   
         }
     }
