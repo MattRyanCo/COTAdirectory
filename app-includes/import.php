@@ -2,21 +2,14 @@
 /**
  * 
  */
-global $cotadb, $conn, $cota_constants;
+global $cota_constants;
+global $cotadb, $conn;
 
 require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
-class COTA_Csv_Importer {
-
-
-    // public function __construct() {
-    //     $db = new COTA_Database();
-    //     $this->conn = $db->get_connection();
-    // }
-
-    public function cota_read_csv_to_assoc_array($filename) {
+    function cota_read_csv_to_assoc_array($filename) {
         $data = [];
         if (($handle = fopen($filename, "r")) !== false) {
             // Remove BOM from the first line if present
@@ -30,7 +23,7 @@ class COTA_Csv_Importer {
                     $value = quoted_printable_decode($value);
                     $value = trim(mb_convert_encoding($value, 'UTF-8', 'UTF-8'));  
                     $value = trim(mb_convert_encoding(quoted_printable_decode($value), 'UTF-8', 'UTF-8,ISO-8859-1,Windows-1252'));              
-                    $value = $this->cota_fix_mime_artifacts($value); 
+                    $value = cota_fix_mime_artifacts($value); 
                 }
                 $data[] = array_combine($headers, $row);
                 // var_dump($data);
@@ -40,38 +33,51 @@ class COTA_Csv_Importer {
         return $data;
     }
 
-    public function cota_import($filename ) {
+    function cota_import($filename ) {
+        global $cota_constants;
+        global $cotadb, $conn;
+
+        require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+        require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+        require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
+
         if (!file_exists($filename)) {
             die("Error: CSV file not found.");
         }
-        $csvData = $this->cota_read_csv_to_assoc_array($filename);
+        $csvData = cota_read_csv_to_assoc_array($filename);
 
         foreach ($csvData as $row) {
             // Skip if familyname is missing
             if (empty($row['familyname'])) {
-                $this->cota_log_error("Missing familyname in row: " . print_r($row, true));
+                cota_log_error("Missing familyname in row: " . print_r($row, true));
                 continue;
             }
 
             // Insert family and get ID
-            $family_id = $this->cota_insert_family_and_get_id($row);
+            $family_id = cota_insert_family_and_get_id($row);
 
             // Insert primary members (parents)
             if (!empty($row['fname1'])) {
-                $this->cota_insert_member($family_id, $row['fname1'], '', $row['cellphone1'] ?? '', $row['email1'] ?? '', $row['bday1'] ?? '', $row['bap1'] ?? '');
+                cota_insert_member($family_id, $row['fname1'], '', $row['cellphone1'] ?? '', $row['email1'] ?? '', $row['bday1'] ?? '', $row['bap1'] ?? '');
             }
             if (!empty($row['fname2'])) {
-                $this->cota_insert_member($family_id, $row['fname2'], '', $row['cellphone2'] ?? '', $row['email2'] ?? '', $row['bday2'] ?? '', $row['bap2'] ?? '');
+                if (!empty($row['lname2'])) {
+                    cota_insert_member($family_id, $row['fname2'], $row['lname2'], $row['cellphone2'] ?? '', $row['email2'] ?? '', $row['bday2'] ?? '', $row['bap2'] ?? '');
+                } else {
+                    // No last name for 2nd family member. Leave blank to use FamilyName
+                    cota_insert_member($family_id, $row['fname2'], '', $row['cellphone2'] ?? '', $row['email2'] ?? '', $row['bday2'] ?? '', $row['bap2'] ?? '');
+                }
             }
 
             // Insert other members (children, etc.)
-            for ($i = 1; $i <= Constants::MAX_FAMILY_MEMBERS; $i++) {
-                $name = $row["othername$i"] ?? '';
+            // for ($i = 1; $i <= $cota_constants->MAX_FAMILY_MEMBERS; $i++) {
+            for ($i = 1; $i <= 9; $i++) {
+                $name = $row["otherfname$i"] ?? '';
                 if (!empty($name)) {
-                    $this->cota_insert_member(
+                    cota_insert_member(
                         $family_id,
                         $name,
-                        '', // last_name (optional)
+                        $row["otherlname$i"] ?? '',
                         $row["othercell$i"] ?? '',
                         $row["otherem$i"] ?? '',
                         $row["otherbday$i"] ?? '',
@@ -84,17 +90,7 @@ class COTA_Csv_Importer {
 
     }
 
-    private function cota_format_date($date) {
-        if (empty($date)) {
-            return "";
-        }
-        if (preg_match('/^(\\d{1,2})\/(\\d{1,2})(?:\/\\d{2,4})?$/', $date, $matches)) {
-            return sprintf("%02d/%02d", $matches[1], $matches[2]);
-        }
-        return $date;
-    }
-
-    private function cota_format_phone($phone) {
+    function cota_format_phone($phone) {
         // Remove all non-digit characters
         $digits = preg_replace('/\D+/', '', $phone);
         // Format if 10 digits
@@ -104,16 +100,17 @@ class COTA_Csv_Importer {
         // Return original if not 10 digits
         return $phone;
     }
-/**
- * The artifacts like +AC0- are not standard quoted-printable or encoding issues—they are MIME encoded-words artifacts (from email exports), where +AC0- represents a hyphen (-), +AEA- is @, and so on.
- * These are not standard UTF-8 or ISO-8859-1 issues, but rather specific to how certain email clients encode special characters.
- * You need to explicitly replace these sequences.
- * The fixMimeArtifacts function is designed to handle these specific cases.
- *
- * @param [type] $value
- * @return void
- */
-    private function cota_fix_mime_artifacts($value) {
+    /**
+     * The artifacts like +AC0- are not standard quoted-printable or encoding issues—they are MIME encoded-words artifacts (from email exports), where +AC0- represents a hyphen (-), +AEA- is @, and so on.
+     * These are not standard UTF-8 or ISO-8859-1 issues, but rather specific to how certain email clients encode special characters.
+     * You need to explicitly replace these sequences.
+     * The fixMimeArtifacts function is designed to handle these specific cases.
+     *
+     * @param [type] $value
+     * @return void
+     */
+    // private function cota_fix_mime_artifacts($value) {
+    function cota_fix_mime_artifacts($value) {
         // Replace common MIME artifacts
         $patterns = [
             '/\+AC0-/' => '-',   // hyphen
@@ -153,31 +150,35 @@ class COTA_Csv_Importer {
         return preg_replace(array_keys($patterns), array_values($patterns), $value);
     }
 
-    private function cota_log_error($message) {
-        error_log($message . PHP_EOL, 3, "import_errors.log");
-    }
+    function cota_insert_family_and_get_id($data) {
+        global $cota_constants;
+        global $cotadb, $conn;
 
-    private function cota_insert_family_and_get_id($data) {
-        $stmt = $this->conn->prepare("INSERT INTO families (
-            familyname, fname1, fname2, address, address2, city, state, zip, homephone,
+        require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+        require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+        require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
+
+        $stmt = $cotadb->conn->prepare("INSERT INTO families (
+            familyname, fname1, fname2, lname2, address, address2, city, state, zip, homephone,
             cellphone1, cellphone2, email1, email2, bday1, bday2,
             bap1, bap2, annday
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-        $homephone   = $this->cota_format_phone($data['homephone']);
-        $cellphone1  = $this->cota_format_phone($data['cellphone1']);
-        $cellphone2  = $this->cota_format_phone($data['cellphone2']);
-        $bday1       = $this->cota_format_date($data['bday1']);
-        $bday2       = $this->cota_format_date($data['bday2']);
-        $bap1        = $this->cota_format_date($data['bap1']);
-        $bap2        = $this->cota_format_date($data['bap2']);
-        $annday      = $this->cota_format_date($data['annday']);
+        $homephone   = cota_format_phone($data['homephone']);
+        $cellphone1  = cota_format_phone($data['cellphone1']);
+        $cellphone2  = cota_format_phone($data['cellphone2']);
+        $bday1       = cota_format_date($data['bday1']);
+        $bday2       = cota_format_date($data['bday2']);
+        $bap1        = cota_format_date($data['bap1']);
+        $bap2        = cota_format_date($data['bap2']);
+        $annday      = cota_format_date($data['annday']);
 
         $stmt->bind_param(
-            "ssssssssssssssssss",
+            "sssssssssssssssssss",
             $data['familyname'],
             $data['fname1'],
             $data['fname2'],
+            $data['lname2'],
             $data['address'],
             $data['address2'],
             $data['city'],
@@ -213,11 +214,18 @@ class COTA_Csv_Importer {
      * @param string $birthday
      * @param string $baptism
      */
-    private function cota_insert_member($family_id, $first_name, $last_name, $cell_phone, $email, $birthday, $baptism) {
-        $stmt = $this->conn->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $cellphone  = $this->cota_format_phone($cell_phone);
-        $bday       = $this->cota_format_date($birthday);
-        $bap        = $this->cota_format_date($baptism);
+    function cota_insert_member($family_id, $first_name, $last_name, $cell_phone, $email, $birthday, $baptism) {
+        global $cota_constants;
+        global $cotadb, $conn;
+
+        require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+        require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+        require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
+
+        $stmt = $cotadb->conn->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $cellphone  = cota_format_phone($cell_phone);
+        $bday       = cota_format_date($birthday);
+        $bap        = cota_format_date($baptism);
 
         $stmt->bind_param(
             "issssss", 
@@ -232,43 +240,6 @@ class COTA_Csv_Importer {
         $stmt->execute();
         $stmt->close();
     }
-}
-
-function cota_handle_error($message, $code) {
-    echo "<p style='color: red;'>Error $code: $message</p>";
-    exit;
-}
-
-// echo "About to instantiate COTA_Csv_Importer class" . PHP_EOL;
-$importAll = new COTA_Csv_Importer();
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["csv_file"])) {
-    $uploadDir = "uploads/";
-    // Sanitize filename: remove dangerous chars, allow only safe chars
-    $fileName = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', basename($_FILES["csv_file"]["name"]));
-    $uploadFile = $uploadDir . $fileName;
-
-    // Ensure the uploads directory exists
-    if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
-        cota_handle_error("Failed to find upload directory.", 101);
-    }
-
-    // Check for upload errors
-    if ($_FILES["csv_file"]["error"] !== UPLOAD_ERR_OK) {
-        cota_handle_error("File upload error. Code: " . $_FILES["csv_file"]["error"], 102);
-    }
-
-    // Move uploaded file
-    // if (move_uploaded_file($_FILES["csv_file"]["tmp_name"], $uploadFile)) {
-        // $importer = new COTA_Csv_Importer();
-        $importAll->cota_import($uploadFile);
-    // } else {
-        // cota_handle_error("File save error. Code: " . $_FILES["csv_file"]["error"], 103);
-    // }
-
-    echo "<h3 style='color:green;'>CSV imported successfully! " . $uploadFile . "</h3>";
-
-    $importAll->cota_read_csv_to_assoc_array($uploadFile);
-}
 
 // Echo header
 echo cota_page_header();
@@ -285,3 +256,34 @@ echo cota_page_header();
     </div>
 </body>
 </html>
+
+<?php
+// Process input form
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["csv_file"])) {
+    $uploadDir = "uploads/";
+    // Sanitize filename: remove dangerous chars, allow only safe chars
+    $fileName = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', basename($_FILES["csv_file"]["name"]));
+    $uploadFile = $uploadDir . $fileName;
+
+    // Ensure the uploads directory exists
+    if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
+        cota_handle_error("Failed to find upload directory.", 101);
+    }
+
+    // Check for upload errors
+    if ($_FILES["csv_file"]["error"] !== UPLOAD_ERR_OK) {
+        cota_handle_error("File upload error. Code: " . $_FILES["csv_file"]["error"], 102);
+    }
+
+    // Move uploaded file & perform import. 
+    if (move_uploaded_file($_FILES["csv_file"]["tmp_name"], $uploadFile)) {
+        cota_import($uploadFile);
+    } else {
+        cota_handle_error("File move error. Code: " . $_FILES["csv_file"]["error"], 103);
+    }
+
+    // cota_read_csv_to_assoc_array($uploadFile);
+    write_success_notice("CSV imported successfully! ");
+    exit;
+
+}
