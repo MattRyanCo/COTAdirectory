@@ -1,12 +1,29 @@
 <?php
 
 class COTA_Database {
-    private $conn;
+    // private $conn;
 
-    public const DB_NAME = 'cotadirectory';
-    public const DB_USER = 'root';
-    public const DB_PASSWORD = '';
-    public const DB_HOST = 'Localhost';
+    // Local
+    private const LOCAL_DB_NAME = 'cotadirectory';
+    private const LOCAL_DB_USER = 'root';
+    private const LOCAL_DB_PASSWORD = '';
+    private const LOCAL_DB_HOST = 'localhost';
+
+    // Live
+    private const LIVE_DB_NAME = 'cotadirectory';
+    private const LIVE_DB_USER = 'cotadirectory';
+    private const LIVE_DB_PASSWORD = 'xo=BqIGmfJxc!+V7LNe97K9^V4p?86Lq';
+    private const LIVE_DB_HOST = '64.176.198.28';
+
+    // Selected DB constants
+    public const DB_NAME = 
+        (PHP_OS_FAMILY === 'Windows' ? self::LOCAL_DB_NAME : self::LIVE_DB_NAME);
+    public const DB_USER = 
+        (PHP_OS_FAMILY === 'Windows' ? self::LOCAL_DB_USER : self::LIVE_DB_USER);
+    public const DB_PASSWORD = 
+        (PHP_OS_FAMILY === 'Windows' ? self::LOCAL_DB_PASSWORD : self::LIVE_DB_PASSWORD);
+    public const DB_HOST = 
+        (PHP_OS_FAMILY === 'Windows' ? self::LOCAL_DB_HOST : self::LIVE_DB_HOST);
     
     public function __construct() {
         $this->conn = new mysqli(
@@ -60,6 +77,10 @@ class COTA_Database {
     public function query($sql) {
         return $this->conn->query($sql);
     }
+
+    // public function prepare($sql) {
+    //     return $this->conn->prepare($sql);
+    // }
 
     public function show_connection_info( ) {
         // echo nl2br(' Method ' . __METHOD__ . ' loaded' . PHP_EOL);
