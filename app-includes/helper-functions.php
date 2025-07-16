@@ -80,10 +80,13 @@ function cota_validate_email($email) {
 
 // Format MM/DD Date Correctly
 function cota_format_date($date) {
-    if (preg_match('/^(\\d{1,2})\/(\\d{1,2})(?:\/\\d{2,4})?$/', $date, $matches)) {
-        return sprintf("%02d/%02d", $matches[1], $matches[2]);
-    }
-    return "";
+        if (empty($date)) {
+            return "";
+        }
+        if (preg_match('/^(\\d{1,2})\/(\\d{1,2})(?:\/\\d{2,4})?$/', $date, $matches)) {
+            return sprintf("%02d/%02d", $matches[1], $matches[2]);
+        }
+        return $date;
 }
 
 // Validate Date (MM/DD Format)
@@ -116,4 +119,43 @@ function cota_validate_phone($phone) {
 // Log Errors to a File
 function cota_log_error($message) {
     error_log($message . PHP_EOL, 3, "error_log.log");
+}
+
+function write_success_notice($msg) {
+	$escaped_msg = htmlspecialchars($msg, ENT_QUOTES);
+	echo "
+	<script>
+	(function() {
+		var notice = document.querySelector('.notice-container');
+		if (notice) {
+			notice.innerHTML = '<h3 style=\"color:green;\">' + " . json_encode($escaped_msg) . " + '</h3>';
+		} else {
+			document.write('<h3 style=\"color:green;\">' + " . json_encode($escaped_msg) . " + '</h3>');
+		}
+	})();
+	</script>
+	<noscript><h3 style='color:green;'>$escaped_msg</h3></noscript>
+	";
+}
+
+function write_error_notice($msg) {
+	$escaped_msg = htmlspecialchars($msg, ENT_QUOTES);
+	echo "
+	<script>
+	(function() {
+		var notice = document.querySelector('.notice-container');
+		if (notice) {
+			notice.innerHTML = '<h3 style=\"color:red;\">' + " . json_encode($escaped_msg) . " + '</h3>';
+		} else {
+			document.write('<h3 style=\"color:red;\">' + " . json_encode($escaped_msg) . " + '</h3>');
+		}
+	})();
+	</script>
+	<noscript><h3 style='color:red;'>$escaped_msg</h3></noscript>
+	";
+}
+
+function cota_handle_error($message, $code) {
+    echo "<p style='color: red;'>Error $code: $message</p>";
+    exit;
 }
