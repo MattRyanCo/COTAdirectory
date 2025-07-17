@@ -1,0 +1,39 @@
+name: Deploy Latest Release to Vultr
+
+on:
+  release: workflow_dispatch
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download latest release asset
+        uses: dsaltares/fetch-gh-release-asset@v2
+        with:
+          repo: MattRyanCo/COTAdirectory
+          file: zip
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload files to Vultr via SFTP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VULTR_HOST }}
+          username: ${{ secrets.VULTR_USERNAME }}
+          key: ${{ secrets.VULTR_SSH_KEY }}
+          port: 22
+          source: <YOUR_RELEASE_ASSET_FILENAME>
+          target: /root/www/cotadirectory
+
+      - name: Set permissions on server
+        uses: appleboy/ssh-action@v0.1.11
+        with:
+          host: ${{ secrets.VULTR_HOST }}
+          username: ${{ secrets.VULTR_USERNAME }}
+          key: ${{ secrets.VULTR_SSH_KEY }}
+          port: 22
+          script: |
+            chown -R www-data:www-data /root/www/cotadirectory
