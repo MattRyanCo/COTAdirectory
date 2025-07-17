@@ -17,6 +17,10 @@ body {
     padding: 20px;
     font-size: 1rem;
 }
+#pre-header {
+    text-align:right;
+    font-size:smallest;
+}
 
 h1, h2,
 #cota-anniversary > h2,

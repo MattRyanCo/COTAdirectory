@@ -1,11 +1,30 @@
 <?php
 
-global $cotadb, $conn, $cota_constants;
 /**
  * Helper functions.
  *
  */
 function cota_page_header() {
+	global $cota_constants, $meta;
+
+	if (!isset($meta) || !is_object($meta)) {
+		// Attempt to initialize $meta if not set
+		if (file_exists($cota_constants->COTA_APP_INCLUDES . 'class-app-meta-data.php')) {
+			require_once $cota_constants->COTA_APP_INCLUDES . 'class-app-meta-data.php';
+			if (class_exists('AppMetadata')) {
+				$meta_file = $cota_constants->COTA_APP_FILE ?? '../index.php';
+				$meta = new AppMetadata($meta_file);
+			}
+		}
+	}
+	if (!isset($meta) || !is_object($meta)) {
+		$app_version = 'unknown';
+		$app_github_url = '#';
+	} else {
+		$app_version = $meta->getVersion();
+		$app_github_url = $meta->getGitHubUrl();
+	}
+
 	return '
 <!DOCTYPE html>
 <html lang="en">
@@ -24,11 +43,15 @@ function cota_page_header() {
 	<script src="/app-assets/js/jquery.min.js"></script>
 	<script src="/app-assets/js/flexdropdown.min.js"></script>
 	<div id="main-header" class="container">
+	<div id="pre-header">
+		App ' . $app_version . '<br>
+		<a href="' . $app_github_url . '" target="_blank">Source</a>  
+	</div>
 	<h1>Church of the Ascension, Parkesburg</h1>
 	<h2>Family Directory Management</h2>
 	<nav id="main-menu" class="primary" >
 	<ul>
-        <li class="left"><a href="/">Home</a></li>
+		<li class="left"><a href="/">Home</a></li>
 		<li class="left"><a href="#" id="" data-flexmenu="drop_main" data-dir="v" class="down">Main Menu</a></li>
 		<li class="left"><a href="#" id="" data-flexmenu="drop_utilities" data-dir="v" class="down">Utilities</a></li>
 		<li class="left"><a href="#" id="" data-flexmenu="drop_print" data-dir="v" class="down">Print Options</a></li>

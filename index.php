@@ -1,18 +1,18 @@
 <?php
 /**
- * Family Directory Management
- *
- * @package   FamilyDirectory
- * @author    Matt Ryan
- * @license   GPL-2.0-or-later
- * @link      https://github.com/mattryanco/cotafamilydirecotry
- * 
+ * App Name:    Family Directory Management
  * Description: A simple family directory management system.
- * Version:     2.0.1
+ * Version:     2.0.2 
+ * 
+ * @package     FamilyDirectory
+ * @author      Matt Ryan
+ * Author URI:  https://github.com/MattRyanCo
+ * @license     GPL-2.0-or-later
+ * Github URL:  https://github.com/MattRyanCo/COTAdirectory
  * 
  */
 
-global $cota_constants;
+global $cota_constants, $meta;
 
 /** Absolute path to the app directory. */
 if ( ! defined( 'ABSPATH' ) ) {
@@ -23,6 +23,7 @@ class Constants {
     const MAX_FAMILY_MEMBERS = 10; // Maximum number of family members
     const ENVIRONMENT_TYPE = 'laragon';
     const ABSPATH = __DIR__ . '/';
+    const COTA_APP_FILE = ABSPATH . 'index.php';
     const COTA_APP_ASSETS = ABSPATH . 'app-assets/';
     const COTA_APP_INCLUDES = ABSPATH . 'app-includes/';
 	const COTA_APP_LIBRARIES = ABSPATH . 'app-libraries/';
@@ -38,13 +39,18 @@ $cota_constants = new Constants();
 // echo nl2br($cota_constants::COTA_APP_ASSETS . ' = COTA_APP_ASSETS' . PHP_EOL);
 // echo nl2br($cota_constants::COTA_APP_INCLUDES . ' = COTA_APP_INCLUDES' . PHP_EOL);
 // echo nl2br($cota_constants::COTA_APP_LIBRARIES . ' = COTA_APP_LIBRARIES' . PHP_EOL);
+// echo nl2br($cota_constants::ABSPATH . ' = ABSPATH' . PHP_EOL);
 
 
 /** Sets up the app vars and included files. */
-// require_once COTA_APPINCLUDES . 'database-functions.php';
 require_once $cota_constants::COTA_APP_INCLUDES . 'settings.php';
 require_once $cota_constants::COTA_APP_INCLUDES . 'helper-functions.php';
+require_once $cota_constants::COTA_APP_INCLUDES . 'class-app-meta-data.php';
 
+$meta = new AppMetadata($cota_constants::COTA_APP_FILE);
+
+// echo "App Version: " . $meta->getVersion() . "\n";
+// echo "GitHub URL: " . $meta->getGitHubUrl() . "\n";
 
 // Echo page header
 echo cota_page_header();
