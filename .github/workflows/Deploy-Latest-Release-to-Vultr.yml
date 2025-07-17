@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download latest release asset
-        uses: dsaltares/fetch-gh-release-asset@v2
+        uses: dsaltares/fetch-gh-release-asset@v1
         with:
           repo: MattRyanCo/COTAdirectory
           file: zip
@@ -26,11 +26,11 @@ jobs:
           username: ${{ secrets.VULTR_USERNAME }}
           key: ${{ secrets.VULTR_SSH_KEY }}
           port: 22
-          source: <YOUR_RELEASE_ASSET_FILENAME>
+          source: zip
           target: /root/www/cotadirectory
 
       - name: Set permissions on server
-        uses: appleboy/ssh-action@v0.1.11
+        uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.VULTR_HOST }}
           username: ${{ secrets.VULTR_USERNAME }}
