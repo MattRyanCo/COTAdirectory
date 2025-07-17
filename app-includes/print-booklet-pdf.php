@@ -41,9 +41,9 @@ $num_families = $families->num_rows;
 $field_positions = $field_widths = $field_info = [];
 
 // Load and insert static pages.
-// for ($i = 1; $i <= 3; $i++) {
-//     $pdf->PrintChapter($i,'intro'.$i.'.txt','../uploads/intro'.$i.'.txt');
-// }
+for ($i = 1; $i <= 3; $i++) {
+    $pdf->PrintChapter($i,'intro'.$i.'.txt','../uploads/intro'.$i.'.txt');
+}
 
 $pdf->AddPage();
 $pdf->SetFont('Arial', 'B', 12);
