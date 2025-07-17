@@ -1,0 +1,37 @@
+name: Deploy Latest Release to Vultr
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download latest release archive
+        run: |
+          curl -L "https://github.com/MattRyanCo/COTAdirectory/archive/refs/tags/${{ github.event.release.tag_name }}.zip" -o cotadirectory.zip
+
+      - name: Upload files to Vultr via SFTP
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VULTR_HOST }}
+          username: ${{ secrets.VULTR_USERNAME }}
+          key: ${{ secrets.VULTR_SSH_KEY }}
+          port: 22
+          source: cotadirectory.zip
+          target: /root/www/cotadirectory
+
+      - name: Unpack and set permissions on server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VULTR_HOST }}
+          username: ${{ secrets.VULTR_USERNAME }}
+          key: ${{ secrets.VULTR_SSH_KEY }}
+          port: 22
+          script: |
+            cd /root/www/cotadirectory
+            unzip -o cotadirectory.zip
+            rm cotadirectory.zip
+            chown -R www-data:www-data /root/www/cotadirectory
