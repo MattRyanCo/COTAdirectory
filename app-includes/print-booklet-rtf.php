@@ -8,6 +8,16 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'format-family-listing.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'print.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
+// Echo page header
+echo cota_page_header();
+$families = $cotadb->read_family_database();
+$num_families = $families->num_rows;
+if ( 0 == $num_families ) {
+	empty_database_alert('Print RTF Directory');
+    exit();
+} 
+
+
 $printBooklet = new MembershipDirectoryPrinter();
 
 $introFiles = ['../uploads/intro1.txt', '../uploads/intro2.txt', '../uploads/intro3.txt'];

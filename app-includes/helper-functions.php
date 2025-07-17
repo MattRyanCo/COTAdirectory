@@ -181,3 +181,15 @@ function cota_handle_error($message, $code) {
     echo "<p style='color: red;'>Error $code: $message</p>";
     exit;
 }
+
+function empty_database_alert( $text ) {
+	// database has been recently reset, import required
+	// Dump out remainder of import page. 
+	echo '<div id="empty-notice" class="container">';
+	echo '<h3>' . $text . '</h3>';
+	echo '<h3 style="color:red; font-weight: 700;"> 0 Families</h3>';
+	echo '<h4>Directory Database is Empty</h4>';
+	echo '<div id="empty-notice">The directory database has been recently reset.<br>';
+	echo 'Use <a href="http://cotadirectory.test/app-includes/import.php">Import CSV Data</a> or <a href="http://cotadirectory.test/app-includes/add-family-form.php">Add New Family</a> to add data to database.</div>';
+	echo '</div>';
+}

@@ -8,12 +8,19 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
+// Dump out page header
+echo cota_page_header();
+$families = $cotadb->read_family_database();
+$num_families = $families->num_rows;
+if ( 0 == $num_families ) {
+	empty_database_alert('Export Not Available');
+    exit();
+} 
 
 header('Content-Type: text/csv');
 header('Content-Disposition: attachment; filename="directory_export.csv"');
 
-// $db = new COTA_Database();
-// $conn = $db->get_connection();
+
 $output = fopen('php://output', 'w');
 
 // Static columns before dynamic member columns

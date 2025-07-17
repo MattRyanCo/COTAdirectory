@@ -93,9 +93,14 @@ function cota_get_upcoming_anniversaries() {
     return $results;
 }
 
-
-// Echo header
+// Echo page header
 echo cota_page_header();
+$families = $cotadb->read_family_database();
+$num_families = $families->num_rows;
+if ( 0 == $num_families ) {
+	empty_database_alert('Display Anniversaries');
+    exit();
+} 
 
 // Dump out remainder of import page. 
 ?>

@@ -40,7 +40,8 @@ h1, h2,
 .cota-delete-container,
 .cota-edit-container,
 .cota-add-container,
-.cota-update-container {
+.cota-update-container,
+#empty-notice {
     text-align: center;
     width: 95vh;
     margin: auto;

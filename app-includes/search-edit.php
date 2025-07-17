@@ -4,11 +4,17 @@
  */
 
 global $cotadb, $conn, $cota_constants;
+require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
-// Echo header
 echo cota_page_header();
+$families = $cotadb->read_family_database();
+$num_families = $families->num_rows;
+if ( 0 == $num_families ) {
+	empty_database_alert('Search / Edit / Delete Directory Entries');
+    exit();
+} 
 
 // Dump out remainder of import page.
 ?>

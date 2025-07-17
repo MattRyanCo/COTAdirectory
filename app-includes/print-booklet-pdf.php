@@ -17,6 +17,15 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'class-print-booklet.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
+// Echo page header
+echo cota_page_header();
+$families = $cotadb->read_family_database();
+$num_families = $families->num_rows;
+if ( 0 == $num_families ) {
+	empty_database_alert('Print Directory');
+    exit();
+} 
+
 // Create a new PDF instance
 // $pdf = new PDF(); // Landscape, Inches, Half-page Letter Size
 $pdf = new PDF('P', 'in', 'Letter'); // Portrait, Inches, Letter Size
@@ -95,7 +104,7 @@ if (!is_dir($_SERVER['DOCUMENT_ROOT'] . '/downloads')) {
 $output_filename = $_SERVER['DOCUMENT_ROOT'] . $output_basename;
 
 // Output the PDF
-// $pdf->Output('F', $output_filename); // Save to server
+$pdf->Output('F', $output_filename); // Save to server
 $pdf->Output('I'); // Still display in browser if you want
 
 $cotadb->close_connection();
