@@ -2,7 +2,7 @@
 /**
  * App Name:    Family Directory Management
  * Description: A simple family directory management system.
- * Version:     2.0.2 
+ * Version:     2.0.3 
  * 
  * @package     FamilyDirectory
  * @author      Matt Ryan
@@ -18,7 +18,7 @@ global $cota_constants, $meta;
 if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', __DIR__ . '/' );
 }
-// echo nl2br(ABSPATH . ' = ABSPATH' . PHP_EOL);
+
 class Constants {
     const MAX_FAMILY_MEMBERS = 10; // Maximum number of family members
     const ENVIRONMENT_TYPE = 'laragon';
