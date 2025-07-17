@@ -14,7 +14,7 @@ function cota_page_header() {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>COTA Family Directory Management</title>
 <meta name="application-name" content="COTA Family Directory Management">
-<link rel="icon" type="image/x-icon" href="/app-assets/images/favicon-white.ico">
+<link rel="icon" type="image/x-icon" href="/app-assets/images/favicon.ico">
 <meta name="msapplication-TileColor" content="#ffc40d">
 <meta name="theme-color" content="#ffffff">
 <link rel="stylesheet" type="text/css" href="/app-assets/css/all_style.css.php" media="all">
