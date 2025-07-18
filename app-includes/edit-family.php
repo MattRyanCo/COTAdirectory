@@ -74,8 +74,8 @@ if (!isset($_GET['address']) || trim($_GET['address']) === '') {
         <div id="edit-family" class="cota-delete-container">
             <h2>Search / Edit Family</h2>
             <div class="container error-message">
-                <?php echo $familyname;?> family search returned multiple results.<br> 
-                <a href="../app-includes/search-delete.php">Please refine your search with the address fields.</a>
+                <?php echo $familyname;?> family search returned multiple results.<br><br> 
+                <a href="../app-includes/search-delete.php?familyname=<?php echo $familyname;?>&address=&address2=">Please refine your search with the address fields.</a>
             </div>
             <?php die();
     }

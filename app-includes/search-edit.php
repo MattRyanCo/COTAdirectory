@@ -18,13 +18,15 @@ if ( 0 == $num_families ) {
 	empty_database_alert('Search / Edit / Delete Directory Entries');
     exit();
 } 
+// Grab a query parm if present. 
+$familyname = isset($_GET['familyname']) ? $_GET['familyname'] : '';
 
-// Dump out remainder of import page.
+// Dump out remainder of page.
 ?>
     <h2>Search / Edit Family</h2>
     <form class="cota-search" action="../app-includes/edit-family.php" method="get">
         <label>Enter Family Name:</label>
-        <input type="text" name="familyname" required>
+        <input type="text" name="familyname" value="<?php echo htmlspecialchars($familyname); ?>">
         <p>OPTIONAL: The fields below may be used to differentiate families with same last names. </p>
         <label>Address</label>
         <input type="text" name="address">
