@@ -28,8 +28,6 @@ if ( 0 == $num_families ) {
 			// Get family details
 			$family = $families->fetch_assoc();
 			// Get all family members
-			// $individuals = $cotadb->query("SELECT * FROM members WHERE family_id = " . $family['id'] . " ORDER BY `first_name`");
-			// $individuals = $cotadb->query("SELECT * FROM members WHERE family_id = " . $family['id']);  // no ordering
 			$individuals = $cotadb->read_members_of_family( $family['id'] );
 			echo cota_format_family_listing_for_display($family, $individuals);	
 			$ictr++;
