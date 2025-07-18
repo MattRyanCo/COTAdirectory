@@ -16,9 +16,10 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
     $family = $result->fetch_assoc();
     $stmt->close();
 
-    if (!$family) {
         // Echo header
-        echo cota_page_header();
+    echo cota_page_header();
+    if (!$family) {
+
         ?>
         <div id="edit-family" class="cota-edit-container">
             <h2>Search / Edit Family</h2>
