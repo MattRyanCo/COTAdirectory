@@ -26,14 +26,12 @@ function cota_get_next_sunday_date($fromDate = null) {
     return $date;
 }
 
-function cota_get_upcoming_anniversaries() {
+function cota_get_upcoming_anniversaries( $look_forward ) {
     require_once '../app-includes/settings.php';
     global $cotadb, $conn;
-    // $db = new COTA_Database();
-    // $conn = $db->get_connection();
 
     $upcoming_sunday = cota_get_next_sunday_date();
-    $end = (clone $upcoming_sunday)->modify('+15 days');
+    $end = (clone $upcoming_sunday)->modify("+$look_forward days");
     $currentYear = $upcoming_sunday->format('Y');
 
     $today = $upcoming_sunday;
@@ -101,17 +99,17 @@ if ( 0 == $num_families ) {
 	empty_database_alert('Display Anniversaries');
     exit();
 } 
-
+$look_forward = 7;
 // Dump out remainder of import page. 
 ?>
     <div id="cota-anniversary" class="container">
     <h2>Upcoming Anniversaries</h2>
 
-    <p><?php echo "Effective: " . cota_get_next_sunday_date()->format('m/d'); ?></p>
+    <p><?php echo "Effective: " . $look_forward . ' days from '. cota_get_next_sunday_date()->format('m/d'); ?></p>
     <ul class='cota-anniversary-list'>
         <?php
         if (function_exists('cota_get_upcoming_anniversaries')) {
-            $upcoming_anniversaries = cota_get_upcoming_anniversaries();
+            $upcoming_anniversaries = cota_get_upcoming_anniversaries( 14 );
             foreach ($upcoming_anniversaries as $category => $anniversaries) {
                 echo "<strong>" . htmlspecialchars($category) . "</strong>";
                 echo "<ul class='cota-anniversary-sublist'>";
