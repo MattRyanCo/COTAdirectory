@@ -22,11 +22,16 @@ body {
     font-size:smallest;
 }
 
-h1, h2,
+h1, 
+h2,
 #cota-anniversary > h2,
 .cota-display-container > h3 {
     color: #2c3e50;
     text-align: center;
+}
+.cota-display-one-container > h3 {
+    color: #2c3e50;
+    text-align: left;
 }
 
 .notice-container {
@@ -46,7 +51,8 @@ h1, h2,
     width: 95vh;
     margin: auto;
 }
-.cota-display-container {
+.cota-display-container,
+.cota-display-one-container {
     text-align: left;
 }
 
@@ -230,6 +236,7 @@ form.cota-family-entry,
 form.cota-search,
 form.cota-family-edit,
 form.cota-family-delete,
+form.cota-display-family,
 form.cota-reset-db {
     background: lightgray;
     padding: 20px 40px 20px 20px;
@@ -254,6 +261,7 @@ form label {
 form.cota-import > label,
 form.cota-reset-db > label,
 form.cota-search > label,
+form.cota-display-family > label,
 form.cota-family-edit > div > label,
 form.cota-family-entry > div > label,
 form.cota-family-delete > div > label {
@@ -279,7 +287,8 @@ form br {
 }
 
 #delete-family .error-message,
-#edit-family .error-message {
+#edit-family .error-message,
+#display-family .error-message {
     text-align: center;
     padding: 20px 0px;
     color: red;
@@ -346,7 +355,8 @@ button {
     width: 20vh;
 }
 button.cota-edit-family > a,
-button.cota-search-family > a {
+button.cota-search-family > a,
+button.cota-display-family > a {
     color: white;
 }
 
@@ -357,7 +367,8 @@ button.cota-edit-family {
 }
 
 button.cota-submit-family,
-button.cota-search-family {
+button.cota-search-family,
+button.cota-display-family {
     background-color: #3498db;
     width: 50vw;
     font-size: 1.5em;
@@ -395,12 +406,24 @@ th {
     text-align:left;
     font-size: 1.1em;
 }
+.cota-display-one-container th {
+    padding: 0px;
+    text-align:left;
+    font-size: .9em;
+}
+
 table > tr > th,
 body > center > table > tbody > tr > th {
     text-align: left;
 }
-table.cota-directory-table > tbody > tr:nth-child(2) {
-    border-bottom: #ccc solid 1px;
+table.directory-one-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table.cota-directory-table > tbody > tr:nth-child(2),
+table.directory-one-table tr:nth-child(2) {
+  border-bottom: 1px solid #ccc;
     margin-top: 1em;
 }
 
