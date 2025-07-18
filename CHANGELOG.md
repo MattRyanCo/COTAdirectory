@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.4] - 2025-07-18
+
+### Added
+
+- Add framework to support custom choice on look forward timeframe for anniversaries 
+
+### Changed
+
+- Converted navigation to support click to open rather than hover
+- Upcoming anniversaries now looks forward 7 days instead of 14
+- Tweaked styling of Delete page. 
+
+### Fixed
+
+- Reworked display and styling of family not found error on search.
+- Remove error notice for RTF
+- Correct destination for HOOME nav link to site root. 
+
 ## [2.0.3] - 2025-07-17
 
 ### Added
