@@ -34,14 +34,12 @@ function cota_page_header() {
 <title>COTA Family Directory Management</title>
 <meta name="application-name" content="COTA Family Directory Management">
 <link rel="icon" type="image/x-icon" href="/app-assets/images/favicon.ico">
-<meta name="msapplication-TileColor" content="#ffc40d">
-<meta name="theme-color" content="#ffffff">
-<link rel="stylesheet" type="text/css" href="/app-assets/css/all_style.css.php" media="all">
+<!-- <link rel="stylesheet" type="text/css" href="/app-assets/css/all_style.css.php"> -->
 <link rel="stylesheet" href="/app-assets/css/styles.css">
 </head>
 <body>
 	<script src="/app-assets/js/jquery.min.js"></script>
-	<script src="/app-assets/js/flexdropdown.min.js"></script>
+	<script src="/app-assets/js/clicktoggle.js"></script>
 	<div id="main-header" class="container">
 	<div id="pre-header">
 		App ' . $app_version . '<br>
@@ -49,39 +47,47 @@ function cota_page_header() {
 	</div>
 	<h1>Church of the Ascension, Parkesburg</h1>
 	<h2>Family Directory Management</h2>
-	<nav id="main-menu" class="primary" >
-	<ul>
-		<li class="left"><a href="/">Home</a></li>
-		<li class="left"><a href="#" id="" data-flexmenu="drop_main" data-dir="v" class="down">Main Menu</a></li>
-		<li class="left"><a href="#" id="" data-flexmenu="drop_utilities" data-dir="v" class="down">Utilities</a></li>
-		<li class="left"><a href="#" id="" data-flexmenu="drop_print" data-dir="v" class="down">Print Options</a></li>
-		<li class="left"><a href="#" id="" data-flexmenu="drop_shared" data-dir="v" class="down">Google Connect</a></li>
-	</ul>
-	<ul id="drop_main" class="flexdropdownmenu">
-		<li class="left"><a href="/app-includes/display.php" target="_blank">Display Directory</a></li>
-		<li class="left"><a href="/app-includes/add-family-form.php" target="_blank">Add New Family</a></li>
-		<li class="left"><a href="/app-includes/search-edit.php" target="_blank">Search & Edit Family</a></li>
-		<li class="left"><a href="/app-includes/search-delete.php" target="_blank">Delete Family or Family Member</a></li>
-		<li class="left"><a href="/app-includes/upcoming-anniversary-dates.php" target="_blank">Display Upcoming Anniversaries</a></li>
-	</ul>
-	<ul id="drop_utilities" class="flexdropdownmenu">
-		<li class="left"><a href="/app-includes/import.php">Import CSV Data</a></li>
-		<li class="left"><a href="/app-includes/export.php">Export Directory as CSV</a></li>
-		<li class="left"><a href="/app-includes/export-sample.php" target="_blank">Export Sample Directory as CSV</a></li>
-<!--	<li class="left"><a href="/app-includes/convert-google-csv.php" target="_blank">Convert Google CSV to Directory-ready CSV</a></li> -->
-		<li class="left"><a href="/app-includes/database-details.php">Database Details</a></li>
-		<li class="left"><a href="/app-includes/reset-db.php" style="color: red;">⚠️ Reset Database ⚠️</a></li>
-	</ul>
-	<ul id="drop_print" class="flexdropdownmenu">
-		<li class="left"><a href="/app-includes/print-booklet-rtf.php">Generate Directory RTF</a></li>
-		<li class="left"><a href="/app-includes/print-booklet-pdf.php" >Generate Directory Booklet PDF</a></li>
-<!--		<li class="left"><a href="/app-includes/build-booklet-sample.php" target="_blank">Build Sample Booklet</a></li> -->
-	</ul>
-	<ul id="drop_shared" class="flexdropdownmenu">
-		<li class="left"><a href="https://forms.gle/AriY71y8gvhyNkv77" target="_blank">Google Form Based Family Entry</a></li>
-		<li class="left"><a href="https://docs.google.com/spreadsheets/d/1anupShYGmySUjrA16yGC5HQ3uucfi6HdMm-CujOqHxc/edit?usp=sharing" target="_blank">Google Form Sheet</a></li>
-	</ul>
+
+	<nav class="main-menu">
+		<ul>
+			<li><a href="#">Home</a></li>
+			<li class="has-submenu">
+				<a href="#">Main Menu</a>
+				<ul class="submenu">
+					<li><a href="/app-includes/display.php" target="_blank">Display Directory</a></li>
+					<li><a href="/app-includes/add-family-form.php" target="_blank">Add New Family</a></li>
+					<li><a href="/app-includes/search-edit.php" target="_blank">Search & Edit Family</a></li>
+					<li><a href="/app-includes/search-delete.php" target="_blank">Delete Family or Family Member</a></li>
+					<li><a href="/app-includes/upcoming-anniversary-dates.php" target="_blank">Display Upcoming Anniversaries</a></li>
+				</ul>
+			</li>
+			<li class="has-submenu">
+				<a href="#">Utilities</a>
+				<ul class="submenu">
+					<li><a href="/app-includes/import.php">Import CSV Data</a></li>
+					<li><a href="/app-includes/export.php">Export Directory as CSV</a></li>
+					<li><a href="/app-includes/export-sample.php" target="_blank">Export Sample Directory as CSV</a></li>
+					<li><a href="/app-includes/database-details.php">Database Details</a></li>
+					<li><a href="/app-includes/reset-db.php" style="color: red;">⚠️ Reset Database ⚠️</a></li>
+				</ul>
+			</li>
+			<li class="has-submenu">
+				<a href="#">Print Options</a>
+				<ul class="submenu">
+					<li><a href="../app-includes/print-booklet-rtf.php">Generate Directory RTF</a></li>
+					<li><a href="../app-includes/print-booklet-pdf.php">Google Form Based Family Entry</a></li>
+				</ul>
+			</li>
+			<li class="has-submenu">
+				<a href="#">Google Connect</a>
+				<ul class="submenu">
+					<li><a href="https://forms.gle/AriY71y8gvhyNkv77">Google Form Based Family Entry</a></li>
+					<li><a href="https://docs.google.com/spreadsheets/d/1anupShYGmySUjrA16yGC5HQ3uucfi6HdMm-CujOqHxc/edit?usp=sharing">Google Form Sheet</a></li>
+				</ul>
+			</li>
+		</ul>
 	</nav>
+
 	</div>
 	<div class="notice-container"></div>
 	<div class="form-container"></div>

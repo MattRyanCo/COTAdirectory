@@ -107,6 +107,115 @@ p.warning {
     font-weight: bold;
 }
 
+/* Nav Styles */
+/* Horizontal main menu */
+nav.main-menu > ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    background: #fff;
+    padding: 10px 0;
+    margin: 0;
+    list-style: none;
+}
+
+nav.main-menu > ul > li {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+nav.main-menu > ul > li > a {
+    display: block;
+    padding: 10px 20px;
+    text-decoration: none;
+    background: #f0f0f0;
+    color: #333;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+nav.main-menu > ul > li > a:hover {
+    background: #3498db;
+    color: #fff;
+}
+
+/* Submenu styles */
+nav.main-menu .submenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 300px;
+    background: #fff;
+    border: 1px solid #ccc;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+#main-header > nav > ul > li > a {
+    background-image: url("/app-assets/images/navdown_red.gif");
+    background-position: right center;
+    background-repeat: no-repeat;
+    padding-right: 14px;
+        padding-left: 14px;
+}
+nav.main-menu .has-submenu.open > .submenu {
+    display: block;
+}
+
+nav.main-menu .submenu li a {
+    background: #fff;
+    color: #333;
+    padding: 10px 15px;
+    border-radius: 0;
+}
+
+nav.main-menu .submenu li a:hover {
+    background: #f0f0f0;
+    color: #2980b9;
+}
+
+.main-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.main-menu li {
+  position: relative;
+}
+
+.main-menu a {
+  display: block;
+  padding: 10px 15px;
+  text-decoration: none;
+  background: #f0f0f0;
+  color: #333;
+}
+
+.main-menu .submenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  z-index: 1000;
+}
+
+.main-menu .submenu li a {
+  background: #fff;
+}
+
+.main-menu .has-submenu.open > .submenu {
+  display: block;
+}
+
+
+
 /* Form Styles */
 form {
   max-width: 80vw;
