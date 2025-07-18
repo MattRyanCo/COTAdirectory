@@ -25,6 +25,8 @@ function cota_page_header() {
 		$app_github_url = $meta->getGitHubUrl();
 	}
 
+	$scripts = $cota_constants->COTA_APP_ASSETS; 
+
 	return '
 <!DOCTYPE html>
 <html lang="en">
@@ -50,7 +52,7 @@ function cota_page_header() {
 
 	<nav class="main-menu">
 		<ul>
-			<li><a href="#">Home</a></li>
+			<li><a href="/">Home</a></li>
 			<li class="has-submenu">
 				<a href="#">Main Menu</a>
 				<ul class="submenu">
