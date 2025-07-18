@@ -155,7 +155,7 @@ nav.main-menu .submenu {
     z-index: 1000;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-#main-header > nav > ul > li > a {
+#main-header > nav > ul > li.has-submenu > a {
     background-image: url("/app-assets/images/navdown_red.gif");
     background-position: right center;
     background-repeat: no-repeat;
@@ -278,7 +278,8 @@ form br {
   clear: both;
 }
 
-#delete-family .error-message {
+#delete-family .error-message,
+#edit-family .error-message {
     text-align: center;
     padding: 20px 0px;
     color: red;
