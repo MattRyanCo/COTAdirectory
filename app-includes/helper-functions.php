@@ -57,6 +57,7 @@ function cota_page_header() {
 				<a href="#">Main Menu</a>
 				<ul class="submenu">
 					<li><a href="/app-includes/display.php" target="_blank">Display Directory</a></li>
+					<li><a href="/app-includes/display-family.php" target="_blank">Display One Family</a></li>
 					<li><a href="/app-includes/add-family-form.php" target="_blank">Add New Family</a></li>
 					<li><a href="/app-includes/search-edit.php" target="_blank">Search & Edit Family</a></li>
 					<li><a href="/app-includes/search-delete.php" target="_blank">Delete Family or Family Member</a></li>
