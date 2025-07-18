@@ -5,17 +5,43 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
+$addresslike = $address2like = '';
 if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
     $familyname = $_GET["familyname"];
-    
+    // Check for optional fields
+
+    if ( isset($_GET["address"]) ) $addresslike = '%' . $_GET["address"] . '%';
+    if ( isset($_GET["address2"]) ) $address2like = '%' . $_GET["address2"] . '%';
+
     // Fetch family record
-    $stmt = $conn->prepare("SELECT * FROM families WHERE familyname = ?");
-    $stmt->bind_param("s", $familyname);
+    if ( !$addresslike && !$address2like ) {
+        $stmt = $conn->prepare(
+            "SELECT * FROM families 
+            WHERE familyname = ?");
+        $stmt->bind_param("s", $familyname);
+    } elseif ( $addresslike && !$address2like ) {
+        $stmt = $conn->prepare(
+            "SELECT * FROM families 
+            WHERE familyname = ? AND address LIKE ?");
+        $stmt->bind_param("ss", $familyname, $addresslike);
+    } elseif (!$addresslike && $address2like) {
+        $stmt = $conn->prepare(
+            "SELECT * FROM families 
+            WHERE familyname = ? AND address2 LIKE ?");
+        $stmt->bind_param("ss", $familyname, $address2like);
+    } elseif ($addresslike && $address2like ) {
+        $stmt = $conn->prepare(
+        "SELECT * FROM families 
+        WHERE familyname = ? 
+        AND ( address LIKE ? OR address2 LIKE ?) ");
+        $stmt->bind_param("sss", $familyname, $addresslike, $address2like );
+    }
+    // $stmt->bind_param("s", $familyname);
     $stmt->execute();
     $result = $stmt->get_result();
     $family = $result->fetch_assoc();
     $stmt->close();
-
+    }
         // Echo header
     echo cota_page_header();
     if (!$family) {
@@ -35,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
     $members = $stmt->get_result();
     $stmt->close();
 
-}
+
 // Dump out remainder of import page. 
 ?>
 

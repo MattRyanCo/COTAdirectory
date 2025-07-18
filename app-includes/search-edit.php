@@ -1,6 +1,9 @@
 <?php
 /**
+ * This script displays the Search form for editing or deleting families. 
+ * It offers optional fields to narraw the search for duplicate last names. 
  * 
+ * Upson 'SUBMIT' edit-family is run to process the input. 
  */
 
 global $cotadb, $conn, $cota_constants;
@@ -22,6 +25,11 @@ if ( 0 == $num_families ) {
     <form class="cota-search" action="../app-includes/edit-family.php" method="get">
         <label>Enter Family Name:</label>
         <input type="text" name="familyname" required>
+        <p>OPTIONAL: The fields below may be used to differentiate families with same last names. </p>
+        <label>Address</label>
+        <input type="text" name="address">
+        <label>Address 2</label>
+        <input type="text" name="address2">
         <button type="submit">Search</button>
     </form>
 </body>
