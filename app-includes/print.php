@@ -77,8 +77,6 @@ global $cotadb, $conn, $cota_constants;
 
 require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
-// $db = new COTA_Database();
-// $conn = $db->get_connection();
 $families = $conn->query("SELECT * FROM families ORDER BY `familyname`");
 $num_families = $families->num_rows;
 $ictr = 1;

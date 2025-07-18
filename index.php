@@ -36,12 +36,6 @@ $cota_constants = new Constants();
  *
  */
 
-// echo nl2br($cota_constants::COTA_APP_ASSETS . ' = COTA_APP_ASSETS' . PHP_EOL);
-// echo nl2br($cota_constants::COTA_APP_INCLUDES . ' = COTA_APP_INCLUDES' . PHP_EOL);
-// echo nl2br($cota_constants::COTA_APP_LIBRARIES . ' = COTA_APP_LIBRARIES' . PHP_EOL);
-// echo nl2br($cota_constants::ABSPATH . ' = ABSPATH' . PHP_EOL);
-
-
 /** Sets up the app vars and included files. */
 require_once $cota_constants::COTA_APP_INCLUDES . 'settings.php';
 require_once $cota_constants::COTA_APP_INCLUDES . 'helper-functions.php';
@@ -54,3 +48,4 @@ $meta = new AppMetadata($cota_constants::COTA_APP_FILE);
 
 // Echo page header
 echo cota_page_header();
+
