@@ -26,10 +26,9 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
         ?>
         <div id="delete-family" class="cota-delete-container">
             <h2>Delete Family</h2>
-            <div class="container error-message"><?php echo $familyname;?> family not found<br>
+            <div class="container error-message"><?php echo ucfirst($familyname);?> family not found<br>
             <a href="../app-includes/search-delete.php">Try again with a different spelling</a></div>
             <?php die();
-
     }
 
     // Fetch members
@@ -76,13 +75,14 @@ echo cota_page_header();
             ?>
             <?php if ($first): ?>
                 <div class="member-header" >
-                <!-- <span style="min-width:120px;">First</span>
-                <span style="min-width:120px;">Last</span>
-                <span style="min-width:120px;">Cell</span>
-                <span style="min-width:180px;">Email</span>
-                <span style="min-width:100px;">Birthday</span>
-                <span style="min-width:100px;">Baptism</span> -->
-                <span style="min-width:75px;">Delete selected member(s)</span>
+                <span style="min-width:5px;">&nbsp;</span>
+                <span style="min-width:8px;">&nbsp;</span>
+                <span style="min-width:120px;text-align:left;">First</span>
+                <span style="min-width:120px;text-align:left;">Last</span>
+                <span style="min-width:120px;text-align:left;">Cell</span>
+                <span style="min-width:180px;text-align:left;">Email</span>
+                <span style="min-width:100px;text-align:left;">Birthday</span>
+                <span style="min-width:100px;text-align:left;">Baptism</span><br>
                 </div>
             <?php $first = false; endif; ?>
             <div class="member-row">
@@ -90,7 +90,7 @@ echo cota_page_header();
                 <input type="checkbox" name="delete_member[]" value="<?= $member['id'] ?>">
                 <input type="text" name="members[first_name][]" value="<?= htmlspecialchars($member['first_name']) ?>" style="width:120px;" readonly>
                 <input type="text" name="members[last_name][]" value="<?= !empty($member['last_name']) ? htmlspecialchars($member['last_name']) : htmlspecialchars($family['familyname'] ?? '') ?>" style="width:120px;" readonly>
-                <input type="tel" name="members[cell_phone][]" value="<?= htmlspecialchars($member['cell_phone']) ?>" style="width:120px;" readonly>
+                <input type="text" name="members[cell_phone][]" value="<?= htmlspecialchars($member['cell_phone']) ?>" style="width:120px;" readonly>
                 <input type="email" name="members[email][]" value="<?= htmlspecialchars($member['email']) ?>" style="width:180px;" readonly>
                 <input type="text" name="members[birthday][]" value="<?= htmlspecialchars($member['birthday']) ?>" style="width:100px;" readonly>
                 <input type="text" name="members[baptism][]" value="<?= htmlspecialchars($member['baptism']) ?>" style="width:100px;" readonly>
@@ -102,8 +102,7 @@ echo cota_page_header();
 
         <button class="delselected" type="submit" name="delselected">Delete Selected Members From Family</button>
     </form>
-            </div>
-    <!-- <button class="main-menu-return" type="button" ><a href='index.php'>Return to Main Menu</a></button> -->
+    </div>
 </body>
 </html>
   
