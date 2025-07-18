@@ -17,8 +17,15 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
     $stmt->close();
 
     if (!$family) {
-        die("Family not found. Try again or Return to the <a href='index.php'>main menu</a>.");
-    }
+        // Echo header
+        echo cota_page_header();
+        ?>
+        <div id="edit-family" class="cota-edit-container">
+            <h2>Search / Edit Family</h2>
+            <div class="container error-message"><?php echo ucfirst($familyname);?> family not found<br>
+            <a href="../app-includes/search-edit.php">Try again with a different spelling</a></div>
+            <?php die();
+    } 
 
     // Fetch members
     $stmt = $conn->prepare("SELECT * FROM members WHERE family_id = ?");
@@ -26,11 +33,8 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
     $stmt->execute();
     $members = $stmt->get_result();
     $stmt->close();
+
 }
-
-// Echo header
-echo cota_page_header();
-
 // Dump out remainder of import page. 
 ?>
 
