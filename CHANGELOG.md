@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.7] - 2025-07-23
+
+### Changed
+
+- Layout of most forms
+- Converted all date values from string to actual PHP dates. 
+- Updated Sample CSV export to align with updated db structure
+- Reorganized nav to better name actions
+- Significant styling updates for buttons and forms
+- Changed display for single family
+
+### Added
+
+- Ability to add new family member on edit of existing family. 
+- Added cancel/reset buttons on edit forms
+- Added input checking on date fields
+
 ## [2.0.6] - 2025-07-18
 
 ### Added
