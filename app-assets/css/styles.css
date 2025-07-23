@@ -270,8 +270,9 @@ form.cota-family-delete > div > label {
 
 form input[type="text"],
 form input[type="email"],
-form input[type="tel"] {
-    grid-column: 2;
+form input[type="tel"],
+form input[type="date"] {
+    /* grid-column: 2; */
     margin-top: 0;
 }
 
@@ -285,6 +286,44 @@ form br {
   width: 50vh;
   clear: both;
 }
+
+/* Form for edit-family.  */
+.member-header, 
+.member-row,
+#add-members > .member-row {
+    display: grid;
+    grid-template-columns: 120px 120px 120px 180px 100px 100px;
+    align-items: center;
+    gap: 8px;
+}
+.member-header {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+.member-row {
+    margin-bottom: 4px;
+}
+/* END: Form for edit-family.  */
+
+/* Form for delete-family.  */
+#members-delete > div.member-header, 
+#members-delete > div.member-row {
+    display: grid;
+    grid-template-columns: 50px 120px 120px 120px 180px 100px 100px;
+    align-items: left;
+    gap: 8px;
+}
+#add-members > div.member-header,
+#add-members > div.member-row {
+    display: grid;
+    grid-template-columns: 120px 120px 120px 180px 100px 100px;
+    align-items: left;
+    gap: 8px;
+}
+
+/* END: Form for delete-family.  */
+
+
 
 #delete-family .error-message,
 #edit-family .error-message,
@@ -312,20 +351,6 @@ form br {
     text-align: left;
     padding-top: .5em   ;
 }
-.member-header,
-.member-row {
-    display:flex; 
-    flex-direction: row;
-    gap:10px; 
-    margin-bottom:4px;
-    font-weight: normal;
-}
-.member-header {
-    font-weight:bold; 
-}
-.member-header > span {
-    align-self: flex-start;
-}
 
 label {
     display: block;
@@ -335,7 +360,9 @@ label {
 
 input[type="text"], 
 input[type="tel"],
-input[type="email"] {
+input[type="email"],
+input[type="date"] {
+    font-family: Arial, sans-serif;
     width: 100%;
     padding: 8px;
     margin-top: 5px;
@@ -358,22 +385,36 @@ button.cota-edit-family > a,
 button.cota-search-family > a,
 button.cota-display-family > a {
     color: white;
+    font-weight: bold;
 }
 
 button.cota-add-another,
-button.cota-edit-family {
-    background-color: #2ecc71;
-    width: 50vw;
-}
-
-button.cota-submit-family,
+button.cota-edit-family,
 button.cota-search-family,
+button.cota-import,
+button.cota-print {
+    background-color: #2ecc71;
+}
+button.cota-edit-family[type='reset'],
+button.cota-cancel-family[type='reset'] {
+    background-color: red;
+}
+button.cota-submit-family,
 button.cota-display-family {
     background-color: #3498db;
-    width: 50vw;
-    font-size: 1.5em;
-    font-weight: 700;
 }
+
+button.cota-add-another,
+button.cota-import,
+button.cota-edit-family,
+button.cota-search-family,
+button.cota-submit-family,
+button.cota-print,
+.two-button-grid button.cota-search-family,
+.two-button-grid button.cota-edit-family {
+    width: 20vw;
+}
+
 
 button.main-menu-return {
     background-color: red;
@@ -384,6 +425,16 @@ button.main-menu-return {
 button.main-menu-return > a {
     color: white;
     text-decoration: none;
+}
+.two-button-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 2vw;
+}
+.three-button-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr .5fr;
+    grid-gap: 2vw;
 }
 #delete-family > form > button.delall,
 #delete-family > form > button.delselected {
