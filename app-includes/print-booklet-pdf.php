@@ -78,7 +78,6 @@ while ($family = $families->fetch_assoc()) {
         // Print out headings on new page
         $pdf->SetFont('Arial', '', 10); // Ensure font is reset before headings
         $pdf->AddPage();
-        // $pdf->print_family_array_headings( FALSE );
         $pdf->print_family_array($family_array, $field_info );
     }
 
@@ -107,6 +106,5 @@ echo cota_page_header();
 echo "<div id='cota-print' class='container'>";
 echo "<h2>PDF file generated successfully!</h2>";
 echo "<h4>File: " . basename($output_filename) . "</h2>";
-echo "<button class='button' type='button' ><a href='.." . $output_basename . "' download >Download File</a></button>";
+echo "<button class='cota-print' type='button' ><a href='.." . $output_basename . "' download >Download File</a></button>";
 echo '</div></body></html>';
- 
