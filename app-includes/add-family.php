@@ -33,10 +33,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             // Save off 1st 2 names to add back to Families table later.
             if ( '' == $fname1 ) {
-                $fname1 = $firstname;
+                $fname1 = $first_name;
             } elseif ( '' == $fname2 ) {
-                $fname2 = $firstname;
-                $lname2 = $lastname;
+                $fname2 = $first_name;
+                $lname2 = $last_name;
             }
 
             $cell_phone = cota_validate_phone($_POST["members"]["cell_phone"][$key]);
@@ -64,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Dump out remainder of import page. 
         echo "<div class='cota-add-container'>";
         // echo "<h2>" . $familyname . " family added successfully!</h2>";
-        echo '<h2><a href="'. $cota_constants->COTA_APP_INCLUDES . 'display-one-family.php?familyname=' . $familyname . '&address=&address2=">'. $familyname . ' family added successfully. Click to view.</a></h2>';
+        echo '<h2><a href="'. $cota_constants->COTA_APP_INCLUDES . 'display-one-family.php?familyname=' . urlencode($familyname) . '&address=&address2=">' . htmlspecialchars($familyname) . ' family added successfully. Click to view.</a></h2>';
         echo "</div>";
     } else {
         cota_log_error("SQL Error (execute): " . $stmt->error);

@@ -7,7 +7,7 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
-    $familyname = $_GET["familyname"];
+    $familyname = cota_sanitize($_GET["familyname"]);
 
     // Check optional search fields
     $addressEntered = !empty(trim($_GET['address'] ?? ''));
@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
         ?>
         <div id="display-family" class="cota-display-container">
             <h2>Display Family</h2>
-            <div class="container error-message"><?php echo ucfirst($familyname);?> family not found<br><br>
+            <div class="container error-message"><?php echo htmlspecialchars(ucfirst($familyname));?> family not found<br><br>
             <a href="../app-includes/display-family.php">Try again with a different spelling.</a></div>
             <?php die();
     } 
@@ -69,8 +69,8 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
         <div id="display-family" class="cota-display-container">
             <h2>Display Family</h2>
             <div class="container error-message">
-                <?php echo $familyname;?> family search returned multiple results.<br><br> 
-                <a href="../app-includes/display-family.php?familyname=<?php echo $familyname;?>&address=&address2=">Please refine your search with the address fields.</a>
+                            <?php echo htmlspecialchars($familyname);?> family search returned multiple results.<br><br>
+            <a href="../app-includes/display-family.php?familyname=<?php echo urlencode($familyname);?>&address=&address2=">Please refine your search with the address fields.</a>
 
             </div>
             <?php die();

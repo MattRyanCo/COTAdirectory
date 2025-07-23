@@ -7,7 +7,7 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
 // $addresslike = $address2like = '';
 if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
-    $familyname = $_GET["familyname"];
+    $familyname = cota_sanitize($_GET["familyname"]);
     // Check for optional fields
 if (!isset($_GET['address']) || trim($_GET['address']) === '') {
     // Address was not entered
@@ -62,7 +62,7 @@ if (!isset($_GET['address']) || trim($_GET['address']) === '') {
         ?>
         <div id="edit-family" class="cota-edit-container">
             <h2>Search / Edit Family</h2>
-            <div class="container error-message"><?php echo ucfirst($familyname);?> family not found<br>
+            <div class="container error-message"><?php echo htmlspecialchars(ucfirst($familyname));?> family not found<br>
             <a href="../app-includes/search-edit.php">Try again with a different spelling</a></div>
             <?php die();
     } 
@@ -74,8 +74,8 @@ if (!isset($_GET['address']) || trim($_GET['address']) === '') {
         <div id="edit-family" class="cota-delete-container">
             <h2>Search / Edit Family</h2>
             <div class="container error-message">
-                <?php echo $familyname;?> family search returned multiple results.<br><br> 
-                <a href="../app-includes/search-delete.php?familyname=<?php echo $familyname;?>&address=&address2=">Please refine your search with the address fields.</a>
+                            <?php echo htmlspecialchars($familyname);?> family search returned multiple results.<br><br>
+            <a href="../app-includes/search-delete.php?familyname=<?php echo urlencode($familyname);?>&address=&address2=">Please refine your search with the address fields.</a>
             </div>
             <?php die();
     }
