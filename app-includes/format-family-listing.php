@@ -8,16 +8,14 @@
  */
 
 function cota_format_family_listing_for_print($family, $members) {
-    // echo nl2br(__METHOD__ . ' called' . PHP_EOL);
-    // Set key logicals
 
+    // Set key logicals
     $mctr = $lctr = $rctr = 1;
     $addr1 = (isset($family['address']) && $family['address'] !== "") ? $family['address'] : false;
     $addr2 = (isset($family['address2']) && $family['address2'] !== "") ? $family['address2'] : false;
     $city = (isset($family['city']) && $family['city'] !== "") ? $family['city'] : false;
     $homephone = (isset($family['homephone']) && $family['homephone'] !== "") ? $family['homephone'] : false;
     $placeholder = '';
-    $familystringlines = '';
 
     $formatted_family_array = []; // Initialize the formatted family array
     $left_side_array = [];
@@ -32,23 +30,16 @@ function cota_format_family_listing_for_print($family, $members) {
                 // No members found
                 break;
             }
-            $familystringlines .= $family['familyname'] . ' ' . 
-                ($individual['first_name'] ?? '') .  ' ' . 
-                ($individual['last_name'] ?? '' ).  ' ' . 
-                ($individual['email'] ?? '' ).  ' ' . 
-                ($individual['cell_phone'] ?? '') .  ' ' . 
-                ($individual['birthday']??'') .  ' ' . 
-                ($individual['baptism'] ?? '') . "\n";
-            if ( $print_it ) {
+
+            // Print out dates in mm/dd format only. 
                 // Format for printing
-                $formatted_family_array[$lctr][1] = $family['familyname'];
-                $formatted_family_array[$lctr][4] = $individual['first_name'] ?? '';
-                $formatted_family_array[$lctr][5] = $individual['last_name'] ?? '';
-                $formatted_family_array[$lctr][6] = $individual['email'] ?? '';
-                $formatted_family_array[$lctr][7] = $individual['cell_phone'] ?? '';
-                $formatted_family_array[$lctr][8] = $individual['birthday'] ?? '';
-                $formatted_family_array[$lctr][9] = $individual['baptism'] ?? '';
-            }
+            $formatted_family_array[$lctr][1] = $family['familyname'];
+            $formatted_family_array[$lctr][4] = $individual['first_name'] ?? '';
+            $formatted_family_array[$lctr][5] = $individual['last_name'] ?? '';
+            $formatted_family_array[$lctr][6] = $individual['email'] ?? '';
+            $formatted_family_array[$lctr][7] = $individual['cell_phone'] ?? '';
+            $formatted_family_array[$lctr][8] = (!empty($individual['birthday'])) ? date('m/d', strtotime($individual['birthday'])) : null;
+            $formatted_family_array[$lctr][9] = (!empty($individual['baptism'])) ? date('m/d', strtotime($individual['baptism'])) : null;
         } elseif ( $lctr == 2 ) {
             $individual = get_next_member_to_print($members);
             if ( $addr1 ) {
@@ -74,22 +65,13 @@ function cota_format_family_listing_for_print($family, $members) {
                 $addr2 = false;
                 $city = false;
             }
-            $familystringlines .= $left_side . ' ' . 
-                ($individual['first_name'] ?? '') .  ' ' . 
-                ($individual['last_name'] ?? '' ).  ' ' . 
-                ($individual['email'] ?? '' ).  ' ' . 
-                ($individual['cell_phone'] ?? '') .  ' ' . 
-                ($individual['birthday']??'') .  ' ' . 
-                ($individual['baptism'] ?? '') . "\n";
-            if ( $print_it ) {
                     // Format for printing
-                    $formatted_family_array[$lctr][4] = $individual['first_name'] ?? '';
-                    $formatted_family_array[$lctr][5] = $individual['last_name'] ?? '';
-                    $formatted_family_array[$lctr][6] = $individual['email'] ?? '';
-                    $formatted_family_array[$lctr][7] = $individual['cell_phone'] ?? '';
-                    $formatted_family_array[$lctr][8] = $individual['birthday'] ?? '';
-                    $formatted_family_array[$lctr][9] = $individual['baptism'] ?? '';
-            }
+            $formatted_family_array[$lctr][4] = $individual['first_name'] ?? '';
+            $formatted_family_array[$lctr][5] = $individual['last_name'] ?? '';
+            $formatted_family_array[$lctr][6] = $individual['email'] ?? '';
+            $formatted_family_array[$lctr][7] = $individual['cell_phone'] ?? '';
+            $formatted_family_array[$lctr][8] = (!empty($individual['birthday'])) ? date('m/d', strtotime($individual['birthday'])) : null;
+            $formatted_family_array[$lctr][9] = (!empty($individual['baptism'])) ? date('m/d', strtotime($individual['baptism'])) : null;
 
         } elseif ( $lctr == 3 ) {
             $individual = get_next_member_to_print($members);
@@ -113,21 +95,12 @@ function cota_format_family_listing_for_print($family, $members) {
                 $left_side = $placeholder;
                 If ($print_it) $formatted_family_array[$lctr][1] = ' ';
             }
-            $familystringlines .= $left_side . ' ' . 
-                ($individual['first_name'] ?? '') .  ' ' . 
-                ($individual['last_name'] ?? '' ).  ' ' . 
-                ($individual['email'] ?? '' ).  ' ' . 
-                ($individual['cell_phone'] ?? '') .  ' ' . 
-                ($individual['birthday']??'') .  ' ' . 
-                ($individual['baptism'] ?? '') . "\n";
-            if ( $print_it ) {
                 // Format for printing
-                $formatted_family_array[$lctr][4] = $individual['first_name'] . ' ' . $individual['last_name'];
-                $formatted_family_array[$lctr][6] = $individual['email'] ?? '';
-                $formatted_family_array[$lctr][7] = $individual['cell_phone'] ?? '';
-                $formatted_family_array[$lctr][8] = $individual['birthday'] ?? '';
-                $formatted_family_array[$lctr][9] = $individual['baptism'] ?? '';
-            }
+            $formatted_family_array[$lctr][4] = $individual['first_name'] . ' ' . $individual['last_name'];
+            $formatted_family_array[$lctr][6] = $individual['email'] ?? '';
+            $formatted_family_array[$lctr][7] = $individual['cell_phone'] ?? '';
+            $formatted_family_array[$lctr][8] = (!empty($individual['birthday'])) ? date('m/d', strtotime($individual['birthday'])) : null;
+            $formatted_family_array[$lctr][9] = (!empty($individual['baptism'])) ? date('m/d', strtotime($individual['baptism'])) : null;
         } elseif ( $lctr == 4 ) {
             $individual = get_next_member_to_print($members);
             // print_r($individual);echo '<br>';
@@ -146,23 +119,13 @@ function cota_format_family_listing_for_print($family, $members) {
                 $left_side = $placeholder;
                 If ($print_it) $formatted_family_array[$lctr][1] = '';
             }
-            $familystringlines .= $left_side . ' ' . 
-                ($individual['first_name'] ?? '') .  ' ' . 
-                ($individual['last_name'] ?? '' ).  ' ' . 
-                ($individual['email'] ?? '' ).  ' ' . 
-                ($individual['cell_phone'] ?? '') .  ' ' . 
-                ($individual['birthday']??'') .  ' ' . 
-                ($individual['baptism'] ?? '') . "\n";
-            if ( $print_it ) {
                 // Format for printing
-                $formatted_family_array[$lctr][4] = $individual['first_name'] ?? '';
-                $formatted_family_array[$lctr][5] = $individual['last_name'] ?? '';
-                $formatted_family_array[$lctr][6] = $individual['email'] ?? '';
-                $formatted_family_array[$lctr][7] = $individual['cell_phone'] ?? '';
-                $formatted_family_array[$lctr][8] = $individual['birthday'] ?? '';
-                $formatted_family_array[$lctr][9] = $individual['baptism'] ?? '';
-            }
-            
+            $formatted_family_array[$lctr][4] = $individual['first_name'] ?? '';
+            $formatted_family_array[$lctr][5] = $individual['last_name'] ?? '';
+            $formatted_family_array[$lctr][6] = $individual['email'] ?? '';
+            $formatted_family_array[$lctr][7] = $individual['cell_phone'] ?? '';
+            $formatted_family_array[$lctr][8] = (!empty($individual['birthday'])) ? date('m/d', strtotime($individual['birthday'])) : null;
+            $formatted_family_array[$lctr][9] = (!empty($individual['baptism'])) ? date('m/d', strtotime($individual['baptism'])) : null;
         }
         $rctr+=1;  // Next line on right side.
         $formatted_family_array[0][0] = $lctr; // Number of left side lines 
@@ -175,38 +138,17 @@ function cota_format_family_listing_for_print($family, $members) {
     $num_members = $members->num_rows;
     while ($mctr <= $num_members) {
         $individual = get_next_member_to_print($members);
-        $familystringlines .= $left_side . ' ' . 
-            ($individual['first_name'] ?? '') . ' ' .
-            ($individual['last_name'] ?? '') . ' ' .
-            ($individual['email'] ?? '') . ' ' .
-            ($individual['cell_phone'] ?? '') . ' ' .
-            ($individual['birthday']??'') .  ' ' . 
-            ($individual['baptism'] ?? '') . "\n";
-
-        if ( $print_it ) {
             // Format for printing
-            $formatted_family_array[$lctr][4] = $individual['first_name'] ?? '';
-            $formatted_family_array[$lctr][5] = $individual['last_name'] ?? '';
-            $formatted_family_array[$lctr][6] = $individual['email'] ?? '';
-            $formatted_family_array[$lctr][7] = $individual['cell_phone'] ?? '';
-            $formatted_family_array[$lctr][8] = $individual['birthday'] ?? '';
-            $formatted_family_array[$lctr][9] = $individual['baptism'] ?? '';
-        }
+        $formatted_family_array[$lctr][4] = $individual['first_name'] ?? '';
+        $formatted_family_array[$lctr][5] = $individual['last_name'] ?? '';
+        $formatted_family_array[$lctr][6] = $individual['email'] ?? '';
+        $formatted_family_array[$lctr][7] = $individual['cell_phone'] ?? '';
+        $formatted_family_array[$lctr][8] = (!empty($individual['birthday'])) ? date('m/d', strtotime($individual['birthday'])) : null;
+        $formatted_family_array[$lctr][9] = (!empty($individual['baptism'])) ? date('m/d', strtotime($individual['baptism'])) : null;
         $mctr++;
         $lctr+=1;
     }
     $formatted_family_array[0][1] = $mctr - $formatted_family_array[0][0];
-// print_r('lctr is ' . $lctr . '   rctr is ' . $rctr . '   mctr is ' . $mctr);echo '<br>';
-// print_r($formatted_family_array[1]);echo '<br>';
-// print_r($formatted_family_array[2]);echo '<br>';
-// print_r($formatted_family_array[3]);echo '<br>';
-// print_r($formatted_family_array[4]);echo '<br>';
-// print_r($formatted_family_array[5]);echo '<br>';
-// print_r($formatted_family_array[6]);echo '<br>';
-// print_r($formatted_family_array[7]);echo '<br>';
-// print_r($formatted_family_array[8]);echo '<br>';
-// print_r($formatted_family_array[9]);echo '<br>';
-// echo '=======================================<br>';
     return $formatted_family_array; // Indicate success
 }
 /**
@@ -217,7 +159,6 @@ function cota_format_family_listing_for_print($family, $members) {
  * @return string | null
  */
 function cota_format_family_listing_for_display($family, $members) { 
-    // echo nl2br(__METHOD__ . ' called' . PHP_EOL);
     // Set key logicals
     $num_members = $members->num_rows;
     $mctr = 1;
@@ -249,8 +190,8 @@ function cota_format_family_listing_for_display($family, $members) {
                     $individual['last_name'] ?? '',
                     $individual['email'] ?? '',
                     $individual['cell_phone'] ?? '',
-                    $individual['birthday'] ?? '',
-                    $individual['baptism'] ?? ''
+                    ($individual['birthday'] ? date('m/d', strtotime($individual['birthday'])) : ''),
+                    ($individual['baptism'] ? date('m/d', strtotime($individual['baptism'])) : '')
                 );
 
             } else {
@@ -283,16 +224,30 @@ function cota_format_family_listing_for_display($family, $members) {
                 $addr2 = false;
                 $city = false;
             }
-            $formatted_family .= sprintf(
-                $format_string, 
-                $left_side,
-                $individual['first_name'] ?? '',
-                $individual['last_name'] ?? '',
-                $individual['email'] ?? '',
-                $individual['cell_phone'] ?? '',
-                $individual['birthday'] ?? '',
-                $individual['baptism'] ?? ''
-            );
+            if ( $individual['first_name'] == $family['fname1'] ||  $individual['first_name'] == $family['fname2'] ) {
+                $formatted_family .= sprintf(
+                    $format_string, 
+                    $left_side,
+                    $individual['first_name'] ?? '',
+                    $individual['last_name'] ?? '',
+                    $individual['email'] ?? '',
+                    $individual['cell_phone'] ?? '',
+                    ($individual['birthday'] ? date('m/d', strtotime($individual['birthday'])) : ''),
+                    ($individual['baptism'] ? date('m/d', strtotime($individual['baptism'])) : '')
+                );
+            } else { // Add year to non-primary family members DoB.
+                $formatted_family .= sprintf(
+                    $format_string, 
+                    $left_side,
+                    $individual['first_name'] ?? '',
+                    $individual['last_name'] ?? '',
+                    $individual['email'] ?? '',
+                    $individual['cell_phone'] ?? '',
+                    ($individual['birthday'] ? date('m/d/y', strtotime($individual['birthday'])) : ''),
+                    ($individual['baptism'] ? date('m/d/y', strtotime($individual['baptism'])) : '') 
+                );
+            }
+
 
         } elseif ( $lctr == 3 ) {
             // Get next member of family
@@ -320,8 +275,8 @@ function cota_format_family_listing_for_display($family, $members) {
                 $individual['last_name'] ?? '',
                 $individual['email'] ?? '',
                 $individual['cell_phone'] ?? '',
-                $individual['birthday'] ?? '',
-                $individual['baptism'] ?? ''
+                ($individual['birthday'] ? date('m/d/y', strtotime($individual['birthday'])) : ''),
+                ($individual['baptism'] ? date('m/d/y', strtotime($individual['baptism'])) : '')
             );
 
         } elseif ( $lctr == 4 ) {
@@ -351,8 +306,10 @@ function cota_format_family_listing_for_display($family, $members) {
                 $individual['last_name'] ?? '',
                 $individual['email'] ?? '',
                 $individual['cell_phone'] ?? '',
-                $individual['birthday'] ?? '',
-                $individual['baptism'] ?? ''
+                // $individual['birthday'] ?? '',
+                // $individual['baptism'] ?? '',
+                ($individual['birthday'] ? date('m/d/y', strtotime($individual['birthday'])) : ''),
+                ($individual['baptism'] ? date('m/d/y', strtotime($individual['baptism'])) : '')
             );
 
         } else {
@@ -371,8 +328,8 @@ function cota_format_family_listing_for_display($family, $members) {
             $individual['last_name'] ?? '',
             $individual['email'] ?? '',
             $individual['cell_phone'] ?? '',
-            $individual['birthday'] ?? '',
-            $individual['baptism'] ?? ''
+            ($individual['birthday'] ? date('m/d/y', strtotime($individual['birthday'])) : ''),
+            ($individual['baptism'] ? date('m/d/y', strtotime($individual['baptism'])) : '')
         );
 
         $mctr++;
@@ -392,17 +349,14 @@ function get_next_member($members) {
             $individual['last_name'] ?? '',
             $individual['cell_phone'] ?? '',
             $individual['email'] ?? '',
-            $individual['birthday'] ?? '',
-            $individual['baptism'] ?? ''
+            $individual['birthday'] ? date('m/d', strtotime($individual['birthday'])) : '',
+            $individual['baptism'] ? date('m/d', strtotime($individual['baptism'])) : ''
         );
     } else {
         // No more members found
         return false;
     }
     return $individual;
-    // var_dump($formatted_family_member);
-    // return $formatted_family_member;
-
 }
 
 function get_next_member_to_print($members) {
