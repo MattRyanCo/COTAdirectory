@@ -18,16 +18,11 @@ if (!is_dir($_SERVER['DOCUMENT_ROOT'] . '/downloads')) {
 }
 $output_filename = $_SERVER['DOCUMENT_ROOT'] . $output_basename;
 
-// $db = new COTA_Database();
 $rtfContent = $printBooklet->generateRTFHeader();
 
-// Load and insert static pages.
-for ($i = 1; $i <= 3; $i++) {
-	$file = '../uploads/intro'.$i.'.txt';
-	if (file_exists($file)) {
-		$rtfContent .= $printBooklet->formatText(file_get_contents($file)) . "\\pard\\page\\par";
-	}
-}
+// Add intro page(s) to output
+$rtfContent .= $printBooklet->print_intro_pages(3);
+
 $all_families = $cotadb->read_family_database();
 
 // Add family listings
@@ -47,5 +42,5 @@ echo cota_page_header();
 echo "<div id='cota-print' class='container'>";
 echo "<h2>RTF file generated successfully!</h2>";
 echo "<h4>File: " . basename($output_filename) . "</h2>";
-echo "<button class='button' type='button' ><a href='.." . $output_basename . "' download>Download File</a></button>";
+echo "<button class='cota-print' type='button' ><a href='.." . $output_basename . "' download>Download File</a></button>";
 echo '</div><body></html>';
