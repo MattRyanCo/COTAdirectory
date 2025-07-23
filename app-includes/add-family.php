@@ -45,7 +45,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $baptism = cota_format_date($_POST["members"]["baptism"][$key]);
 
             if (!empty($first_name) ) {
-                // && cota_validate_email($email) && cota_validate_date($birthday)) {
                 $stmt = $conn->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 $stmt->bind_param("issssss", $family_id, $first_name, $last_name, $cell_phone, $email, $birthday, $baptism);
                 $stmt->execute();
@@ -64,7 +63,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo cota_page_header();
         // Dump out remainder of import page. 
         echo "<div class='cota-add-container'>";
-        echo "<h2>" . $familyname . " family added successfully!</h2>";
+        // echo "<h2>" . $familyname . " family added successfully!</h2>";
+        echo '<h2><a href="'. $cota_constants->COTA_APP_INCLUDES . 'display-one-family.php?familyname=' . $familyname . '&address=&address2=">'. $familyname . ' family added successfully. Click to view.</a></h2>';
         echo "</div>";
     } else {
         cota_log_error("SQL Error (execute): " . $stmt->error);
