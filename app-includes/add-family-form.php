@@ -59,10 +59,10 @@ echo cota_page_header();
         <label>Home Phone</label>
         <input type="text" name="homephone" placeholder="xxx-xxx-xxxx"><br>
         <label>Anniversary of Marriage</label>
-        <input type="text" name="annday" title="Wedding anniversary of primary family members." placeholder="mm/dd/yyyy"><br>
+        <input type="date" name="annday" title="Wedding anniversary of primary family members." placeholder="mm/dd/yyyy"><br>
 
         <h3>Family Members</h3>
-        <p>Enter the primary family member first, then add additional family members and information as desired.</p>
+        <p>Enter the primary adult family member(s) first, then add additional family members and information as desired.</p>
         <div id="members">
             <div>
                 <label >Name</label>
@@ -74,14 +74,16 @@ echo cota_page_header();
                 <label for="members[email][]">Email</label>
                 <input type="email" id="members[email][]" name="members[email][]"><br>
                 <label for="members[birthday][]">Birthday</label>
-                <input type="text" id="members[birthday][]" name="members[birthday][]" placeholder="mm/dd/yyyy"><br>
+                <input type="date" id="members[birthday][]" name="members[birthday][]" placeholder="mm/dd/yyyy"><br>
                 <label for="members[baptism][]">Anniversary of Baptism</label>
-                <input type="text" id="members[baptism]" name="members[baptism][]" placeholder="mm/dd/yyyy"><br><br><br>
+                <input type="date" id="members[baptism][]" name="members[baptism][]" placeholder="mm/dd/yyyy"><br><br><br>
             </div>
         </div>
-        <button class="cota-add-another" type="button" onclick="cota_add_member()">Add Another Family Member</button>
-        <br><br>
-        <button class="cota-submit-family" type="submit">Submit Family Update</button>
+
+        <div class="two-button-grid">
+            <div><button class="cota-add-another" type="button" onclick="cota_add_member()">Add Another Family Member</button></div>
+            <div><button class="cota-submit-family" type="submit">Submit Family Update</button></div>
+        </div>
     </form>
 
 
