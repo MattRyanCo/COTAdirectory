@@ -57,17 +57,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 last_name VARCHAR(100),
                 cell_phone VARCHAR(20),
                 email VARCHAR(255),
-                birthday VARCHAR(10),
-                baptism VARCHAR(10),
+                birthday DATE,
+                baptism DATE,
                 FOREIGN KEY (family_id) REFERENCES families(id) ON DELETE CASCADE
             )
         ";
         if ($cotadb->query($createMembersTableSQL) === TRUE) {
-            write_success_notice("Database table has been reset successfully!");
+            write_success_notice("Database table 'Members' has been reset successfully!");
         } else {
             echo "<p style='color: red;'>Error recreating members table: " . $cotadb->conn->error . "</p>";
             $cotadb->close_connection();
-            exit;
+            exit(1);
         }
 
         // Drop and recreate the families table
@@ -91,30 +91,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 cellphone2 VARCHAR(20),
                 email1 VARCHAR(50),
                 email2 VARCHAR(50),
-                bday1 VARCHAR(10),
-                bday2 VARCHAR(10),
-                bap1 VARCHAR(10),
-                bap2 VARCHAR(10),
-                annday VARCHAR(10)
+                bday1 DATE,
+                bday2 DATE,
+                bap1 DATE,
+                bap2 DATE,
+                annday DATE
             )
         ";
 
         if ($cotadb->query($createFamiliesTableSQL) === TRUE) {
-            write_success_notice("Database table has been reset successfully!");
+            write_success_notice("Database tables have been reset successfully!");
         } else {
             write_error_notice('Error recreating families table: " . $cotadb->conn->error . "</p>"');
-            $cotadb->close_connection();
-            exit;
         }
-
-
     } else {
         // echo "<p style='color: red;'>Action canceled. No changes were made.</p>";
         write_error_notice('Action canceled. No changes were made.');
-
     }
 
     $cotadb->close_connection();
-    exit;
+    exit();
 }
 
