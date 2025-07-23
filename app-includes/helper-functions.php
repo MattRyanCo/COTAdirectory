@@ -57,19 +57,19 @@ function cota_page_header() {
 				<a href="#">Main Menu</a>
 				<ul class="submenu">
 					<li><a href="/app-includes/display.php" target="_blank">Display Directory</a></li>
-					<li><a href="/app-includes/display-family.php" target="_blank">Display One Family</a></li>
-					<li><a href="/app-includes/add-family-form.php" target="_blank">Add New Family</a></li>
-					<li><a href="/app-includes/search-edit.php" target="_blank">Search & Edit Family</a></li>
-					<li><a href="/app-includes/search-delete.php" target="_blank">Delete Family or Family Member</a></li>
-					<li><a href="/app-includes/upcoming-anniversary-dates.php" target="_blank">Display Upcoming Anniversaries</a></li>
+					<li><a href="/app-includes/display-family.php" >Display One Family</a></li>
+					<li><a href="/app-includes/add-family-form.php" >Add Family</a></li>
+					<li><a href="/app-includes/search-edit.php" >Edit Family / Family Member(s)</a></li>
+					<li><a href="/app-includes/search-delete.php" >Delete Family / Family Member(s)</a></li>
+					<li><a href="/app-includes/upcoming-anniversary-dates.php" target="_blank">Upcoming Anniversaries</a></li>
 				</ul>
 			</li>
 			<li class="has-submenu">
 				<a href="#">Utilities</a>
 				<ul class="submenu">
 					<li><a href="/app-includes/import.php">Import CSV Data</a></li>
-					<li><a href="/app-includes/export.php">Export Directory as CSV</a></li>
-					<li><a href="/app-includes/export-sample.php" target="_blank">Export Sample Directory as CSV</a></li>
+					<li><a href="/app-includes/export.php">Export CSV Directory</a></li>
+					<li><a href="/app-includes/export-sample.php" target="_blank">Export Sample CSV</a></li>
 					<li><a href="/app-includes/database-details.php">Database Details</a></li>
 					<li><a href="/app-includes/reset-db.php" style="color: red;">⚠️ Reset Database ⚠️</a></li>
 				</ul>
@@ -77,8 +77,8 @@ function cota_page_header() {
 			<li class="has-submenu">
 				<a href="#">Print Options</a>
 				<ul class="submenu">
-					<li><a href="../app-includes/print-booklet-rtf.php">Generate Directory RTF</a></li>
-					<li><a href="../app-includes/print-booklet-pdf.php">Google Form Based Family Entry</a></li>
+					<li><a href="../app-includes/print-booklet-rtf.php">RTF for External Use</a></li>
+					<li><a href="../app-includes/print-booklet-pdf.php">PDF for Printing</a></li>
 				</ul>
 			</li>
 			<li class="has-submenu">
@@ -97,6 +97,39 @@ function cota_page_header() {
 ';
 }
 
+function cota_add_member_script() {
+	return '
+	    <script>
+        function cota_add_member() {
+            const membersDiv = document.getElementById("members");
+            const memberCount = membersDiv.children.length;
+
+            if (memberCount < 7) {
+                const newMember = document.createElement("div");
+                newMember.innerHTML = `
+
+                <label >First Name</label>
+                <input type="text" name="members[first_name][]" style="text-transform:capitalize;" required>
+                <label for="members[last_name][]">Last Name (if different than family name)</label>
+                <input type="text" id="members[last_name][]" name="members[last_name][]" style="text-transform:capitalize;"><br>
+                <label for="members[cell_phone][]">Cell Phone</label>
+                <input type="text" id="members[cell_phone][]" name="members[cell_phone][]" placeholder="xxx-xxx-xxxx" ><br>
+                <label for="members[email][]">Email</label>
+                <input type="email" id="members[email][]" name="members[email][]"><br>
+                <label for="members[birthday][]">Birthday</label>
+                <input type="date" id="members[birthday][]" name="members[birthday][]" placeholder="mm/dd"><br>
+                <label for="members[baptism][]">Anniversary of Baptism</label>
+                <input type="date" id="members[baptism]" name="members[baptism][]" placeholder="mm/dd"><br><br><br>
+                `;
+                membersDiv.appendChild(newMember);
+            } else {
+                alert("Maximum of 7 members allowed. Please send us a note if you wish to add additional family members.");
+            }
+        }
+    </script>';
+}
+
+
 // Sanitize Input
 function cota_sanitize($data) {
     $data = trim($data);
@@ -111,18 +144,43 @@ function cota_validate_email($email) {
 
 // Format MM/DD Date Correctly
 function cota_format_date($date) {
+	// Convert date to YYYY-MM-DD 
+	// If date is empty, return empty string
         if (empty($date)) {
-            return "";
+            return null;
         }
+		$current_year = date("Y");
         if (preg_match('/^(\\d{1,2})\/(\\d{1,2})(?:\/\\d{2,4})?$/', $date, $matches)) {
-            return sprintf("%02d/%02d", $matches[1], $matches[2]);
+			// $datereturned = sprintf("%02d/%02d", $matches[1], $matches[2]);
+			$datereturned = sprintf("%s-%02d-%02d", $current_year, $matches[1], $matches[2]);
+            return $datereturned;
         }
         return $date;
 }
 
+function cota_format_date_to_db($date) {
+	// Convert date to YYYY-MM-DD format for database storage. or return null if empty.
+	if (empty($date)) {
+		return null;
+	}
+	// $date_parts = explode('/', $date);
+	// if (count($date_parts) == 3) {
+	// 	return sprintf("%04d-%02d-%02d", $date_parts[2], $date_parts[0], $date_parts[1]);
+	// } elseif (count($date_parts) == 2) {
+	// 	// If only month and day are provided, leave year blank
+	// 	// $datereturned = sprintf("%02d-%02d", $date_parts[0], $date_parts[1] );
+	// 	$datereturned = sprintf("%s-%02d-%02d", $current_year, $matches[1], $matches[2]);
+	// }
+	// This works if the year is included or the column allows partial dates.
+	$datereturned = !empty($date) ? "STR_TO_DATE('{$date}', '%m/%d')" : null;
+	return $datereturned; 
+}
+
+
 // Validate Date (MM/DD Format)
-function cota_validate_date($date) {
-    return preg_match('/^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])$/', $date);
+function cota_validate_date_entry($date) {
+    $datereturned = preg_match('/^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])$/', $date);
+	return $datereturned ? true : false;
 }
 
 // Validate Phone Number format (111-222-3333)
