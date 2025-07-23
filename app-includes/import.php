@@ -172,6 +172,11 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
         $bap1        = cota_format_date($data['bap1']);
         $bap2        = cota_format_date($data['bap2']);
         $annday      = cota_format_date($data['annday']);
+        // $bday1       = $data['bday1'] ?? null;
+        // $bday2       = $data['bday2'] ?? null;
+        // $bap1        = $data['bap1'] ?? null;
+        // $bap2        = $data['bap2'] ?? null;
+        // $annday      = $data['annday'] ?? null;
 
         $stmt->bind_param(
             "sssssssssssssssssss",
@@ -189,11 +194,11 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
             $cellphone2,
             $data['email1'],
             $data['email2'],
-            $bday1,
-            $bday2,
-            $bap1,
-            $bap2,
-            $annday
+            $bday1,   // Should be 's' (string) if using DATE or DATETIME in MySQL
+            $bday2,   // Should be 's'
+            $bap1,    // Should be 's'
+            $bap2,    // Should be 's'
+            $annday   // Should be 's'
         );
         $stmt->execute();
         $family_id = $stmt->insert_id;
@@ -225,7 +230,9 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
         $stmt = $cotadb->conn->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $cellphone  = cota_format_phone($cell_phone);
         $bday       = cota_format_date($birthday);
-        $bap        = cota_format_date($baptism);
+        $bap       = cota_format_date($baptism);
+        // $bday       = $birthday ?? null;
+        // $bap        = $baptism ?? null;
 
         $stmt->bind_param(
             "issssss", 
@@ -251,7 +258,7 @@ echo cota_page_header();
         <form class="cota-import" method="post" enctype="multipart/form-data">
             <label>Select CSV File:</label>
             <input type="file" name="csv_file" accept=".csv" required>
-            <button type="submit">Upload & Import</button>
+            <button class="cota-import" type="submit">Upload & Import</button>
         </form>
     </div>
 </body>
