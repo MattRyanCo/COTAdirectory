@@ -84,10 +84,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
     echo cota_page_header();
     // Dump out remainder of import page. 
     echo "<div class='cota-update-container'>";
-    echo "<h2>" . $familyname . " family updated!</h2>";
+    echo "<h2>" . htmlspecialchars($familyname) . " family updated!</h2>";
     echo "<br><br>";
     echo '<div class="two-button-grid">';
-    echo '<div><button class="cota-edit-family" type="button"><a href="edit-family.php?familyname="' . $familyname . '">Edit this family again</a></button></div>';
+    echo '<div><button class="cota-edit-family" type="button"><a href="edit-family.php?familyname=' . urlencode($familyname) . '">Edit this family again</a></button></div>';
     echo '<div><button class="cota-search-family" type="button"><a href="search-edit.php">Edit Another Family</a></button></div>';
     echo '</div>';
 

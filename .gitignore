@@ -75,3 +75,8 @@ app-libraries/fpdf/
 libraries/fpdf/font/
 
 *.log
+
+# Environment variables (contains sensitive data)
+.env
+.env.*
+!.env.example

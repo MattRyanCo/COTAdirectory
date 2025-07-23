@@ -9,31 +9,38 @@ class COTA_Database {
     private const LOCAL_DB_PASSWORD = '';
     private const LOCAL_DB_HOST = 'localhost';
 
-    // Live
-    private const LIVE_DB_NAME = 'cotadirectory';
-    private const LIVE_DB_USER = 'cotadirectory';
-    private const LIVE_DB_PASSWORD = 'xo=BqIGmfJxc!+V7LNe97K9^V4p?86Lq';
-    private const LIVE_DB_HOST = '64.176.198.28';
+    // Live - Use environment variables for security
+    private const LIVE_DB_NAME = null; // Set via environment variable DB_NAME
+    private const LIVE_DB_USER = null; // Set via environment variable DB_USER  
+    private const LIVE_DB_PASSWORD = null; // Set via environment variable DB_PASSWORD
+    private const LIVE_DB_HOST = null; // Set via environment variable DB_HOST
 
-    // Selected DB constants
-    public const DB_NAME = 
-        (PHP_OS_FAMILY === 'Windows' ? self::LOCAL_DB_NAME : self::LIVE_DB_NAME);
-    public const DB_USER = 
-        (PHP_OS_FAMILY === 'Windows' ? self::LOCAL_DB_USER : self::LIVE_DB_USER);
-    public const DB_PASSWORD = 
-        (PHP_OS_FAMILY === 'Windows' ? self::LOCAL_DB_PASSWORD : self::LIVE_DB_PASSWORD);
-    public const DB_HOST = 
-        (PHP_OS_FAMILY === 'Windows' ? self::LOCAL_DB_HOST : self::LIVE_DB_HOST);
+    // Selected DB constants - use environment variables for production
+    public static function getDbName() {
+        return PHP_OS_FAMILY === 'Windows' ? self::LOCAL_DB_NAME : ($_ENV['DB_NAME'] ?? self::LIVE_DB_NAME);
+    }
+    
+    public static function getDbUser() {
+        return PHP_OS_FAMILY === 'Windows' ? self::LOCAL_DB_USER : ($_ENV['DB_USER'] ?? self::LIVE_DB_USER);
+    }
+    
+    public static function getDbPassword() {
+        return PHP_OS_FAMILY === 'Windows' ? self::LOCAL_DB_PASSWORD : ($_ENV['DB_PASSWORD'] ?? self::LIVE_DB_PASSWORD);
+    }
+    
+    public static function getDbHost() {
+        return PHP_OS_FAMILY === 'Windows' ? self::LOCAL_DB_HOST : ($_ENV['DB_HOST'] ?? self::LIVE_DB_HOST);
+    }
     
     public function __construct() {
         $this->conn = new mysqli(
-            self::DB_HOST, 
-            self::DB_USER, 
-            self::DB_PASSWORD, 
-            self::DB_NAME);
+            self::getDbHost(), 
+            self::getDbUser(), 
+            self::getDbPassword(), 
+            self::getDbName());
         // var_dump($this->conn);
         if ($this->conn->connect_error) {
-            die("Connection failed: Errno " . $this->conn->connect_error . ' Error ' . $this->conn->connect_error);
+            die("Connection failed: Errno " . $this->conn->connect_errno . ' Error ' . $this->conn->connect_error);
         }
     }
 
@@ -53,22 +60,29 @@ class COTA_Database {
         return $families;
     }
 
-    public function read_a_family() {
-        $families = $this->conn->query("SELECT * FROM families WHERE family_id = " . $family_id);
+    public function read_a_family($family_id) {
+        $stmt = $this->conn->prepare("SELECT * FROM families WHERE family_id = ?");
+        $stmt->bind_param("i", $family_id);
+        $stmt->execute();
+        $families = $stmt->get_result();
         if ($families === FALSE) {
             die("Error: " . $this->conn->error);
         }
+        $stmt->close();
         return $families;
     }
 
     public function read_members_of_family( $family_id ) {
         // @TODO Modify this to return the 1 or 2 primary members first (as noted in family table) 
         //  followed by all the other family members in birthday order. 
-        // $members = $this->conn->query("SELECT * FROM members WHERE family_id = " . $family_id . " ORDER BY `birthday`");
-        $members = $this->conn->query("SELECT * FROM members WHERE family_id = " . $family_id);
+        $stmt = $this->conn->prepare("SELECT * FROM members WHERE family_id = ? ORDER BY `birthday`");
+        $stmt->bind_param("i", $family_id);
+        $stmt->execute();
+        $members = $stmt->get_result();
         if ($members === FALSE) {
             die("Error: " . $this->conn->error);
         }
+        $stmt->close();
         return $members;
     }
 
