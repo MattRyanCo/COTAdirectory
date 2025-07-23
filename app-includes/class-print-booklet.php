@@ -162,12 +162,9 @@ class PDF extends FPDF
         $line_height = .25;
         $left_margin = $this->lMargin;
         $start_heading = $header_height + $line_height;
-        // var_dump($start_heading);
 
         // Do this setup only first time through
- 
         if ( $first_time ) {
-
             $large_field_width = round($this->GetStringWidth('Family Name/Address'),1);
             $wline1 = [
                 round($this->GetStringWidth('Family Name/Address'),1),  // [0]
@@ -274,9 +271,6 @@ class PDF extends FPDF
 
             $next_row = $this->GetY() + $line_height;
         }
-        // Add some spacing after each family
-        // $next_row = $this->GetY() + 2 * $line_height;
-        // $this->SetXY($left_margin, $next_row);
 
         // return where we are. 
         return $this->GetY();
