@@ -62,6 +62,9 @@ class COTA_Database {
     }
 
     public function read_members_of_family( $family_id ) {
+        // @TODO Modify this to return the 1 or 2 primary members first (as noted in family table) 
+        //  followed by all the other family members in birthday order. 
+        // $members = $this->conn->query("SELECT * FROM members WHERE family_id = " . $family_id . " ORDER BY `birthday`");
         $members = $this->conn->query("SELECT * FROM members WHERE family_id = " . $family_id);
         if ($members === FALSE) {
             die("Error: " . $this->conn->error);
