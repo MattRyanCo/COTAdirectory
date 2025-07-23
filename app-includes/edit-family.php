@@ -87,11 +87,11 @@ if (!isset($_GET['address']) || trim($_GET['address']) === '') {
     $members = $stmt->get_result();
     $stmt->close();
 
-
+    echo cota_add_member_script();
 // Dump out remainder of import page. 
 ?>
 
-    <h2>Edit / Review Family</h2>
+    <h2>Edit Family</h2>
     <form class="cota-family-edit" action="update-family.php" method="post">
         <input type="hidden" name="family_id" value="<?= $family['id'] ?>">
         <label>Family Name</label>
@@ -107,37 +107,79 @@ if (!isset($_GET['address']) || trim($_GET['address']) === '') {
         <label>Home Phone</label>
         <input type="text" name="homephone" value="<?= htmlspecialchars($family['homephone']) ?>">
         <label>Anniversary</label>
-        <input type="text" name="annday" value="<?= htmlspecialchars($family['annday']) ?>">
+        <input type="date" name="annday" value="<?= htmlspecialchars($family['annday']) ?>">
 
         <h3>Family Members</h3>
+
         <div id="members">
             <?php
             $first = true;
             while ($member = $members->fetch_assoc()):
             ?>
             <?php if ($first): ?>
-                <div class="member-header" >
-                <span style="min-width:120px;">First</span>
-                <span style="min-width:120px;">Last</span>
-                <span style="min-width:120px;">Cell</span>
-                <span style="min-width:180px;">Email</span>
-                <span style="min-width:100px;">Birthday</span>
-                <span style="min-width:100px;">Baptism</span>
+                <div class="member-header">
+                    <span>First</span>
+                    <span>Last</span>
+                    <span>Cell</span>
+                    <span>Email</span>
+                    <span>Birthday</span>
+                    <span>Baptism</span>
                 </div>
             <?php $first = false; endif; ?>
             <div class="member-row">
+
+                <input type="text" name="members[first_name][]" value="<?= htmlspecialchars($member['first_name']) ?>">
+                <input type="text" name="members[last_name][]" value="<?= !empty($member['last_name']) ? htmlspecialchars($member['last_name']) : htmlspecialchars($family['familyname'] ?? '') ?>">
+                <input type="text" name="members[cell_phone][]" value="<?= htmlspecialchars($member['cell_phone']) ?>">
+                <input type="email" name="members[email][]" value="<?= htmlspecialchars($member['email']) ?>">
+                <input type="date" name="members[birthday][]" value="<?= htmlspecialchars($member['birthday']) ?>">
+                <input type="date" name="members[baptism][]" value="<?= htmlspecialchars($member['baptism']) ?>">
                 <input type="hidden" name="members[id][]" value="<?= $member['id'] ?>">
-                <input type="text" name="members[first_name][]" value="<?= htmlspecialchars($member['first_name']) ?>" style="width:120px;">
-                <input type="text" name="members[last_name][]" value="<?= !empty($member['last_name']) ? htmlspecialchars($member['last_name']) : htmlspecialchars($family['familyname'] ?? '') ?>" style="width:120px;">
-                <input type="text" name="members[cell_phone][]" value="<?= htmlspecialchars($member['cell_phone']) ?>" style="width:120px;">
-                <input type="email" name="members[email][]" value="<?= htmlspecialchars($member['email']) ?>" style="width:180px;">
-                <input type="text" name="members[birthday][]" value="<?= htmlspecialchars($member['birthday']) ?>" style="width:100px;">
-                <input type="text" name="members[baptism][]" value="<?= htmlspecialchars($member['baptism']) ?>" style="width:100px;">
             </div>
             <?php endwhile; ?>
-        </div>
+        </div><br><br>
 
-        <button type="submit">Apply Updates</button>
+        <h3>Add NEW Family Members</h3>
+        <div id="add-members">
+            <div class="member-header">
+                <span>First</span>
+                <span>Last</span>
+                <span>Cell</span>
+                <span>Email</span>
+                <span>Birthday</span>
+                <span>Baptism</span>
+            </div>
+            <div class="member-row">
+                <input type="text" name="members[first_name][]" value="<?= htmlspecialchars($member['first_name']) ?>">
+                <input type="text" name="members[last_name][]" value="<?= !empty($member['last_name']) ? htmlspecialchars($member['last_name']) : htmlspecialchars($family['familyname'] ?? '') ?>">
+                <input type="text" name="members[cell_phone][]" value="<?= htmlspecialchars($member['cell_phone']) ?>">
+                <input type="email" name="members[email][]" value="<?= htmlspecialchars($member['email']) ?>">
+                <input type="date" name="members[birthday][]" value="<?= htmlspecialchars($member['birthday']) ?>">
+                <input type="date" name="members[baptism][]" value="<?= htmlspecialchars($member['baptism']) ?>">
+                <input type="hidden" name="members[id][]" value="-1">
+            </div>
+            <!-- <div>
+                <label >Name</label>
+                <input type="text" name="members[first_name][]" style="text-transform:capitalize;" placeholder="First" >
+                <label for="members[last_name][]">Last (only needed if different from family name)</label>
+                <input type="text" id="members[last_name][]" name="members[last_name][]" style="text-transform:capitalize;" placeholder="Last"><br>
+                <label for="members[cell_phone][]">Cell Phone</label>
+                <input type="text" id="members[cell_phone][]" name="members[cell_phone][]" placeholder="xxx-xxx-xxxx"><br>
+                <label for="members[email][]">Email</label>
+                <input type="email" id="members[email][]" name="members[email][]"><br>
+                <label for="members[birthday][]">Birthday</label>
+                <input type="date" id="members[birthday][]" name="members[birthday][]" placeholder="mm/dd/yyyy"><br>
+                <label for="members[baptism][]">Anniversary of Baptism</label>
+                <input type="date" id="members[baptism]" name="members[baptism][]" placeholder="mm/dd/yyyy"><br><br><br>
+                <input type="hidden" name="members[id][]" value="-1">
+            </div> -->
+        <!-- </div> -->
+
+        <div class="three-button-grid">
+            <div><button class="cota-add-another" type="button" onclick="cota_add_member()">Add Another Family Member</button></div>
+            <div><button class="cota-submit-family" type="submit">Submit Update</button></div>
+            <div><button class="cota-cancel-family" type="reset">Cancel</button></div>
+        </div>
     </form>
 </body>
 </html>

@@ -87,7 +87,6 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
 // Dump out remainder of import page. 
 
 	echo '<div class="cota-display-one-container">';
-	// echo '<h3>'. ucfirst($familyname) . ' Listing</h3>';
 	echo '<table class="directory-one-table">';
 		echo '<tr><th>Family Name/Address</th><th><i>Family Members</i></th></tr>';
 		echo '<tr><th>Home Phone<td><i>Name</i></td><td><i>Email</i></td><td><i>Cell</i></td><td><i>DoB</i></td><td><i>DoBaptism</i></td></th></tr>';

@@ -33,7 +33,7 @@ $familyname = isset($_GET['familyname']) ? $_GET['familyname'] : '';
 		<input type="text" name="address">
 		<label>Address 2</label>
 		<input type="text" name="address2">
-		<button type="submit">Search</button>
+		<button class="cota-display-family" type="submit">Search</button>
 	</form>
 </body>
 </html>

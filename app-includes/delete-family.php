@@ -111,38 +111,36 @@ echo cota_page_header();
         <label>Home Phone</label>
         <input type="text" name="homephone" value="<?= htmlspecialchars($family['homephone']) ?>" readonly>
         <label>Anniversary</label>
-        <input type="text" name="annday" value="<?= htmlspecialchars($family['annday']) ?>" readonly>
+        <input type="date" name="annday" value="<?= htmlspecialchars($family['annday']) ?>" readonly>
 
         <button class="delall" type="submit" name="delall" >Delete Entire Family From Directory</button>
 
         <h3>Family Members</h3>
-        <div id="members">
+        <div id="members-delete">
             <?php
             $first = true;
             while ($member = $members->fetch_assoc()):
             ?>
             <?php if ($first): ?>
                 <div class="member-header" >
-                <span style="min-width:5px;">&nbsp;</span>
-                <span style="min-width:8px;">&nbsp;</span>
-                <span style="min-width:120px;text-align:left;">First</span>
-                <span style="min-width:120px;text-align:left;">Last</span>
-                <span style="min-width:120px;text-align:left;">Cell</span>
-                <span style="min-width:180px;text-align:left;">Email</span>
-                <span style="min-width:100px;text-align:left;">Birthday</span>
-                <span style="min-width:100px;text-align:left;">Baptism</span><br>
+                <span>Select</span>
+                <span>First</span>
+                <span>Last</span>
+                <span>Cell</span>
+                <span>Email</span>
+                <span>Birthday</span>
+                <span>Baptism</span>
                 </div>
             <?php $first = false; endif; ?>
             <div class="member-row">
-                <input type="hidden" name="members[id][]" value="<?= $member['id'] ?>" readonly>
                 <input type="checkbox" name="delete_member[]" value="<?= $member['id'] ?>">
-                <input type="text" name="members[first_name][]" value="<?= htmlspecialchars($member['first_name']) ?>" style="width:120px;" readonly>
-                <input type="text" name="members[last_name][]" value="<?= !empty($member['last_name']) ? htmlspecialchars($member['last_name']) : htmlspecialchars($family['familyname'] ?? '') ?>" style="width:120px;" readonly>
-                <input type="text" name="members[cell_phone][]" value="<?= htmlspecialchars($member['cell_phone']) ?>" style="width:120px;" readonly>
-                <input type="email" name="members[email][]" value="<?= htmlspecialchars($member['email']) ?>" style="width:180px;" readonly>
-                <input type="text" name="members[birthday][]" value="<?= htmlspecialchars($member['birthday']) ?>" style="width:100px;" readonly>
-                <input type="text" name="members[baptism][]" value="<?= htmlspecialchars($member['baptism']) ?>" style="width:100px;" readonly>
-
+                <input type="text" name="members[first_name][]" value="<?= htmlspecialchars($member['first_name']) ?>" readonly>
+                <input type="text" name="members[last_name][]" value="<?= !empty($member['last_name']) ? htmlspecialchars($member['last_name']) : htmlspecialchars($family['familyname'] ?? '') ?>" readonly>
+                <input type="text" name="members[cell_phone][]" value="<?= htmlspecialchars($member['cell_phone']) ?>" readonly>
+                <input type="email" name="members[email][]" value="<?= htmlspecialchars($member['email']) ?>" readonly>
+                <input type="date" name="members[birthday][]" value="<?= htmlspecialchars($member['birthday']) ?>" readonly>
+                <input type="date" name="members[baptism][]" value="<?= htmlspecialchars($member['baptism']) ?>" readonly>
+                <input type="hidden" name="members[id][]" value="<?= $member['id'] ?>">
 
             </div>
             <?php endwhile; ?>

@@ -8,19 +8,8 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
-// Dump out page header
-echo cota_page_header();
-$families = $cotadb->read_family_database();
-$num_families = $families->num_rows;
-if ( 0 == $num_families ) {
-	empty_database_alert('Export Not Available');
-    exit();
-} 
-
 header('Content-Type: text/csv');
 header('Content-Disposition: attachment; filename="directory_export.csv"');
-
-
 $output = fopen('php://output', 'w');
 
 // Static columns before dynamic member columns
@@ -28,6 +17,7 @@ $header = [
     "familyname",
     "fname1",
     "fname2",
+    "lname2",
     "address",
     "address2",
     "city",
@@ -63,10 +53,11 @@ fputcsv($output, $header);
 $families = $conn->query("SELECT * FROM families");
 while ($family = $families->fetch_assoc()) {
     // Initialize family data
-    $one_family = sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", 
+    $one_family = sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", 
         $family['familyname'],
         $family['fname1'],
         $family['fname2'],
+        $family['lname2'],
         $family['address'],
         $family['address2'],
         $family['city'],
@@ -90,7 +81,7 @@ while ($family = $families->fetch_assoc()) {
     // Loop through each member and append their data
     while ($member = $members->fetch_assoc()) {
 
-        $one_family .= sprintf("%s %s,%s,%s,%s,%s,",$member['first_name'],$member['last_name'], $member['birthday'], $member['baptism'] ,$member['cell_phone'],$member['email']);
+        $one_family .= sprintf("%s,%s,%s,%s,%s,%s,",$member['first_name'],$member['last_name'], $member['birthday'], $member['baptism'] ,$member['cell_phone'],$member['email']);
     }
     // write out all data on a single csv record
     fputcsv($output, explode(",", $one_family));
