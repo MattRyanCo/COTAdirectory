@@ -25,10 +25,10 @@ An attacker could manipulate the `$family_id` parameter to execute arbitrary SQL
 $families = $this->conn->query("SELECT * FROM families WHERE family_id = " . $family_id);
 
 // After (secure):
-$stmt = $this->conn->prepare("SELECT * FROM families WHERE family_id = ?");
-$stmt->bind_param("i", $family_id);
-$stmt->execute();
-$families = $stmt->get_result();
+$statement = $this->conn->prepare("SELECT * FROM families WHERE family_id = ?");
+$statement->bind_param("i", $family_id);
+$statement->execute();
+$families = $statement->get_result();
 ```
 
 ## Bug #2: Logic Error with Undefined Variables (Runtime Error)
@@ -115,12 +115,12 @@ An attacker could execute arbitrary JavaScript in users' browsers, potentially:
 ### Code Changes Examples
 ```php
 // Before (vulnerable):
-$familyname = $_GET["familyname"];
-echo "<h2>" . $familyname . " family updated!</h2>";
+$family_name = $_GET["familyname"];
+echo "<h2>" . $family_name . " family updated!</h2>";
 
 // After (secure):
-$familyname = cota_sanitize($_GET["familyname"]);
-echo "<h2>" . htmlspecialchars($familyname) . " family updated!</h2>";
+$family_name = cota_sanitize($_GET["familyname"]);
+echo "<h2>" . htmlspecialchars($family_name) . " family updated!</h2>";
 ```
 
 ## Additional Security Recommendations

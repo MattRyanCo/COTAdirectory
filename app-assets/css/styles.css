@@ -46,6 +46,7 @@ h2,
 .cota-edit-container,
 .cota-add-container,
 .cota-update-container,
+.cota-upload-info-docs-container,
 #empty-notice {
     text-align: center;
     width: 95vh;
@@ -231,13 +232,19 @@ form {
   width: 50vw;
 }
 
+/* <div class='cota-upload-info-docs-container'>"; */
+/* <form class="cota-upload-info" method="post" enctype="multipart/form-data"> */
+/* <button class="cota-upload-info" type="submit">Upload Info Documents</button> */
+
+
 form.cota-import,
 form.cota-family-entry,
 form.cota-search,
 form.cota-family-edit,
 form.cota-family-delete,
 form.cota-display-family,
-form.cota-reset-db {
+form.cota-reset-db,
+form.cota-upload-info {
     background: lightgray;
     padding: 20px 40px 20px 20px;
     border-radius: 5px;
@@ -379,7 +386,10 @@ button {
     cursor: pointer;
     margin: 10px auto;
     font-size: 1em;
-    width: 20vh;
+    width: 20vw;
+}
+button.cota-upload-info {
+    width: 30vw;
 }
 button.cota-edit-family > a,
 button.cota-search-family > a,
@@ -392,7 +402,8 @@ button.cota-add-another,
 button.cota-edit-family,
 button.cota-search-family,
 button.cota-import,
-button.cota-print {
+button.cota-print,
+button.cota-upload-info {
     background-color: #2ecc71;
 }
 button.cota-edit-family[type='reset'],
