@@ -45,6 +45,10 @@ class App_Meta_Data {
 		return $this->metadata['GitHub URL'];
 	}
 
+	public function get_github_wiki_url(): string {
+		return $this->metadata['GitHub URL'] . '/wiki';
+	}
+
 	public function getAll(): array {
 		return $this->metadata;
 	}

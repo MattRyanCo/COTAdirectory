@@ -20,9 +20,11 @@ function cota_page_header() {
 	if ( ! isset( $meta ) || ! is_object( $meta ) ) {
 		$app_version    = 'unknown';
 		$app_github_url = '#';
+		$app_github_wiki_url = '#';
 	} else {
 		$app_version    = $meta->get_version();
 		$app_github_url = $meta->get_github_url();
+		$app_github_wiki_url = $meta->get_github_wiki_url();
 	}
 
 	$scripts = $constants->COTA_APP_ASSETS;
@@ -45,6 +47,7 @@ function cota_page_header() {
 	<div id="pre-header">
 		App ' . $app_version . '<br>
 		<a href="' . $app_github_url . '" target="_blank">Source</a>  
+		<a href="' . $app_github_wiki_url . '" target="_blank">Wiki</a> 
 	</div>
 	<h1>Church of the Ascension, Parkesburg</h1>
 	<h2><a href="/">Family Directory Management</a></h2>
