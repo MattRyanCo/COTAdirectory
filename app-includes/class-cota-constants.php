@@ -4,7 +4,6 @@
 class Constants {
 	const MAX_FAMILY_MEMBERS = 10; // Maximum number of family members
 	const ENVIRONMENT_TYPE   = 'laragon';
-	// const ABSPATH                = __DIR__ . '/';
 	const COTA_APP_ASSETS        = __DIR__ . '/app-assets/';
 	const COTA_APP_INCLUDES      = __DIR__ . '/app-includes/';
 	const COTA_APP_LIBRARIES     = __DIR__ . '/app-libraries/';

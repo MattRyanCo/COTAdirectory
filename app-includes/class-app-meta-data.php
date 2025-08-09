@@ -13,13 +13,13 @@ class App_Meta_Data {
 
 		$this->filepath = $file_path;
 		$this->parse_meta_data();
-		var_dump( $this->filepath );
+		// var_dump( $this->filepath );
 	}
 
 	private function parse_meta_data(): void {
 		$header    = '';
 		$max_bytes = 8192;
-		var_dump( $this->filepath );
+		// var_dump( $this->filepath );
 		if ( is_readable( $this->filepath ) ) {
 			$handle = fopen( $this->filepath, 'r' );
 			if ( $handle ) {
