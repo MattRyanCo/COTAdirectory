@@ -21,8 +21,8 @@ function cota_page_header() {
 		$app_version    = 'unknown';
 		$app_github_url = '#';
 	} else {
-		$app_version    = $meta->getVersion();
-		$app_github_url = $meta->getGitHubUrl();
+		$app_version    = $meta->get_version();
+		$app_github_url = $meta->get_github_url();
 	}
 
 	$scripts = $constants->COTA_APP_ASSETS;

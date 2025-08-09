@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/bootstrap.php';
+// require_once __DIR__ . '/bootstrap.php';
 
 class App_Meta_Data {
 	private string $file_path;
@@ -10,16 +10,18 @@ class App_Meta_Data {
 	);
 
 	public function __construct( string $file_path ) {
-		$this->file_path = $file_path;
+
+		$this->filepath = $file_path;
 		$this->parse_meta_data();
+		var_dump( $this->filepath );
 	}
 
 	private function parse_meta_data(): void {
 		$header    = '';
 		$max_bytes = 8192;
-
-		if ( is_readable( $this->file_path ) ) {
-			$handle = fopen( $this->file_path, 'r' );
+		var_dump( $this->filepath );
+		if ( is_readable( $this->filepath ) ) {
+			$handle = fopen( $this->filepath, 'r' );
 			if ( $handle ) {
 				$header = fread( $handle, $max_bytes );
 				fclose( $handle );
@@ -35,11 +37,11 @@ class App_Meta_Data {
 		}
 	}
 
-	public function getVersion(): string {
+	public function get_version(): string {
 		return 'v' . $this->metadata['Version'];
 	}
 
-	public function getGitHubUrl(): string {
+	public function get_github_url(): string {
 		return $this->metadata['GitHub URL'];
 	}
 
