@@ -80,3 +80,5 @@ libraries/fpdf/font/
 .env
 .env.*
 !.env.example
+
+*.phpOFF
