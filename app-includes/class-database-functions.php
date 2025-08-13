@@ -18,7 +18,7 @@ class COTA_Database {
 
 
 	public function __construct() {
-		$this->conn = new mysqli(
+		$this->conn = new \mysqli(
 			self::get_db_host(),
 			self::get_db_user(),
 			self::get_db_password(),

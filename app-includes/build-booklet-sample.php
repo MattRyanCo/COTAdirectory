@@ -29,7 +29,7 @@ function generate_booklet_order( $total_pages ) {
 
 
 $title     = 'Church of the Ascension Directory 2025';
-$build_pdf = new PDF( 'P', 'in', 'Letter' ); // Portrait, Inches, Letter Size
+$build_pdf = new PDF( 'P', 'in', 'HalfLetter' ); // Portrait, Inches, Half-Letter Size for booklet printing
 $author    = 'Vestry & Wardens of Church of the Ascension, Parkesburg';
 $build_pdf->SetTitle( $title );
 $build_pdf->SetAuthor( $author );
@@ -46,8 +46,6 @@ $build_pdf->SetFont( 'Arial', '', 12 );
 
 $logo_file = '../app-assets/images/cota-logo.png';
 $build_pdf->front_cover( $title, $author, $logo_file ); // Add front cover with logo
-
-// $build_pdf->dummy_up_pages( $build_pdf, $pages ); // Add dummy pages based on the generated order
 
 $build_pdf->SetFont( 'Arial', 'B', 14 );
 $build_pdf->Cell( 0, 10, 'COTA Directory', 0, 1, 'C' );

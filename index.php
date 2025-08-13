@@ -11,6 +11,7 @@
  * Github URL:  https://github.com/MattRyanCo/COTAdirectory
  *
  */
+
 require_once __DIR__ . '/app-includes/bootstrap.php';
 
 // Echo page header

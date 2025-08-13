@@ -4,7 +4,7 @@ require_once __DIR__ . '/bootstrap.php';
  * cota_format_family_listing_for_fpdf
  *
  * Takes a family array and a members result set, formats the family listing for FPDF output.The output is
- * designed to mimic the displayed format. The output is writen to a PDF file for later processing by a
+ * designed to mimic the displayed format. The output is written to a PDF file for later processing by a
  * PDF booklet printing app.
  *
  * @param [type] $family
@@ -26,7 +26,7 @@ function cota_format_family_listing_for_fpdf( $pdfobj, $family, $members ) {
 	// Calling this function to print out 1 entire family to the pdf file.
 	// The calling function must set up the pdf object, and handle the 2 line header for
 	// the family directory listing
-	// It must check the amout of space needed for the family and determine
+	// It must check the amount of space needed for the family and determine
 	// if it needs to add a new page or not.
 
 	// Outer loop through left side of printed entry block
@@ -34,16 +34,18 @@ function cota_format_family_listing_for_fpdf( $pdfobj, $family, $members ) {
 		if ( $lctr == 1 ) {
 			// Build the family header (name and address, other column headings)
 			// Get 1st member of family
-			$pdfobj->multicell( 2, 0.5, "Family Name/Address Family Members\n", 0, 1 );
+			$pdfobj->SetFont( 'Arial', '', 8 );  // Smaller font for booklet
+			// $pdfobj->multicell( 2, 0.5, "Family Name/Address Family Members\n", 0, 1 );
 			$pdfobj->cell( 2, 0.5, 'Family Name/Address', 0, 0, 'L', false );
 			$pdfobj->cell( 2, 0.5, 'Family Members', 0, 1, 'L', false );
 			$pdfobj->cell( 2, 0.25, 'Home Phone', 0, 0, 'L', false );
-			// $pdfobj->MultiCell(2, 0.5, "Home Phone   Name   Email   Cell   DoB   DoBaptism\n", 0, 1);
 			$pdfobj->cell( 1, 0.25, 'Name', 0, 0, 'L', false );
 			$pdfobj->cell( 1, 0.25, 'Email', 0, 0, 'L', false );
 			$pdfobj->cell( 1, 0.25, 'Cell', 0, 0, 'L', false );
 			$pdfobj->cell( 1, 0.25, 'DoB', 0, 0, 'L', false );
 			$pdfobj->cell( 1, 0.25, 'DoBaptism', 0, 1, 'L', false );
+
+			// Inits the return string with headings.
 			$familystringlines  = "Family Name/Address Family Members\n";
 			$familystringlines .= "Home Phone   Name   Email   Cell   DoB   DoBaptism\n";
 
@@ -52,7 +54,6 @@ function cota_format_family_listing_for_fpdf( $pdfobj, $family, $members ) {
 				// No members found
 				break;
 			}
-			// $familystringlines = [];
 			$familystringlines .= $family['familyname'] . ' ' .
 				( $individual['first_name'] ?? '' ) . ' ' .
 				( $individual['last_name'] ?? '' ) . ' ' .

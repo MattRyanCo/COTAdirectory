@@ -1,15 +1,225 @@
 <?php
 require_once __DIR__ . '/bootstrap.php';
-require_once '../app-libraries/fpdf/fpdf.php';
+// require_once '../app-libraries/fpdf/fpdf.php';
+require_once $COTA_APP_LIBRARIES . 'fpdf/fpdf.php';
 
 
 class PDF extends FPDF {
+
+	public $booklet_pages        = array();
+	public $pageWidth            = 0;
+	private $current_page_number = 0;
 
 	public function getPageBreakTrigger(): float {
 		return $this->PageBreakTrigger;
 	}
 
-	function center_this_text( $text, $vertical_position ) {
+	/**
+	 * Constructor for booklet PDF
+	 * Sets up portrait orientation with custom half-letter size for 2-up printing
+	 */
+	public function __construct( $orientation = 'P', $unit = 'in', $size = 'HalfLetter' ) {
+		// For booklet printing, we need half-letter size (5.5" x 8.5") in portrait
+		// This will print 2-up on 8.5" x 11" paper
+		if ( $size === 'HalfLetter' ) {
+			// Create custom page size: 5.5" x 8.5" (half of letter size)
+			// For booklet printing, we want portrait orientation with 5.5" width and 8.5" height
+			// This will print 2-up on 8.5" x 11" paper
+			$size = array( 5.5, 8.5 ); // Width, Height in inches
+		}
+
+		parent::__construct( $orientation, $unit, $size );
+		// Set up booklet-specific settings
+		$this->SetAutoPageBreak( true, 0.5 );
+		$this->SetMargins( 0.25, 0.25, 0.25 ); // Smaller margins for booklet format
+	}
+
+	/**
+	 * Generate booklet page order for 2-up printing
+	 * @param int $total_pages Total number of content pages
+	 * @return array Array of page numbers in booklet order
+	 */
+	public function generate_booklet_order( $total_pages ) {
+		// Ensure total pages is a multiple of 4 (each sheet has 2 pages front and back)
+		$pages_to_print = ( $total_pages % 4 === 0 ) ? $total_pages : $total_pages + ( 4 - ( $total_pages % 4 ) );
+
+		$booklet_order = array();
+		$sheets_needed = $pages_to_print / 4;
+
+		for ( $sheet = 0; $sheet < $sheets_needed; $sheet++ ) {
+			// Calculate page numbers for this sheet
+			$first_page = $sheet * 4 + 1;
+			$last_page  = $pages_to_print - ( $sheet * 4 );
+
+			// Front of sheet: last_page (left) | first_page (right)
+			$booklet_order[] = array( $last_page, $first_page );
+
+			// Back of sheet: first_page + 1 (left) | last_page - 1 (right)
+			$booklet_order[] = array( $first_page + 1, $last_page - 1 );
+		}
+
+		return $booklet_order;
+	}
+
+	/**
+	 * Add a page to the booklet collection
+	 * @param string $content_type Type of content (cover, intro, family, etc.)
+	 * @param mixed $content_data Content data for the page
+	 */
+	public function add_booklet_page( $content_type, $content_data = null ) {
+		$this->AddPage();  // New page.
+		++$this->current_page_number;
+		$this->booklet_pages[] = array(
+			'page_number'  => $this->current_page_number,
+			'content_type' => $content_type,
+			'content_data' => $content_data,
+		);
+		// Does this need to have end of page info added?
+	}
+
+	/**
+	 * Generate the final booklet PDF with correct page ordering
+	 */
+	public function generate_booklet_pdf() {
+		$total_pages   = count( $this->booklet_pages );
+		$booklet_order = $this->generate_booklet_order( $total_pages );
+
+		// Create a new PDF for the final booklet
+		$final_pdf = new PDF( 'P', 'in', 'HalfLetter' );
+
+		foreach ( $booklet_order as $sheet ) {
+			$final_pdf->AddPage();
+
+			// Left page (back of sheet)
+			if ( $sheet[0] <= $total_pages ) {
+				$this->render_page_content( $final_pdf, $this->booklet_pages[ $sheet[0] - 1 ], 'left' );
+			} else {
+				// Blank page
+				$final_pdf->SetFont( 'Arial', '', 8 );
+				$final_pdf->center_this_text( '(Blank)', 4 );
+			}
+
+			// Right page (front of sheet)
+			if ( $sheet[1] <= $total_pages ) {
+				$this->render_page_content( $final_pdf, $this->booklet_pages[ $sheet[1] - 1 ], 'right' );
+			} else {
+				// Blank page
+				$final_pdf->SetFont( 'Arial', '', 8 );
+				$final_pdf->center_this_text( '(Blank)', 4 );
+			}
+		}
+
+		return $final_pdf;
+	}
+
+	/**
+	 * Render individual page content
+	 * @param PDF $pdf PDF object
+	 * @param array $page_data Page data
+	 * @param string $position left or right
+	 */
+	private function render_page_content( $pdf, $page_data, $position ) {
+		$content_type = $page_data['content_type'];
+		$content_data = $page_data['content_data'];
+
+		switch ( $content_type ) {
+			case 'cover':
+				$this->render_cover_page( $pdf, $content_data, $position );
+				break;
+			case 'intro':
+				$this->render_intro_page( $pdf, $content_data, $position );
+				break;
+			case 'family':
+				$this->render_family_page( $pdf, $content_data, $position );
+				break;
+			case 'back_cover':
+				$this->render_back_cover( $pdf, $content_data, $position );
+				break;
+		}
+	}
+
+	/**
+	 * Render cover page
+	 */
+	private function render_cover_page( $pdf, $data, $position ) {
+		$pdf->SetFont( 'Arial', 'I', 14 );
+		$pdf->center_this_text( $data['title'], 0.5 );
+		$pdf->SetFontSize( 8 );
+		$pdf->center_this_text( $data['author'], 0.75 );
+
+		if ( isset( $data['logo'] ) ) {
+			$pageWidth  = $pdf->GetPageWidth();
+			$imageWidth = 3.5;
+			$x          = ( $pageWidth - $imageWidth ) / 2;
+			$pdf->Image( $data['logo'], $x, 1.5, $imageWidth );
+		}
+	}
+
+	/**
+	 * Render intro page
+	 */
+	private function render_intro_page( $pdf, $data, $position ) {
+		$pdf->SetFont( 'Arial', '', 10 );
+		$pdf->center_this_text( $data['title'], 0.5 );
+		$pdf->SetFont( 'Arial', '', 8 );
+		$pdf->SetXY( 0.5, 1 );
+		$pdf->MultiCell( 4.5, 0.15, $data['content'] );
+	}
+
+	/**
+	 * Render family listing page
+	 */
+	private function render_family_page( $pdf, $data, $position ) {
+		$pdf->SetFont( 'Arial', 'B', 10 );
+		$pdf->center_this_text( 'Family & Members Listing', 0.5 );
+		$pdf->SetFont( 'Arial', '', 8 );
+
+		// Render family data here
+		if ( isset( $data['families'] ) ) {
+			$y = 1;
+			foreach ( $data['families'] as $family ) {
+				// Display family name as header
+				$pdf->SetXY( 0.5, $y );
+				$pdf->SetFont( 'Arial', 'B', 9 );
+				$pdf->Cell( 4.5, 0.2, $family['name'] );
+				$y += 0.25;
+
+				// Display formatted family data
+				if ( isset( $family['data'] ) && is_string( $family['data'] ) ) {
+					$pdf->SetFont( 'Arial', '', 7 );
+					$pdf->SetXY( 0.5, $y );
+					// Split the formatted string into lines and display each line
+					$lines = explode( "\n", trim( $family['data'] ) );
+					foreach ( $lines as $line ) {
+						if ( ! empty( trim( $line ) ) ) {
+							$pdf->SetXY( 0.5, $y );
+							$pdf->Cell( 4.5, 0.15, trim( $line ) );
+							$y += 0.2;
+						}
+					}
+				}
+				$y += 0.1; // Add space between families
+			}
+		}
+	}
+
+	/**
+	 * Render back cover
+	 */
+	private function render_back_cover( $pdf, $data, $position ) {
+		$pdf->SetFont( 'Arial', '', 6 );
+		$text = 'Printed ' . date( 'F j, Y' );
+		$pdf->center_this_text( $text, 3.5 );
+	}
+
+	/**
+	 * Center This Text
+	 *
+	 * @param [type] $text
+	 * @param [type] $vertical_position
+	 * @return void
+	 */
+	public function center_this_text( $text, $vertical_position ) {
 		$pageWidth = $this->GetPageWidth();
 		$textWidth = $this->GetStringWidth( $text );
 		// Calculate X position to center
@@ -28,7 +238,7 @@ class PDF extends FPDF {
 	 * @param string $align
 	 * @return void
 	 */
-	function just_this_text( $text, $align = 'L' ) {
+	public function just_this_text( $text, $align = 'L' ) {
 		$y = $this->GetY();
 		if ( $align === 'L' ) {
 			$x = $this->lMargin;
@@ -36,30 +246,27 @@ class PDF extends FPDF {
 			$x = $this->w - $this->rMargin - ( $this->GetStringWidth( $text ) + .25 );
 		} else {
 			// Default to center alignment
-			center_this_text( $text, $y );
+			$this->center_this_text( $text, $y );
 		}
 		$this->SetX( $x );
 		$this->Write( 0.25, $text );
 	}
 
-	function Header() {
+	public function Header() {
 		global $title, $header_height;
-		$this->SetFont( 'Arial', 'B', 15 );  // Arial bold 15
+		$this->SetFont( 'Arial', 'B', 12 );  // Smaller font for booklet
 		$this->SetTextColor( 128 );
 
-		$this->center_this_text( $title, 0 );
-		// $this->h  is height of document 11"
-		// $this->w  is width of document 8.5"
+		$this->center_this_text( $title, 0.25 );
+		// $this->h  is height of document 8.5" (portrait)
+		// $this->w  is width of document 5.5" (portrait)
 
-		// var_dump($this->GetY());
-		$this->Ln( 1 );  // Moves 1 inch down.
-		// $this->SetY(3);   // Position cursor 3" from top of page.
+		$this->Ln( 0.5 );  // Moves 0.5 inch down for booklet format
 		$header_height = $this->GetY();
-		// var_dump($header_height);
 	}
 
-	function Footer() {
-		$this->SetFont( 'Arial', 'I', 8 );  // Select Arial italic 8
+	public function Footer() {
+		$this->SetFont( 'Arial', 'I', 6 );  // Smaller font for booklet
 		$this->SetTextColor( 128 );  // Text color in gray
 		$page_no     = $this->PageNo();
 		$footer_text = 'Page ' . $page_no;
@@ -77,69 +284,61 @@ class PDF extends FPDF {
 	}
 
 
-	function chapter_title( $num, $label ) {
-		// Arial 12
-		$this->SetFont( 'Arial', '', 12 );
+	public function chapter_title( $num, $label ) {
+		// Arial 10 for booklet format
+		$this->SetFont( 'Arial', '', 10 );
 		$chapter_title = "Chapter $num : $label";
-		$this->center_this_text( $chapter_title, 1 );
+		$this->center_this_text( $chapter_title, 0.5 );
 	}
 
-	function chapter_body( $file ) {
-		$line_height = 0.2;
+	public function chapter_body( $file ) {
+		$line_height = 0.15; // Smaller line height for booklet
 		// Read text file
 		$content = file_get_contents( $file );
-		// Ouput file contents
-		$this->SetXY( 1, 2 ); // 1 inch from left, 2 inches from top
+		// Output file contents
+		$this->SetXY( 0.5, 1 ); // 0.5 inch from left, 1 inch from top
 		if ( $content !== false ) {
-			$this->MultiCell( 6.5, 0.2, $content ); // 6.5" width, 0.2" height per line
+			$this->MultiCell( 4.5, 0.15, $content ); // 4.5" width, 0.15" height per line
 		} else {
 			$this->SetTextColor( 255, 0, 0 );
-			$this->MultiCell( 6.5, 0.2, 'Could not load {$file}.' );
+			$this->MultiCell( 4.5, 0.15, 'Could not load {$file}.' );
 		}
 	}
 
-	function print_chapter( $num, $title, $file ) {
-		$this->SetFont( 'Times', '', 12 );
+	public function print_chapter( $num, $title, $file ) {
+		$this->SetFont( 'Times', '', 10 );
 		$this->AddPage();
 		$this->chapter_title( $num, $title );
 		$this->chapter_body( $file );
 	}
 
-	function back_cover( $label ) {
-
+	public function back_cover( $label ) {
 		$this->AddPage();
-		$this->SetFont( 'Arial', '', 8 );
+		$this->SetFont( 'Arial', '', 6 );
 		$text = ' Printed ' . date( 'F j, Y' );
-		$this->center_this_text( $text, 5 );
+		$this->center_this_text( $text, 3.5 );
 	}
 
-	function front_cover( $title, $author, $logo_file ) {
+	public function front_cover( $title, $author, $logo_file ) {
 		// Background color
 		$this->SetFillColor( 200, 220, 255 );
-		// $this->AddPage();
-		$this->Ln( 4 );
-		$this->SetY( -1 );
-		$this->SetFont( 'Arial', 'I', 20 );
+		$this->Ln( 2 );
+		$this->SetY( -0.5 );
+		$this->SetFont( 'Arial', 'I', 14 ); // Smaller font for booklet
 
 		// Center the title
-		$this->center_this_text( $title, 1 );
-		$this->SetFontSize( 12 );
+		$this->center_this_text( $title, 0.5 );
+		$this->SetFontSize( 8 );
 		// Output the author
-		$this->center_this_text( $author, 1.5 );
-		$this->Ln( 10 );
+		$this->center_this_text( $author, 0.75 );
+		$this->Ln( 5 );
 
-		// Center the logo
-		$pageWidth = $this->GetPageWidth();
-		// $logowidth = 200;
-		$imageWidth = 7; // image size
+		// Center the logo - smaller for booklet
+		$pageWidth  = $this->GetPageWidth();
+		$imageWidth = 3.5; // Smaller image size for booklet
 		$x          = ( $pageWidth - $imageWidth ) / 2;
-		$this->SetXY( $x, 3 );  // Place it in the center 3" from top.
-		$this->Image( $logo_file );
-
-		// $this->SetFontSize(8);
-		// Center the date.
-		// $datetext = "Created: " . date('F j, Y');
-		// $this->center_this_text( $datetext, -1 );
+		$this->SetXY( $x, 1.5 );  // Place it in the center 1.5" from top.
+		$this->Image( $logo_file, $x, 1.5, $imageWidth );
 	}
 
 	/**
@@ -151,10 +350,10 @@ class PDF extends FPDF {
 				1 => [array] $field_widths
 			)
 	 */
-	function print_family_array_headings( $first_time ) {
+	public function print_family_array_headings( $first_time ) {
 		global $header_height;
 
-		$line_height   = .25;
+		$line_height   = .2; // Smaller line height for booklet
 		$left_margin   = $this->lMargin;
 		$start_heading = $header_height + $line_height;
 
@@ -174,7 +373,7 @@ class PDF extends FPDF {
 				round( $this->GetStringWidth( 'mm/dd_' ), 1 ),                 // [5
 			); // width of heading lables line 2.
 			$field_widths      = $wline2;
-			$large_field_width = round( $this->GetStringWidth( 'Family Name/Address' ), 1 ) + 0.5;
+			$large_field_width = round( $this->GetStringWidth( 'Family Name/Address' ), 1 ) + 0.25; // Smaller margin for booklet
 			$field_positions   = array(
 				$left_margin,                                         // [0] phone or blank
 				$left_margin + $large_field_width,                                            // 1 name
@@ -194,11 +393,11 @@ class PDF extends FPDF {
 		$this->Cell( $wline1[1], $line_height, 'Family Members' );
 
 		// Table Headers - 2nd line in italics.
-		$this->SetFont( 'Arial', 'I', 10 );
+		$this->SetFont( 'Arial', 'I', 8 ); // Smaller font for booklet
 
 		// Print out column headings.
 			// Set x position & print content 'cell'
-		$this->SetXY( $field_positions[1], $start_heading + 0.25 );
+		$this->SetXY( $field_positions[1], $start_heading + 0.2 );
 		$this->Cell( $field_widths[1], $line_height, 'Name' );
 
 		$this->SetX( $field_positions[2] );
@@ -229,8 +428,8 @@ class PDF extends FPDF {
 	 * @return void
 	 */
 	public function print_family_array( $family_array, $field_info ) {
-		$this->SetFont( 'Arial', '', 10 );  // Set default font.
-		$line_height                    = 0.25;
+		$this->SetFont( 'Arial', '', 8 );  // Smaller font for booklet
+		$line_height                    = 0.2; // Smaller line height for booklet
 		$left_margin                    = $this->lMargin;
 		$field_positions                = $field_info[0];
 		$field_widths                   = $field_info[1];
@@ -270,8 +469,8 @@ class PDF extends FPDF {
 		return $this->GetY();
 	}
 
-	public function enough_room_for_family( $lines_to_output, $line_height = 0.25 ) {
-		$page_break_now = 10;  // If we hit this, time to break to new page.
+	public function enough_room_for_family( $lines_to_output, $line_height = 0.2 ) {
+		$page_break_now = 7.5;  // Adjusted for booklet format (8.5" height - margins)
 		if ( 0 == $lines_to_output ) {
 			return true;  // weird input. Assume okay.
 		} else {
@@ -283,20 +482,6 @@ class PDF extends FPDF {
 				return false; // not enough room
 			} else {
 				return true;  // enough room
-			}
-		}
-	}
-
-
-	function dummy_up_pages( $pdf_object, $no_of_pages ) {
-		foreach ( $no_of_pages as $pair ) {
-			$pdf_object->AddPage();
-			foreach ( $pair as $page_num ) {
-				if ( $page_num > $no_of_pages ) {
-					$pdf_object->Cell( 0, 5, '(Blank)', 0, 1, 'C' ); // Handle extra blank pages
-				} else {
-					$pdf_object->Cell( 0, 5, 'Page ' . $page_num, 0, 1, 'C' );
-				}
 			}
 		}
 	}
