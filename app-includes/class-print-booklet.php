@@ -67,14 +67,13 @@ class PDF extends FPDF {
 	 * @param mixed $content_data Content data for the page
 	 */
 	public function add_booklet_page( $content_type, $content_data = null ) {
-		$this->AddPage();  // New page.
 		++$this->current_page_number;
 		$this->booklet_pages[] = array(
 			'page_number'  => $this->current_page_number,
 			'content_type' => $content_type,
 			'content_data' => $content_data,
 		);
-		// Does this need to have end of page info added?
+		// Does this need to have end of page info added? No page footers are being added.
 	}
 
 	/**
@@ -87,25 +86,25 @@ class PDF extends FPDF {
 		// Create a new PDF for the final booklet
 		$final_pdf = new PDF( 'P', 'in', 'HalfLetter' );
 
+		$final_pdf->AddPage();
 		foreach ( $booklet_order as $sheet ) {
-			$final_pdf->AddPage();
-
-			// Left page (back of sheet)
 			if ( $sheet[0] <= $total_pages ) {
 				$this->render_page_content( $final_pdf, $this->booklet_pages[ $sheet[0] - 1 ], 'left' );
-			} else {
-				// Blank page
-				$final_pdf->SetFont( 'Arial', '', 8 );
-				$final_pdf->center_this_text( '(Blank)', 4 );
+				$final_pdf->AddPage();
+				// } else {
+				//  // Blank page
+				//  $final_pdf->SetFont( 'Arial', '', 8 );
+				//  $final_pdf->center_this_text( '(Blank)', 4 );
 			}
 
 			// Right page (front of sheet)
 			if ( $sheet[1] <= $total_pages ) {
 				$this->render_page_content( $final_pdf, $this->booklet_pages[ $sheet[1] - 1 ], 'right' );
-			} else {
-				// Blank page
-				$final_pdf->SetFont( 'Arial', '', 8 );
-				$final_pdf->center_this_text( '(Blank)', 4 );
+				$final_pdf->AddPage();
+				// } else {
+				//  // Blank page
+				//  $final_pdf->SetFont( 'Arial', '', 8 );
+				//  $final_pdf->center_this_text( '(Blank)', 4 );
 			}
 		}
 
@@ -121,6 +120,8 @@ class PDF extends FPDF {
 	private function render_page_content( $pdf, $page_data, $position ) {
 		$content_type = $page_data['content_type'];
 		$content_data = $page_data['content_data'];
+
+		// $this->AddPage();  // Start new page in render_page_content
 
 		switch ( $content_type ) {
 			case 'cover':
@@ -272,7 +273,7 @@ class PDF extends FPDF {
 		$footer_text = 'Page ' . $page_no;
 		$this->SetY( -0.25 );  // Set position 1/4" from bottom of page.
 
-		if ( $page_no == 1 ) {
+		if ( $page_no == 1 ) { // @TODO add check for last page. No footer needed.
 			return; // no footer on 1st page.
 		}
 
@@ -284,62 +285,62 @@ class PDF extends FPDF {
 	}
 
 
-	public function chapter_title( $num, $label ) {
-		// Arial 10 for booklet format
-		$this->SetFont( 'Arial', '', 10 );
-		$chapter_title = "Chapter $num : $label";
-		$this->center_this_text( $chapter_title, 0.5 );
-	}
+	// public function chapter_title( $num, $label ) {
+	//  // Arial 10 for booklet format
+	//  $this->SetFont( 'Arial', '', 10 );
+	//  $chapter_title = "Chapter $num : $label";
+	//  $this->center_this_text( $chapter_title, 0.5 );
+	// }
 
-	public function chapter_body( $file ) {
-		$line_height = 0.15; // Smaller line height for booklet
-		// Read text file
-		$content = file_get_contents( $file );
-		// Output file contents
-		$this->SetXY( 0.5, 1 ); // 0.5 inch from left, 1 inch from top
-		if ( $content !== false ) {
-			$this->MultiCell( 4.5, 0.15, $content ); // 4.5" width, 0.15" height per line
-		} else {
-			$this->SetTextColor( 255, 0, 0 );
-			$this->MultiCell( 4.5, 0.15, 'Could not load {$file}.' );
-		}
-	}
+	// public function chapter_body( $file ) {
+	//  $line_height = 0.15; // Smaller line height for booklet
+	//  // Read text file
+	//  $content = file_get_contents( $file );
+	//  // Output file contents
+	//  $this->SetXY( 0.5, 1 ); // 0.5 inch from left, 1 inch from top
+	//  if ( $content !== false ) {
+	//      $this->MultiCell( 4.5, 0.15, $content ); // 4.5" width, 0.15" height per line
+	//  } else {
+	//      $this->SetTextColor( 255, 0, 0 );
+	//      $this->MultiCell( 4.5, 0.15, 'Could not load {$file}.' );
+	//  }
+	// }
 
-	public function print_chapter( $num, $title, $file ) {
-		$this->SetFont( 'Times', '', 10 );
-		$this->AddPage();
-		$this->chapter_title( $num, $title );
-		$this->chapter_body( $file );
-	}
+	// public function print_chapter( $num, $title, $file ) {
+	//  $this->SetFont( 'Times', '', 10 );
+	//  $this->AddPage();
+	//  $this->chapter_title( $num, $title );
+	//  $this->chapter_body( $file );
+	// }
 
-	public function back_cover( $label ) {
-		$this->AddPage();
-		$this->SetFont( 'Arial', '', 6 );
-		$text = ' Printed ' . date( 'F j, Y' );
-		$this->center_this_text( $text, 3.5 );
-	}
+	// public function back_cover( $label ) {
+	//  $this->AddPage();
+	//  $this->SetFont( 'Arial', '', 6 );
+	//  $text = ' Printed ' . date( 'F j, Y' );
+	//  $this->center_this_text( $text, 3.5 );
+	// }
 
-	public function front_cover( $title, $author, $logo_file ) {
-		// Background color
-		$this->SetFillColor( 200, 220, 255 );
-		$this->Ln( 2 );
-		$this->SetY( -0.5 );
-		$this->SetFont( 'Arial', 'I', 14 ); // Smaller font for booklet
+	// public function front_cover( $title, $author, $logo_file ) {
+	//  // Background color
+	//  $this->SetFillColor( 200, 220, 255 );
+	//  $this->Ln( 2 );
+	//  $this->SetY( -0.5 );
+	//  $this->SetFont( 'Arial', 'I', 14 ); // Smaller font for booklet
 
-		// Center the title
-		$this->center_this_text( $title, 0.5 );
-		$this->SetFontSize( 8 );
-		// Output the author
-		$this->center_this_text( $author, 0.75 );
-		$this->Ln( 5 );
+	//  // Center the title
+	//  $this->center_this_text( $title, 0.5 );
+	//  $this->SetFontSize( 8 );
+	//  // Output the author
+	//  $this->center_this_text( $author, 0.75 );
+	//  $this->Ln( 5 );
 
-		// Center the logo - smaller for booklet
-		$pageWidth  = $this->GetPageWidth();
-		$imageWidth = 3.5; // Smaller image size for booklet
-		$x          = ( $pageWidth - $imageWidth ) / 2;
-		$this->SetXY( $x, 1.5 );  // Place it in the center 1.5" from top.
-		$this->Image( $logo_file, $x, 1.5, $imageWidth );
-	}
+	//  // Center the logo - smaller for booklet
+	//  $pageWidth  = $this->GetPageWidth();
+	//  $imageWidth = 3.5; // Smaller image size for booklet
+	//  $x          = ( $pageWidth - $imageWidth ) / 2;
+	//  $this->SetXY( $x, 1.5 );  // Place it in the center 1.5" from top.
+	//  $this->Image( $logo_file, $x, 1.5, $imageWidth );
+	// }
 
 	/**
 	 * print_family_array_headings
@@ -350,74 +351,74 @@ class PDF extends FPDF {
 				1 => [array] $field_widths
 			)
 	 */
-	public function print_family_array_headings( $first_time ) {
-		global $header_height;
+	// public function print_family_array_headings( $first_time ) {
+	//  global $header_height;
 
-		$line_height   = .2; // Smaller line height for booklet
-		$left_margin   = $this->lMargin;
-		$start_heading = $header_height + $line_height;
+	//  $line_height   = .2; // Smaller line height for booklet
+	//  $left_margin   = $this->lMargin;
+	//  $start_heading = $header_height + $line_height;
 
-		// Do this setup only first time through
-		if ( $first_time ) {
-			$large_field_width = round( $this->GetStringWidth( 'Family Name/Address' ), 1 );
-			$wline1            = array(
-				round( $this->GetStringWidth( 'Family Name/Address' ), 1 ),  // [0]
-				round( $this->GetStringWidth( 'Family Members' ), 1 ),       // [1]                                             // [1]
-			);  // width of heading lables line 1.
-			$wline2            = array(
-				round( $this->GetStringWidth( 'Home: xxx-xxx-xxxx_' ), 1 ),           // [0]
-				round( $this->GetStringWidth( 'MyLongFirstName ' ), 1 ), // [1]
-				round( $this->GetStringWidth( 'LongEmailExample@example.com ' ), 1 ),           // [2
-				round( $this->GetStringWidth( '###-###-####__' ), 1 ),                // [3
-				round( $this->GetStringWidth( 'mm/dd_' ), 1 ),                // [4
-				round( $this->GetStringWidth( 'mm/dd_' ), 1 ),                 // [5
-			); // width of heading lables line 2.
-			$field_widths      = $wline2;
-			$large_field_width = round( $this->GetStringWidth( 'Family Name/Address' ), 1 ) + 0.25; // Smaller margin for booklet
-			$field_positions   = array(
-				$left_margin,                                         // [0] phone or blank
-				$left_margin + $large_field_width,                                            // 1 name
-				$left_margin + $large_field_width + $wline2[1],                                 // 2 em
-				$left_margin + $large_field_width + $wline2[1] + $wline2[2],                      // 3 cell
-				$left_margin + $large_field_width + $wline2[1] + $wline2[2] + $wline2[3],           // 4 DOB
-				$left_margin + $large_field_width + $wline2[1] + $wline2[2] + $wline2[3] + $wline2[4], // 5 Bap
-			);  // X position for start of label / fields to write
-		}
+	//  // Do this setup only first time through
+	//  if ( $first_time ) {
+	//      $large_field_width = round( $this->GetStringWidth( 'Family Name/Address' ), 1 );
+	//      $wline1            = array(
+	//          round( $this->GetStringWidth( 'Family Name/Address' ), 1 ),  // [0]
+	//          round( $this->GetStringWidth( 'Family Members' ), 1 ),       // [1]                                             // [1]
+	//      );  // width of heading lables line 1.
+	//      $wline2            = array(
+	//          round( $this->GetStringWidth( 'Home: xxx-xxx-xxxx_' ), 1 ),           // [0]
+	//          round( $this->GetStringWidth( 'MyLongFirstName ' ), 1 ), // [1]
+	//          round( $this->GetStringWidth( 'LongEmailExample@example.com ' ), 1 ),           // [2
+	//          round( $this->GetStringWidth( '###-###-####__' ), 1 ),                // [3
+	//          round( $this->GetStringWidth( 'mm/dd_' ), 1 ),                // [4
+	//          round( $this->GetStringWidth( 'mm/dd_' ), 1 ),                 // [5
+	//      ); // width of heading lables line 2.
+	//      $field_widths      = $wline2;
+	//      $large_field_width = round( $this->GetStringWidth( 'Family Name/Address' ), 1 ) + 0.25; // Smaller margin for booklet
+	//      $field_positions   = array(
+	//          $left_margin,                                         // [0] phone or blank
+	//          $left_margin + $large_field_width,                                            // 1 name
+	//          $left_margin + $large_field_width + $wline2[1],                                 // 2 em
+	//          $left_margin + $large_field_width + $wline2[1] + $wline2[2],                      // 3 cell
+	//          $left_margin + $large_field_width + $wline2[1] + $wline2[2] + $wline2[3],           // 4 DOB
+	//          $left_margin + $large_field_width + $wline2[1] + $wline2[2] + $wline2[3] + $wline2[4], // 5 Bap
+	//      );  // X position for start of label / fields to write
+	//  }
 
-		// Output headings here.
-		// Table Headers - 1st line
-		$this->SetXY( $field_positions[0], $start_heading );
-		$this->Cell( $wline1[0], $line_height, 'Family Name/Address' );
+	//  // Output headings here.
+	//  // Table Headers - 1st line
+	//  $this->SetXY( $field_positions[0], $start_heading );
+	//  $this->Cell( $wline1[0], $line_height, 'Family Name/Address' );
 
-		$this->SetX( $field_positions[1] );
-		$this->Cell( $wline1[1], $line_height, 'Family Members' );
+	//  $this->SetX( $field_positions[1] );
+	//  $this->Cell( $wline1[1], $line_height, 'Family Members' );
 
-		// Table Headers - 2nd line in italics.
-		$this->SetFont( 'Arial', 'I', 8 ); // Smaller font for booklet
+	//  // Table Headers - 2nd line in italics.
+	//  $this->SetFont( 'Arial', 'I', 8 ); // Smaller font for booklet
 
-		// Print out column headings.
-			// Set x position & print content 'cell'
-		$this->SetXY( $field_positions[1], $start_heading + 0.2 );
-		$this->Cell( $field_widths[1], $line_height, 'Name' );
+	//  // Print out column headings.
+	//      // Set x position & print content 'cell'
+	//  $this->SetXY( $field_positions[1], $start_heading + 0.2 );
+	//  $this->Cell( $field_widths[1], $line_height, 'Name' );
 
-		$this->SetX( $field_positions[2] );
-		$this->Cell( $field_widths[2], $line_height, 'Email' );   //wline2[2]
+	//  $this->SetX( $field_positions[2] );
+	//  $this->Cell( $field_widths[2], $line_height, 'Email' );   //wline2[2]
 
-		$this->SetX( $field_positions[3] );
-		$this->Cell( $field_widths[3], $line_height, 'Cell' );
+	//  $this->SetX( $field_positions[3] );
+	//  $this->Cell( $field_widths[3], $line_height, 'Cell' );
 
-		$this->SetX( $field_positions[4] );
-		$this->Cell( $field_widths[4], $line_height, 'DoB' );
+	//  $this->SetX( $field_positions[4] );
+	//  $this->Cell( $field_widths[4], $line_height, 'DoB' );
 
-		$this->SetX( $field_positions[5] );
-		$this->Cell( $field_widths[5], $line_height, 'DoBap' );
+	//  $this->SetX( $field_positions[5] );
+	//  $this->Cell( $field_widths[5], $line_height, 'DoBap' );
 
-		// $current_y = $this->GetY();
-		return array(
-			0 => $field_positions,
-			1 => $field_widths,
-		);
-	}
+	//  // $current_y = $this->GetY();
+	//  return array(
+	//      0 => $field_positions,
+	//      1 => $field_widths,
+	//  );
+	// }
 	/**
 	 * print_family_array
 	 *
@@ -427,62 +428,62 @@ class PDF extends FPDF {
 	 * @param [type] $family_array
 	 * @return void
 	 */
-	public function print_family_array( $family_array, $field_info ) {
-		$this->SetFont( 'Arial', '', 8 );  // Smaller font for booklet
-		$line_height                    = 0.2; // Smaller line height for booklet
-		$left_margin                    = $this->lMargin;
-		$field_positions                = $field_info[0];
-		$field_widths                   = $field_info[1];
-		$family_listing_height_in_lines = max( $family_array[0][0], $family_array[0][1] );
+	// public function print_family_array( $family_array, $field_info ) {
+	//  $this->SetFont( 'Arial', '', 8 );  // Smaller font for booklet
+	//  $line_height                    = 0.2; // Smaller line height for booklet
+	//  $left_margin                    = $this->lMargin;
+	//  $field_positions                = $field_info[0];
+	//  $field_widths                   = $field_info[1];
+	//  $family_listing_height_in_lines = max( $family_array[0][0], $family_array[0][1] );
 
-		// Output a divider with a blank line above it.
-		$this->Ln( $line_height );
-		$current_y = $this->GetY();  //Where are we on the page?
-		$this->line( $left_margin, $current_y + $line_height, ( $this->w ) - $left_margin, $current_y + $line_height );
-		$next_row = $this->GetY() + $line_height;
+	//  // Output a divider with a blank line above it.
+	//  $this->Ln( $line_height );
+	//  $current_y = $this->GetY();  //Where are we on the page?
+	//  $this->line( $left_margin, $current_y + $line_height, ( $this->w ) - $left_margin, $current_y + $line_height );
+	//  $next_row = $this->GetY() + $line_height;
 
-		// Process family listing for 1 family
-		for ( $i = 1; $i <= $family_listing_height_in_lines; $i++ ) {
+	//  // Process family listing for 1 family
+	//  for ( $i = 1; $i <= $family_listing_height_in_lines; $i++ ) {
 
-			$this->SetXY( $field_positions[0], $next_row );
-			$this->Cell( $field_widths[0], $line_height, $family_array[ $i ][1] );  // Left side of listing.
+	//      $this->SetXY( $field_positions[0], $next_row );
+	//      $this->Cell( $field_widths[0], $line_height, $family_array[ $i ][1] );  // Left side of listing.
 
-			$this->SetX( $field_positions[1] );
-			$this->Cell( $field_widths[1], $line_height, $family_array[ $i ][4] . ' ' . $family_array[ $i ][5] );  // Name
+	//      $this->SetX( $field_positions[1] );
+	//      $this->Cell( $field_widths[1], $line_height, $family_array[ $i ][4] . ' ' . $family_array[ $i ][5] );  // Name
 
-			$this->SetX( $field_positions[2] );
-			$this->Cell( $field_widths[2], $line_height, $family_array[ $i ][6] ); // em
+	//      $this->SetX( $field_positions[2] );
+	//      $this->Cell( $field_widths[2], $line_height, $family_array[ $i ][6] ); // em
 
-			$this->SetX( $field_positions[3] );
-			$this->Cell( $field_widths[3], $line_height, $family_array[ $i ][7] ); // cell
+	//      $this->SetX( $field_positions[3] );
+	//      $this->Cell( $field_widths[3], $line_height, $family_array[ $i ][7] ); // cell
 
-			$this->SetX( $field_positions[4] );
-			$this->Cell( $field_widths[4], $line_height, $family_array[ $i ][8] ); // DoB
+	//      $this->SetX( $field_positions[4] );
+	//      $this->Cell( $field_widths[4], $line_height, $family_array[ $i ][8] ); // DoB
 
-			$this->SetX( $field_positions[5] );
-			$this->Cell( $field_widths[5], $line_height, $family_array[ $i ][9] ); // DoBap
+	//      $this->SetX( $field_positions[5] );
+	//      $this->Cell( $field_widths[5], $line_height, $family_array[ $i ][9] ); // DoBap
 
-			$next_row = $this->GetY() + $line_height;
-		}
+	//      $next_row = $this->GetY() + $line_height;
+	//  }
 
-		// return where we are.
-		return $this->GetY();
-	}
+	//  // return where we are.
+	//  return $this->GetY();
+	// }
 
-	public function enough_room_for_family( $lines_to_output, $line_height = 0.2 ) {
-		$page_break_now = 7.5;  // Adjusted for booklet format (8.5" height - margins)
-		if ( 0 == $lines_to_output ) {
-			return true;  // weird input. Assume okay.
-		} else {
-			// Calculate the room required given number of lines to output
-			// Compare to where we are now
-			$start_y       = $this->GetY(); // Where we are now
-			$needed_height = ( $lines_to_output + 1 ) * $line_height; // Add 1 to account for decorative line.
-			if ( $start_y + $needed_height >= $page_break_now ) {
-				return false; // not enough room
-			} else {
-				return true;  // enough room
-			}
-		}
-	}
+	// public function enough_room_for_family( $lines_to_output, $line_height = 0.2 ) {
+	//  $page_break_now = 7.5;  // Adjusted for booklet format (8.5" height - margins)
+	//  if ( 0 == $lines_to_output ) {
+	//      return true;  // weird input. Assume okay.
+	//  } else {
+	//      // Calculate the room required given number of lines to output
+	//      // Compare to where we are now
+	//      $start_y       = $this->GetY(); // Where we are now
+	//      $needed_height = ( $lines_to_output + 1 ) * $line_height; // Add 1 to account for decorative line.
+	//      if ( $start_y + $needed_height >= $page_break_now ) {
+	//          return false; // not enough room
+	//      } else {
+	//          return true;  // enough room
+	//      }
+	//  }
+	// }
 }

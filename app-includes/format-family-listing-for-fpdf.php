@@ -29,13 +29,14 @@ function cota_format_family_listing_for_fpdf( $pdfobj, $family, $members ) {
 	// It must check the amount of space needed for the family and determine
 	// if it needs to add a new page or not.
 
+	$pdfobj->AddPage();  // Dump out a new page.
 	// Outer loop through left side of printed entry block
 	for ( $lctr = 1; $lctr <= 4; $lctr++ ) {
 		if ( $lctr == 1 ) {
 			// Build the family header (name and address, other column headings)
 			// Get 1st member of family
 			$pdfobj->SetFont( 'Arial', '', 8 );  // Smaller font for booklet
-			// $pdfobj->multicell( 2, 0.5, "Family Name/Address Family Members\n", 0, 1 );
+			$pdfobj->multicell( 2, 0.5, "Family Name/Address Family Members\n", 0, 1 );
 			$pdfobj->cell( 2, 0.5, 'Family Name/Address', 0, 0, 'L', false );
 			$pdfobj->cell( 2, 0.5, 'Family Members', 0, 1, 'L', false );
 			$pdfobj->cell( 2, 0.25, 'Home Phone', 0, 0, 'L', false );
@@ -46,8 +47,9 @@ function cota_format_family_listing_for_fpdf( $pdfobj, $family, $members ) {
 			$pdfobj->cell( 1, 0.25, 'DoBaptism', 0, 1, 'L', false );
 
 			// Inits the return string with headings.
-			$familystringlines  = "Family Name/Address Family Members\n";
-			$familystringlines .= "Home Phone   Name   Email   Cell   DoB   DoBaptism\n";
+			//    This adds the header info above EVERY family. Do not want this.
+			// $familystringlines  = "Family Name/Address Family Members\n";
+			// $familystringlines .= "Home Phone   Name   Email   Cell   DoB   DoBaptism\n";
 
 			$individual = $members->fetch_assoc();
 			if ( ! $individual ) {

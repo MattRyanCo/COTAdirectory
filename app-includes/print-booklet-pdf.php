@@ -41,15 +41,15 @@ for ( $i = 1; $i <= 3; $i++ ) {
 	);
 }
 
-// Add
 //    This is just adding a header. No family data yet.
-// $pdf->add_booklet_page(
-//  'family',
-//  array(
-//      'title'    => 'Family & Members Listing',
-//      'families' => array(), // Will be populated below
-//  )
-// );
+//       THIS header does not appear to be output anywhere????
+$pdf->add_booklet_page(
+	'family',
+	array(
+		'title'    => 'Family & Members Listing Overview ------------------------------------',
+		'families' => array(), // Will be populated below
+	)
+);
 
 // Retrieve and Format Membership Entries
 $families     = $cota_db->read_family_database();
@@ -57,7 +57,7 @@ $num_families = $families->num_rows;
 
 // Process families and add them to booklet pages
 $current_page_families = array();
-$families_per_page     = 3; // Adjust based on content size
+$families_per_page     = 5; // Adjust based on content size
 $family_count          = 0;
 
 while ( $family = $families->fetch_assoc() ) {
@@ -73,7 +73,8 @@ while ( $family = $families->fetch_assoc() ) {
 	++$family_count;
 
 	// When we reach the limit, add a new page
-	if ( $family_count % $families_per_page === 0 ) {
+	// if ( $family_count % $families_per_page === 0 ) {
+	if ( $family_count % $constants->FAMILIES_PER_PAGE === 0 ) {
 		$pdf->add_booklet_page(
 			'family',
 			array(
@@ -84,7 +85,7 @@ while ( $family = $families->fetch_assoc() ) {
 		// Reset array in prep of next family
 		$current_page_families = array();
 	}
-}
+}  // end of loop
 
 // Add remaining families to the last page
 if ( ! empty( $current_page_families ) ) {
@@ -106,6 +107,8 @@ $pdf->add_booklet_page(
 );
 
 // Generate the final booklet PDF with correct page ordering
+// $pdf->AddPage();
+
 $final_pdf = $pdf->generate_booklet_pdf();
 
 $output_basename = '/downloads/directory_booklet_' . date( 'Y-m-d' ) . '.pdf';
