@@ -19,7 +19,7 @@ $UPLOAD_DIR         = '../uploads/'; // Directory for uploaded files
 // var_dump($UPLOAD_DIR);
 
 require_once __DIR__ . '/class-app-meta-data.php';
-$meta = new App_Meta_Data( $COTA_APP_FILE );
+$meta = new AppMetaData( $COTA_APP_FILE );
 
 // Class constants (defined with const) are accessed as
 // ClassName::CONSTANT_NAME.

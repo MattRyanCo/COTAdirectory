@@ -1,137 +1,131 @@
 <?php
-require_once __DIR__ . '/bootstrap.php';
 /**
  * COTA Membership Directory PDF Generation Script
- * This script prints the COTA directory in booklet format for 2-up printing
- * on 8.5 x 11" paper in landscape mode with 2 pages per sheet.
+ * This script prints the COTA directory as a linear set of standard 
+ * pages (1 through x, with 1 being the front cover and x being the last printed page). 
+ * It does not account for 2-sided booklet printing, but rather prints 
+ * assuming that the PDF will then be processed by another app that will convert it to 
+ * 2-sided, 4 to a page format. 
  */
 
-global $cota_db, $connect, $constants, $header_height;
+global $cotadb, $conn, $cota_constants, $header_height;
 
-require_once $constants->COTA_APP_INCLUDES . 'format-family-listing.php';
-require_once $constants->COTA_APP_INCLUDES . 'format-family-listing-for-fpdf.php';
-require_once $constants->COTA_APP_INCLUDES . 'print.php';
-require_once $constants->COTA_APP_INCLUDES . 'class-print-booklet.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'format-family-listing.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'print.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'class-print-booklet.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
-// Create a new PDF instance for booklet format
-$pdf = new PDF( 'P', 'in', 'HalfLetter' ); // Portrait, Inches, Half-Letter Size
+// Create a new PDF instance
+// $pdf = new PDF(); // Landscape, Inches, Half-page Letter Size
+// $pdf = new PDF('P', 'in', 'Letter'); // Portrait, Inches, Letter Size
 
-$title  = 'Church of the Ascension Directory 2025';
+// This to use new half page format
+$pdf = new PDF('P', 'in', 'HalfLetter' ); // Portrait, Inches, Half-Letter Size
+
+
+$pdf->AddPage();
+
+$title = 'Church of the Ascension Directory 2025';
 $author = 'Vestry & Wardens of Church of the Ascension, Parkesburg';
+$pdf->SetTitle($title);
+$pdf->SetAuthor($author);
 
-// Add front cover page
-$pdf->add_booklet_page(
-	'cover',
-	array(
-		'title'  => $title,
-		'author' => $author,
-		'logo'   => '../app-assets/images/cota-logo.png',
-	)
-);
+// Use values set by PDF constructor 
+// $left_margin = $top_margin = $right_margin = 0.25;
+// $pdf->SetMargins($left_margin, $top_margin, $right_margin);
+// $pdf->SetAutoPageBreak(true, 2*$top_margin);
+// $pdf->SetAutoPageBreak(false);
 
-// Load and insert static intro pages
-for ( $i = 1; $i <= 3; $i++ ) {
-	$intro_content = file_get_contents( '../uploads/intro' . $i . '.txt' );
-	$pdf->add_booklet_page(
-		'intro',
-		array(
-			'title'   => 'Introduction ' . $i,
-			'content' => $intro_content,
-		)
-	);
-}
+$pdf->SetFont('Arial', '', 12);
+$logoFile = '../app-assets/images/cota-logo.png';
+// $pdf->front_cover( $title, $author, $logoFile ); // Add front cover with logo
 
-//    This is just adding a header. No family data yet.
-//       THIS header does not appear to be output anywhere????
-$pdf->add_booklet_page(
-	'family',
-	array(
-		'title'    => 'Family & Members Listing Overview ------------------------------------',
-		'families' => array(), // Will be populated below
-	)
-);
+// Render the cover page with title, author, and logo
+// 'cover' page
+$data = [
+    'title'=>$title, 
+    'author'=> $author, 
+    'logo' => $logoFile
+];
+$position = 'center';
+$content_data = [ $pdf, $data, $position ];
+$pdf->render_cover_page($pdf, $content_data, $position );
 
 // Retrieve and Format Membership Entries
-$families     = $cota_db->read_family_database();
+$families = $cotadb->read_family_database();
 $num_families = $families->num_rows;
+$field_positions = $field_widths = $field_info = [];
 
-// Process families and add them to booklet pages
-$current_page_families = array();
-$families_per_page     = 5; // Adjust based on content size
-$family_count          = 0;
+// Load and insert static pages.
+for ($i = 1; $i <= 3; $i++) {
+    // $pdf->PrintChapter($i,'intro'.$i.'.txt','../uploads/intro'.$i.'.txt');
 
-while ( $family = $families->fetch_assoc() ) {
-	// Get family members
-	$individuals  = $cota_db->read_members_of_family( $family['id'] );
-	$family_array = cota_format_family_listing_for_fpdf( $pdf, $family, $individuals );
-
-	$current_page_families[] = array(
-		'name' => $family['familyname'],
-		'data' => $family_array, // This is now a formatted string for entire family listing.
-	);
-
-	++$family_count;
-
-	// When we reach the limit, add a new page
-	// if ( $family_count % $families_per_page === 0 ) {
-	if ( $family_count % $constants->FAMILIES_PER_PAGE === 0 ) {
-		$pdf->add_booklet_page(
-			'family',
-			array(
-				'title'    => 'Family & Members Listing - Page ' . ( ( $family_count / $families_per_page ) + 1 ),
-				'families' => $current_page_families,
-			)
-		);
-		// Reset array in prep of next family
-		$current_page_families = array();
-	}
-}  // end of loop
-
-// Add remaining families to the last page
-if ( ! empty( $current_page_families ) ) {
-	$pdf->add_booklet_page(
-		'family',
-		array(
-			'title'    => 'Family & Members Listing - Final Page',
-			'families' => $current_page_families,
-		)
-	);
+    // Call new page function. 
+    $pdf->render_intro_page( $pdf, ['title'=>'intro'.$i.'.txt', 'content'=>'../uploads/intro'.$i.'.txt'], 'left' ); 
 }
 
-// Add the back cover
-$pdf->add_booklet_page(
-	'back_cover',
-	array(
-		'date' => date( 'F j, Y' ),
-	)
-);
+$pdf->AddPage();
+$pdf->SetFont('Arial', 'B', 12);
+$pdf->center_this_text('Family & Members Listing - '.$num_families . ' families', 0.75);
+$pdf->SetFont('Arial', '', 10);
+$pdf->center_this_text('Other misc info may be shared here about the membership numbers.', 3);
 
-// Generate the final booklet PDF with correct page ordering
-// $pdf->AddPage();
 
-$final_pdf = $pdf->generate_booklet_pdf();
+$pdf->SetFont('Arial', '', 8);  // Reset to normal font
+$pdf->AddPage(); // Start the alpha listing on a new page
+$line_height = 0.25;  // Set basic line height
 
-$output_basename = '/downloads/directory_booklet_' . date( 'Y-m-d' ) . '.pdf';
+// Get things started with headings below titles. 
+$field_info = $pdf->print_family_array_headings( TRUE );  // print headings
+
+while ($family = $families->fetch_assoc()) {
+    // Get family members
+    $individuals = $cotadb->read_members_of_family( $family['id'] );
+    $family_array = cota_format_family_listing_for_print($family, $individuals);
+
+    // $family_array[0][0] = number of listing lines on left
+    // $family_array[0][1] = number of listing lines on right
+    $family_listing_height_in_lines = max($family_array[0][0], $family_array[0][1]);
+
+    if ( $pdf->enough_room_for_family( $family_listing_height_in_lines, $line_height ) ) {
+        // Enough space to print out this family. 
+        $pdf->SetFont('Arial', '', 7); // Ensure font is reset before headings
+        $pdf->print_family_array($family_array, $field_info );
+    } else {
+        // Not enough room for family. 
+        // Add new page. 
+        // Print out headings on new page
+        $pdf->SetFont('Arial', '', 10); // Ensure font is reset before headings
+        $pdf->AddPage();
+        $pdf->print_family_array($family_array, $field_info );
+    }
+
+}
+
+// Add the rear cover
+$pdf->back_cover(1, 'Back Cover');
+
+$output_basename = '/downloads/directory_booklet_' . date('Y-m-d') . '.pdf';
 // Ensure the downloads directory exists
-if ( ! is_dir( $_SERVER['DOCUMENT_ROOT'] . '/downloads' ) ) {
-	mkdir( $_SERVER['DOCUMENT_ROOT'] . '/downloads', 0755, true );
+if (!is_dir($_SERVER['DOCUMENT_ROOT'] . '/downloads')) {
+	mkdir($_SERVER['DOCUMENT_ROOT'] . '/downloads', 0755, true);
 }
 $output_filename = $_SERVER['DOCUMENT_ROOT'] . $output_basename;
 
-// Output the final booklet PDF
-$final_pdf->Output( 'F', $output_filename ); // Save to server
+// Output the PDF
+$pdf->Output('F', $output_filename); // Save to server
+// $pdf->Output('I'); // Still display in browser if you want
 
-$cota_db->close_connection();
+$cotadb->close_connection();
 
 // Echo header
 echo cota_page_header();
 
-// Dump out remainder of import page.
+// Dump out remainder of import page. 
 echo "<div id='cota-print' class='container'>";
-echo '<h2>Booklet PDF file generated successfully!</h2>';
-echo '<h4>File: ' . basename( $output_filename ) . '</h4>';
-echo '<p><strong>Booklet Format:</strong> This PDF is configured for 2-up printing on 8.5 x 11" paper in portrait mode.</p>';
-echo '<p><strong>Printing Instructions:</strong> When printing, select "2 pages per sheet" and "Portrait" orientation for proper booklet format.</p>';
-echo '<p><strong>Total Pages:</strong> ' . count( $pdf->booklet_pages ) . ' content pages</p>';
-echo "<button class='cota-print' type='button' ><a href='.." . $output_basename . "' download >Download Booklet PDF</a></button>";
+echo "<h2>PDF file generated successfully!</h2>";
+echo "<h4>File: " . basename($output_filename) . "</h2>";
+echo "<button class='cota-print' type='button' ><a href='.." . $output_basename . "' download >Download File</a></button>";
 echo '</div></body></html>';
