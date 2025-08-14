@@ -62,7 +62,6 @@ class PDF extends FPDF
 			'content_type' => $content_type,
 			'content_data' => $content_data,
 		);
-		// Does this need to have end of page info added? No page footers are being added.
 	}
 
 	/**
@@ -110,8 +109,6 @@ class PDF extends FPDF
 	public function render_page_content( $pdf, $page_data, $position ) {
 		$content_type = $page_data['content_type'];
 		$content_data = $page_data['content_data'];
-
-		// $this->AddPage();  // Start new page in render_page_content
 
 		switch ( $content_type ) {
 			case 'cover':

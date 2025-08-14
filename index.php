@@ -27,9 +27,18 @@ class Constants {
     const COTA_APP_ASSETS = ABSPATH . 'app-assets/';
     const COTA_APP_INCLUDES = ABSPATH . 'app-includes/';
 	const COTA_APP_LIBRARIES = ABSPATH . 'app-libraries/';
+    const FAMILY_LISTING_FONT = 8;
+    const FAMILY_LISTING_FONT_SMALL = 7;
+    const FAMILY_LISTING_LINE_HEIGHT = .15;
+    const FAMILY_LISTING_LINE_HEIGHT_TALL = .25;
+    const FAMILY_HEADING_FONT = 10;
+    const DIRECTORY_HEADING_FONT = 12;
+    const DIRECTORY_HEADING_FONT_SMALL = 10;
 }
 
 $cota_constants = new Constants();
+
+
 
 /**
  * Stores the location of the app directory of functions, classes, and core content.
