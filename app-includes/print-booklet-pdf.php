@@ -17,7 +17,7 @@
  */
 // END New header info
 
-global $cotadb, $conn, $cota_constants, $header_height;
+global $cotadb, $conn, $cota_constants;
 
 require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'format-family-listing.php';

@@ -4,6 +4,8 @@ require_once '../app-libraries/fpdf/fpdf.php';
 
 class PDF extends FPDF
 {
+    private $header_height = 0.0;  // Height of family listing page header.
+
     /**
 	 * Constructor for booklet PDF
 	 * Sets up portrait orientation with custom half-letter size for 2-up printing
@@ -120,6 +122,9 @@ class PDF extends FPDF
 			case 'family':
 				$this->render_family_page( $pdf, $content_data, $position );
 				break;
+            case 'family_summary':
+				$this->render_family_summary_page( $pdf, $content_data, $position );
+				break;
 			case 'back_cover':
 				$this->render_back_cover( $pdf, $content_data, $position );
 				break;
@@ -154,6 +159,18 @@ class PDF extends FPDF
 		$pdf->SetXY( 0.5, 1 );
 		$pdf->MultiCell( 4.5, 0.15, $data['content'] );
 	}
+
+    /**
+	 * Render family summary page
+	 */
+    public function render_family_summary_page( $pdf, $data, $position ) {
+        $pdf->AddPage();
+        $pdf->SetFont('Arial', 'B', 12 );
+        $pdf->center_this_text( $data['title'], 0.5);
+        $pdf->SetFont('Arial', 'I', 10);
+		$pdf->SetXY( 0.5, 1 );
+		$pdf->MultiCell( 4.5, 0.15, $data['content'] );
+    }
 
 	/**
 	 * Render family listing page
@@ -248,18 +265,16 @@ class PDF extends FPDF
 
     function Header()
     {
-        global $title, $header_height;
+        global $title;
         $this->SetFont('Arial','B',15);  // Arial bold 15
         $this->SetTextColor(128);;
         $this->center_this_text( $title, 0 );
-        // $this->h  is height of document 11"
-        // $this->w  is width of document 8.5"
+        $this->header_height = $this->GetY() + 0.25;
+    }
 
-        // var_dump($this->GetY());
-        $this->Ln(1);  // Moves 1 inch down. 
-        // $this->SetY(3);   // Position cursor 3" from top of page. 
-        $header_height = $this->GetY();
-        // var_dump($header_height);
+    public function getHeaderHeight(): float
+    {
+        return $this->header_height;
     }
 
     function Footer()
@@ -360,31 +375,32 @@ class PDF extends FPDF
             1 => [array] $field_widths
         )
  */
-    function print_family_array_headings( $first_time ) {
-        global $header_height;
 
-        $this->SetFont('Arial', '', 7);
+        // @TODO Add new add_booklet_page functionality into here. 
+
+    function print_family_array_headings( $first_time ) {
+        $this->SetFont('Arial', '', 8);
         $line_height = .15;
         $left_margin = $this->lMargin;
-        $start_heading = $header_height + $line_height;
+        $start_heading = $this->getHeaderHeight() + $line_height;
 
         // Do this setup only first time through
         if ( $first_time ) {
             $large_field_width = round($this->GetStringWidth('Family Name/Address'),1);
             $wline1 = [
-                round($this->GetStringWidth('Family Name/Address'),1),  // [0]
-                round($this->GetStringWidth('Family Members'),1),       // [1]                                             // [1]
+                round($this->GetStringWidth('Family Name/Address'),1),  
+                round($this->GetStringWidth('Family Members'),1),          
             ];  // width of heading lables line 1. 
             $wline2 = [
-                round($this->GetStringWidth('Home: xxx-xxx-xxxx_'),1),           // [0]
-                round($this->GetStringWidth('MyLongFirstName '),1), // [1]
-                round($this->GetStringWidth('LongEmailExample@example.com '),1),           // [2
-                round($this->GetStringWidth('###-###-####__'),1),                // [3
+                round($this->GetStringWidth('Home: xxx-xxx-xxxx_'),1), // [0]
+                round($this->GetStringWidth('LongFirstName '),1), // [1]
+                round($this->GetStringWidth('EmailExample@example.com '),1), // [2
+                round($this->GetStringWidth('###-###-####__'),1),            // [3
                 round($this->GetStringWidth('mm/dd_'),1),                // [4
                 round($this->GetStringWidth('mm/dd_'),1)                 // [5
             ]; // width of heading lables line 2.
             $field_widths = $wline2;
-            $large_field_width = round($this->GetStringWidth('Family Name/Address'),1) + 0.25;
+            $large_field_width = round($this->GetStringWidth('Family Name/Address'),1) + 0.1;
             $field_positions = [
                 $left_margin,                                         // [0] phone or blank
                 $left_margin+$large_field_width,                                            // 1 name
@@ -393,10 +409,12 @@ class PDF extends FPDF
                 $left_margin+$large_field_width+$wline2[1]+$wline2[2]+$wline2[3],           // 4 DOB
                 $left_margin+$large_field_width+$wline2[1]+$wline2[2]+$wline2[3]+$wline2[4] // 5 Bap
             ];  // X position for start of label / fields to write
+            // var_dump($field_positions);
         }
 
         // Output headings here. 
         // Table Headers - 1st line
+        $this->SetFont('Arial', '', 7);
         $this->SetXY($field_positions[0], $start_heading );
         $this->Cell($wline1[0], $line_height, 'Family Name/Address');
 
@@ -408,7 +426,7 @@ class PDF extends FPDF
 
         // Print out column headings.
             // Set x position & print content 'cell'
-        $this->SetXY($field_positions[1], $start_heading + 0.25 );
+        $this->SetXY($field_positions[1], $start_heading + 0.15 );
         $this->Cell( $field_widths[1], $line_height, 'Name');
 
         $this->SetX($field_positions[2]);
@@ -432,21 +450,21 @@ class PDF extends FPDF
     /**
      * print_family_array
      * 
-     * Functions assumes that we have enough space to print family array.
+     * Function assumes that we have enough space to print family array.
      * Need for AddPage calculated before calling us. 
      *
      * @param [type] $family_array
      * @return void
      */
     function print_family_array($family_array, $field_info ) {
-        $this->SetFont('Arial', '', 7);  // Set default font. 
+
+        $this->SetFont('Arial', '', 7);
         $line_height = 0.15;
         $left_margin = $this->lMargin;
         $field_positions = $field_info[0];
         $field_widths = $field_info[1];
         $family_listing_height_in_lines = max($family_array[0][0], $family_array[0][1]);
 
-        
 
         // Output a divider with a blank line above it. 
         $this->Ln($line_height);
