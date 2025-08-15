@@ -38,8 +38,6 @@ $pdf->AddPage();
 
 $title  = 'Church of the Ascension Directory 2025';
 $author = 'Vestry & Wardens of Church of the Ascension, Parkesburg';
-$pdf->SetTitle( $title );
-$pdf->SetAuthor( $author );
 
 $pdf->SetFont( 'Arial', '', 12 );
 $logoFile = '../app-assets/images/cota-logo.png';

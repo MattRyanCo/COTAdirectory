@@ -254,10 +254,7 @@ class PDF extends FPDF {
 
     function Header()
     {
-        global $title;
         $this->SetFont('Arial','B',15);  // Arial bold 15
-        $this->SetTextColor(128);;
-        $this->center_this_text( $title, 0 );
         $this->header_height = $this->GetY() + 0.25;
     }
 
