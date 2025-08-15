@@ -82,3 +82,5 @@ libraries/fpdf/font/
 !.env.example
 
 *.phpOFF
+
+app-includes/print-booklet-pdf - Copy.php
