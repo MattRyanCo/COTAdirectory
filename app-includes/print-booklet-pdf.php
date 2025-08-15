@@ -41,26 +41,17 @@ $author = 'Vestry & Wardens of Church of the Ascension, Parkesburg';
 $pdf->SetTitle($title);
 $pdf->SetAuthor($author);
 
-// Use values set by PDF constructor 
-// $left_margin = $top_margin = $right_margin = 0.25;
-// $pdf->SetMargins($left_margin, $top_margin, $right_margin);
-// $pdf->SetAutoPageBreak(true, 2*$top_margin);
-// $pdf->SetAutoPageBreak(false);
-
 $pdf->SetFont('Arial', '', 12 );
 $logoFile = '../app-assets/images/cota-logo.png';
-// $pdf->front_cover( $title, $author, $logoFile ); // Add front cover with logo
 
 // Render the cover page with title, author, and logo
-// 'cover' page
 $data = [
     'title'=>$title, 
     'author'=> $author, 
     'logo' => $logoFile
 ];
 $position = 'center';
-$content_data = [ $pdf, $data, $position ];
-$pdf->render_cover_page($pdf, $content_data, $position );
+$pdf->render_cover_page($pdf, $data, $position );
 
 // Retrieve and Format Membership Entries
 $families = $cotadb->read_family_database();
@@ -71,20 +62,25 @@ $field_positions = $field_widths = $field_info = [];
 for ($i = 1; $i <= 3; $i++) {
     // $pdf->PrintChapter($i,'intro'.$i.'.txt','../uploads/intro'.$i.'.txt');
 
-    // Call new page function. 
-    $pdf->render_intro_page( $pdf, ['title'=>'intro'.$i.'.txt', 'content'=>'../uploads/intro'.$i.'.txt'], 'left' ); 
+    // Call new page function.
+    $data = [
+        'title'=> 'intro'.$i.'.txt', 
+        'content'=> '../uploads/intro'.$i.'.txt'
+    ];
+    $position = 'center';
+    $pdf->render_intro_page( $pdf, $data, $position ); 
 }
 
 // New front cover page loading into temp booklet for pagination
 // Add front cover page
-// $pdf->add_booklet_page(
-// 	'cover',
-// 	array(
-// 		'title'  => $title,
-// 		'author' => $author,
-// 		'logo'   => $logofile,
-// 	)
-// );
+$pdf->add_booklet_page(
+	'cover',
+	array(
+		'title'  => $title,
+		'author' => $author,
+		'logo'   => $logofile,
+	)
+);
 // END New front cover page loading
 
 
