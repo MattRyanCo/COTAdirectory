@@ -47,7 +47,7 @@ $pdf->SetAuthor($author);
 // $pdf->SetAutoPageBreak(true, 2*$top_margin);
 // $pdf->SetAutoPageBreak(false);
 
-$pdf->SetFont('Arial', '', $cota_constants->DIRECTORY_HEADING_FONT);
+$pdf->SetFont('Arial', '', 12 );
 $logoFile = '../app-assets/images/cota-logo.png';
 // $pdf->front_cover( $title, $author, $logoFile ); // Add front cover with logo
 
@@ -68,23 +68,23 @@ $num_families = $families->num_rows;
 $field_positions = $field_widths = $field_info = [];
 
 // Load and insert static pages.
-// for ($i = 1; $i <= 3; $i++) {
-//     // $pdf->PrintChapter($i,'intro'.$i.'.txt','../uploads/intro'.$i.'.txt');
+for ($i = 1; $i <= 3; $i++) {
+    // $pdf->PrintChapter($i,'intro'.$i.'.txt','../uploads/intro'.$i.'.txt');
 
-//     // Call new page function. 
-//     $pdf->render_intro_page( $pdf, ['title'=>'intro'.$i.'.txt', 'content'=>'../uploads/intro'.$i.'.txt'], 'left' ); 
-// }
+    // Call new page function. 
+    $pdf->render_intro_page( $pdf, ['title'=>'intro'.$i.'.txt', 'content'=>'../uploads/intro'.$i.'.txt'], 'left' ); 
+}
 
 // New front cover page loading into temp booklet for pagination
 // Add front cover page
-$pdf->add_booklet_page(
-	'cover',
-	array(
-		'title'  => $title,
-		'author' => $author,
-		'logo'   => $logofile,
-	)
-);
+// $pdf->add_booklet_page(
+// 	'cover',
+// 	array(
+// 		'title'  => $title,
+// 		'author' => $author,
+// 		'logo'   => $logofile,
+// 	)
+// );
 // END New front cover page loading
 
 
@@ -105,27 +105,27 @@ for ( $i = 1; $i <= 3; $i++ ) {
 
 // This is direct outputs. Not being included in booklet for pagination. 
 $pdf->AddPage();
-$pdf->SetFont('Arial', 'B', $cota_constants->DIRECTORY_HEADING_FONT);
+$pdf->SetFont('Arial', 'B', 12 );
 $pdf->center_this_text('Family & Members Listing - '.$num_families . ' families', 0.75);
-$pdf->SetFont('Arial', 'I', $cota_constants->DIRECTORY_HEADING_FONT_SMALL);
+$pdf->SetFont('Arial', 'I', 10);
 $pdf->center_this_text('Other misc info may be shared here about the membership numbers.', 3);
 
 
 // @TODO Convert above comments and family counter to booklet page 
 
 // $pdf->add_booklet_page(
-// 	'family',
+// 	'family_summary',
 // 	array(
-// 		'title'    => 'Family & Members Listing Overview ------------------------------------',
-// 		'families' => array(), // Will be populated below
-// 	)
+// 		'title'    => 'Family & Members Listing - '.$num_families . ' families',
+// 		'content' => 'Other misc info may be shared here about the membership numbers.'
+//         )
 // );
 
 
 
-$pdf->SetFont('Arial', '', $cota_constants->FAMILY_LISTING_FONT);  // Reset to normal font
+$pdf->SetFont('Arial', '', 8);  // Reset to normal font
 $pdf->AddPage(); // Start the alpha listing on a new page
-$line_height = $cota_constants->FAMILY_LISTING_LINE_HEIGHT;  // Set basic line height
+$line_height = .15;  // Set basic line height
 
 // Get things started with headings below titles. 
 $field_info = $pdf->print_family_array_headings( TRUE );  // print headings
@@ -141,13 +141,13 @@ while ($family = $families->fetch_assoc()) {
 
     if ( $pdf->enough_room_for_family( $family_listing_height_in_lines, $line_height ) ) {
         // Enough space to print out this family. 
-        $pdf->SetFont('Arial', '', $cota_constants->FAMILY_LISTING_FONT_SMALL); // Ensure font is reset before headings
+        $pdf->SetFont('Arial', '', 7); // Ensure font is reset before headings
         $pdf->print_family_array($family_array, $field_info );
     } else {
         // Not enough room for family. 
         // Add new page. 
         // Print out headings on new page
-        $pdf->SetFont('Arial', '', $cota_constants->FAMILY_HEADING_FONT); // Ensure font is reset before headings
+        $pdf->SetFont('Arial', '', 10); // Ensure font is reset before headings
         $pdf->AddPage();
         $pdf->print_family_array($family_array, $field_info );
     }
