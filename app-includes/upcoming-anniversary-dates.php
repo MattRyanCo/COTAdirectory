@@ -2,15 +2,12 @@
 /**
  * Get upcoming anniversary dates within the next 15 days.
  */
-
-global $cotadb, $conn, $cota_constants;
-
-require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once __DIR__ . '/bootstrap.php';
+global $cota_db, $connect,  $cota_constants;
 require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
-require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';;
 
 function cota_get_last_name($family_id, $conn) {
-    $family = $conn->query("SELECT familyname FROM families WHERE id = " . intval($family_id))->fetch_assoc();
+    $family = $connect->query("SELECT familyname FROM families WHERE id = " . intval($family_id))->fetch_assoc();
 
     return $family['familyname'] ?? 'Unknown';
 }
@@ -27,8 +24,7 @@ function cota_get_next_sunday_date($fromDate = null) {
 }
 
 function cota_get_upcoming_anniversaries( $look_forward ) {
-    require_once '../app-includes/settings.php';
-    global $cotadb, $conn;
+    global $cota_db, $connect;
 
     $upcoming_sunday = cota_get_next_sunday_date();
     $end = (clone $upcoming_sunday)->modify("+$look_forward days");
@@ -44,6 +40,8 @@ function cota_get_upcoming_anniversaries( $look_forward ) {
 
     // Helper to check if MM/DD is in the next 14 days
     function cota_is_upcoming($mmdd, $today, $end) {
+        global $cota_db, $connect;
+
         if (!$mmdd || !preg_match('/^\d{2}\/\d{2}$/', $mmdd)) return false;
         $date = DateTime::createFromFormat('m/d/Y', $mmdd . '/' . $today->format('Y'));
         if (!$date) return false;
@@ -57,7 +55,7 @@ function cota_get_upcoming_anniversaries( $look_forward ) {
 
 
     // 1. Marriage Anniversaries (families table)
-    $families = $conn->query("SELECT familyname, fname1, fname2, annday FROM families WHERE annday IS NOT NULL AND annday != ''");
+    $families = $connect->query("SELECT familyname, fname1, fname2, annday FROM families WHERE annday IS NOT NULL");
     while ($fam = $families->fetch_assoc()) {
         if (cota_is_upcoming($fam['annday'], $today, $end)) {
             $names = trim($fam['fname1'] . ' & ' . $fam['fname2'], ' &');
@@ -66,7 +64,7 @@ function cota_get_upcoming_anniversaries( $look_forward ) {
     }
 
     // 2. Birthdays (members table)
-    $members = $conn->query("SELECT family_id, first_name, last_name, birthday FROM members WHERE birthday IS NOT NULL AND birthday != ''");
+    $members = $connect->query("SELECT family_id, first_name, last_name, birthday FROM members WHERE birthday IS NOT NULL");
     while ($mem = $members->fetch_assoc()) {
         if (cota_is_upcoming($mem['birthday'], $today, $end)) {
             if ( $mem['last_name'] === '' ) {
@@ -77,7 +75,7 @@ function cota_get_upcoming_anniversaries( $look_forward ) {
     }
 
     // 3. Baptisms (members table)
-    $members = $conn->query("SELECT family_id, first_name, last_name, baptism FROM members WHERE baptism IS NOT NULL AND baptism != ''");
+    $members = $connect->query("SELECT family_id, first_name, last_name, baptism FROM members WHERE baptism IS NOT NULL");
     while ($mem = $members->fetch_assoc()) {
         if (cota_is_upcoming($mem['baptism'], $today, $end)) {
             if ( $mem['last_name'] === '' ) {
@@ -87,13 +85,13 @@ function cota_get_upcoming_anniversaries( $look_forward ) {
         }
     }
 
-    $conn->close();
+    $connect->close();
     return $results;
 }
 
 // Echo page header
 echo cota_page_header();
-$families = $cotadb->read_family_database();
+$families = $cota_db->read_family_database();
 $num_families = $families->num_rows;
 if ( 0 == $num_families ) {
 	empty_database_alert('Display Anniversaries');

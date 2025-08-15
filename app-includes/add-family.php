@@ -1,9 +1,10 @@
 <?php
-global $cotadb, $conn, $cota_constants;
 
-require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once __DIR__ . '/bootstrap.php';
+
+global $cota_db, $connect,  $cota_constants;
+
 require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
-require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Sanitize & Validate Family Data
@@ -16,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $annday = cota_format_date($_POST["annday"]);
 
     // Insert family record using prepared statements
-    $stmt = $conn->prepare("INSERT INTO families (familyname, address, city, state, zip, homephone, annday) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $connect->prepare("INSERT INTO families (familyname, address, city, state, zip, homephone, annday) VALUES (?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("sssssss", $familyname, $address, $city, $state, $zip, $homephone, $annday);
 
     if ($stmt->execute()) {
@@ -45,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $baptism = cota_format_date($_POST["members"]["baptism"][$key]);
 
             if (!empty($first_name) ) {
-                $stmt = $conn->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $stmt = $connect->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 $stmt->bind_param("issssss", $family_id, $first_name, $last_name, $cell_phone, $email, $birthday, $baptism);
                 $stmt->execute();
                 // Store results immediately 
@@ -71,4 +72,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
-$cotadb->close_connection();
+$cota_db->close_connection();

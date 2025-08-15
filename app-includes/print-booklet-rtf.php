@@ -1,14 +1,14 @@
 <?php
+require_once __DIR__ . '/bootstrap.php';
+require_once __DIR__ . '/class-membership-directory-printer.php';
+global $cota_db, $connect, $cota_constants;
 
-global $cotadb, $conn, $cota_constants;
-
-require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+// require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'format-family-listing.php';
-require_once $cota_constants->COTA_APP_INCLUDES . 'print.php';
-require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
+// require_once $cota_constants->COTA_APP_INCLUDES . 'print.php';
 
-$printBooklet = new MembershipDirectoryPrinter();
+$printBooklet = new Membership_Directory_Printer();
 
 $introFiles = ['../uploads/intro1.txt', '../uploads/intro2.txt', '../uploads/intro3.txt'];
 $output_basename = '/downloads/directory_booklet_' . date('Y-m-d') . '.rtf';
@@ -23,7 +23,7 @@ $rtfContent = $printBooklet->generateRTFHeader();
 // Add intro page(s) to output
 $rtfContent .= $printBooklet->print_intro_pages(3);
 
-$all_families = $cotadb->read_family_database();
+$all_families = $cota_db->read_family_database();
 
 // Add family listings
 	$rtfContent .= $printBooklet->formatFamilyListings($all_families) . "\\pard\\page\\par";
@@ -33,7 +33,7 @@ $rtfContent .= "}";
 file_put_contents($output_filename, $rtfContent);
 
 // Closing the file 
-$cotadb->close_connection();
+$cota_db->close_connection();
 
 // Echo header
 echo cota_page_header();

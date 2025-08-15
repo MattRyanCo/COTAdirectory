@@ -46,7 +46,6 @@ $cota_constants = new Constants();
  */
 
 /** Sets up the app vars and included files. */
-require_once $cota_constants::COTA_APP_INCLUDES . 'settings.php';
 require_once $cota_constants::COTA_APP_INCLUDES . 'helper-functions.php';
 require_once $cota_constants::COTA_APP_INCLUDES . 'class-app-meta-data.php';
 

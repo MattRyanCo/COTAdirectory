@@ -2,11 +2,12 @@
 /**
  * Export directory data to CSV
  */
-global $cotadb, $conn, $cota_constants;
 
-require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once __DIR__ . '/bootstrap.php';
+
+global $cota_db, $connect,  $cota_constants;
+
 require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
-require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
 header('Content-Type: text/csv');
 header('Content-Disposition: attachment; filename="directory_export.csv"');
@@ -50,7 +51,7 @@ for ($i = 3; $i <= $max_members; $i++) {
 
 fputcsv($output, $header);
 
-$families = $conn->query("SELECT * FROM families");
+$families = $connect->query("SELECT * FROM families");
 while ($family = $families->fetch_assoc()) {
     // Initialize family data
     $one_family = sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", 
@@ -75,7 +76,7 @@ while ($family = $families->fetch_assoc()) {
         $family['annday']);
 
     // Fetch members of this family
-    $members = $conn->query("SELECT * FROM members WHERE family_id = " . $family['id']);
+    $members = $connect->query("SELECT * FROM members WHERE family_id = " . $family['id']);
     $all_members = [];
     $one_family .= ',';
     // Loop through each member and append their data
@@ -87,4 +88,4 @@ while ($family = $families->fetch_assoc()) {
     fputcsv($output, explode(",", $one_family));
 }
 fclose($output);
-$cotadb->close_connection();
+$cota_db->close_connection();

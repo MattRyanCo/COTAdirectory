@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/bootstrap.php';
 
 class COTA_Database {
 	// private $connect;
@@ -79,7 +78,8 @@ class COTA_Database {
 	public function read_members_of_family( $family_id ) {
 		// @TODO Modify this to return the 1 or 2 primary members first (as noted in family table)
 		//  followed by all the other family members in birthday order.
-		$statement = $this->conn->prepare( 'SELECT * FROM members WHERE family_id = ? ORDER BY `birthday`' );
+		$statement = $this->conn->prepare( 'SELECT * FROM members WHERE family_id = ? ' );
+		// $statement = $this->conn->prepare( 'SELECT * FROM members WHERE family_id = ? ORDER BY `birthday`' );
 		$statement->bind_param( 'i', $family_id );
 		$statement->execute();
 		$members = $statement->get_result();

@@ -2,12 +2,11 @@
 /**
  * 
  */
-global $cota_constants;
-global $cotadb, $conn;
 
-require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once __DIR__ . '/bootstrap.php';
+global $cota_constants, $cota_db, $connect;
+
 require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
-require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
     function cota_read_csv_to_assoc_array($filename) {
         $data = [];
@@ -35,11 +34,9 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
     function cota_import($filename ) {
         global $cota_constants;
-        global $cotadb, $conn;
+        global $cota_db, $conn;
 
-        require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
         require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
-        require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
         if (!file_exists($filename)) {
             die("Error: CSV file not found.");
@@ -151,14 +148,14 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
     }
 
     function cota_insert_family_and_get_id($data) {
+        require_once __DIR__ . '/bootstrap.php';
+
         global $cota_constants;
-        global $cotadb, $conn;
+        global $cota_db, $connect;
 
-        require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
         require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
-        require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
-        $stmt = $cotadb->conn->prepare("INSERT INTO families (
+        $stmt = $cota_db->conn->prepare("INSERT INTO families (
             familyname, fname1, fname2, lname2, address, address2, city, state, zip, homephone,
             cellphone1, cellphone2, email1, email2, bday1, bday2,
             bap1, bap2, annday
@@ -221,13 +218,13 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
      */
     function cota_insert_member($family_id, $first_name, $last_name, $cell_phone, $email, $birthday, $baptism) {
         global $cota_constants;
-        global $cotadb, $conn;
+        global $cota_db, $conn;
 
         require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
         require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
         require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
-        $stmt = $cotadb->conn->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $cota_db->conn->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $cellphone  = cota_format_phone($cell_phone);
         $bday       = cota_format_date($birthday);
         $bap       = cota_format_date($baptism);

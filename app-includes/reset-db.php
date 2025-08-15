@@ -1,12 +1,7 @@
 <?php
-
-global $cotadb, $conn, $cota_constants;
-
-require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once __DIR__ . '/bootstrap.php';
+global $cota_db, $connect,  $cota_constants;
 require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
-require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
-
-
 
 // Echo header
 echo cota_page_header();
@@ -29,26 +24,26 @@ echo cota_page_header();
 <?php
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    // $cotadb->show_structure();
+    // $cota_db->show_structure();
     if (isset($_POST["confirm"]) && $_POST["confirm"] === "YES") {
 
         // Check if the members table exists before deleting rows
-        $result = $cotadb->query("SHOW TABLES LIKE 'members'");
+        $result = $cota_db->query("SHOW TABLES LIKE 'members'");
         if ($result && $result->num_rows > 0) {
-            $cotadb->query("DELETE FROM members");
+            $cota_db->query("DELETE FROM members");
         }
 
         // Check if the families table exists before deleting rows
-        $result = $cotadb->query("SHOW TABLES LIKE 'families'");
+        $result = $cota_db->query("SHOW TABLES LIKE 'families'");
         if ($result && $result->num_rows > 0) {
-            $cotadb->query("DELETE FROM families");
+            $cota_db->query("DELETE FROM families");
         }
 
         // Disable foreign key checks to avoid constraint errors
         // Drop and recreate the members table
-        $cotadb->query("SET FOREIGN_KEY_CHECKS=0");
-        $cotadb->query("DROP TABLE IF EXISTS members");
-        $cotadb->query("SET FOREIGN_KEY_CHECKS=1"); // Re-enable constraints
+        $cota_db->query("SET FOREIGN_KEY_CHECKS=0");
+        $cota_db->query("DROP TABLE IF EXISTS members");
+        $cota_db->query("SET FOREIGN_KEY_CHECKS=1"); // Re-enable constraints
         $createMembersTableSQL = "
             CREATE TABLE members (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -62,18 +57,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 FOREIGN KEY (family_id) REFERENCES families(id) ON DELETE CASCADE
             )
         ";
-        if ($cotadb->query($createMembersTableSQL) === TRUE) {
+        if ($cota_db->query($createMembersTableSQL) === TRUE) {
             write_success_notice("Database table 'Members' has been reset successfully!");
         } else {
-            echo "<p style='color: red;'>Error recreating members table: " . $cotadb->conn->error . "</p>";
-            $cotadb->close_connection();
+            echo "<p style='color: red;'>Error recreating members table: " . $cota_db->conn->error . "</p>";
+            $cota_db->close_connection();
             exit(1);
         }
 
         // Drop and recreate the families table
-        $cotadb->query("SET FOREIGN_KEY_CHECKS=0");
-        $cotadb->query("DROP TABLE IF EXISTS families");
-        $cotadb->query("SET FOREIGN_KEY_CHECKS=1"); // Re-enable constraints
+        $cota_db->query("SET FOREIGN_KEY_CHECKS=0");
+        $cota_db->query("DROP TABLE IF EXISTS families");
+        $cota_db->query("SET FOREIGN_KEY_CHECKS=1"); // Re-enable constraints
         $createFamiliesTableSQL = "
             CREATE TABLE families (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -99,17 +94,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             )
         ";
 
-        if ($cotadb->query($createFamiliesTableSQL) === TRUE) {
+        if ($cota_db->query($createFamiliesTableSQL) === TRUE) {
             write_success_notice("Database tables have been reset successfully!");
         } else {
-            write_error_notice('Error recreating families table: " . $cotadb->conn->error . "</p>"');
+            write_error_notice('Error recreating families table: " . $cota_db->conn->error . "</p>"');
         }
     } else {
         // echo "<p style='color: red;'>Action canceled. No changes were made.</p>";
         write_error_notice('Action canceled. No changes were made.');
     }
 
-    $cotadb->close_connection();
+    $cota_db->close_connection();
     exit();
 }
 

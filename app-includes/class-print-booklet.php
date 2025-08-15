@@ -52,6 +52,17 @@ class PDF extends FPDF {
 			$booklet_order[] = array( $first_page + 1, $last_page - 1 );
 		}
 
+        // Below is a prior version of the page ordering. 
+        // $booklet_order = array();
+        // $front_cover   = 1;
+        // $back_cover    = $pages_to_print;
+        // for ( $i = 0; $i < $pages_to_print / 2; $i++ ) {
+        //     $left_page  = $pages_to_print - $i;  // Back side of a sheet
+        //     $right_page = $i + 1;             // Front side of a sheet
+
+        //     $booklet_order[] = array( $left_page, $right_page ); // Front of sheet
+        //     $booklet_order[] = array( $right_page + 1, $left_page - 1 ); // Back of sheet
+        // }
 		return $booklet_order;
 	}
 
@@ -75,6 +86,8 @@ class PDF extends FPDF {
 	public function generate_booklet_pdf() {
 		$total_pages   = count( $this->booklet_pages );
 		$booklet_order = $this->generate_booklet_order( $total_pages );
+        var_dump($total_pages);
+        var_dump($booklet_order);
 
 		// Create a new PDF for the final booklet
 		$final_pdf = new PDF( 'P', 'in', 'HalfLetter' );
@@ -186,6 +199,7 @@ class PDF extends FPDF {
 			// Set up the page for family listing
 			$pdf->SetFont( 'Arial', 'B', 10 );
 			$pdf->center_this_text( 'Family & Members Listing', 0.5 );
+            $pdf->print_family_array_headings( true );
 
 			// Print each family using the existing print_family_array method
 			foreach ( $data['families'] as $family_data ) {
@@ -212,12 +226,10 @@ class PDF extends FPDF {
 		$pdf->center_this_text( $text, 3.5 );
 	}
 
-
-
-    public function getPageBreakTrigger(): float
-    {
-        return $this->PageBreakTrigger;
-    }
+    // public function getPageBreakTrigger(): float
+    // {
+    //     return $this->PageBreakTrigger;
+    // }
 
     function center_this_text($text, $vertical_position) {
         $pageWidth = $this->GetPageWidth();
@@ -255,7 +267,7 @@ class PDF extends FPDF {
     function Header()
     {
         $this->SetFont('Arial','B',15);  // Arial bold 15
-        $this->header_height = $this->GetY() + 0.25;
+        $this->header_height = $this->GetY() + 0.5;
     }
 
     public function getHeaderHeight(): float
@@ -265,94 +277,22 @@ class PDF extends FPDF {
 
     function Footer()
     {
-        $this->SetFont('Arial', 'I', 8);  // Select Arial italic 8
-        $this->SetTextColor(128);  // Text color in gray
-        $page_no = $this->PageNo();
-        $footer_text = "Page " . $page_no;
-        $this->SetY(-0.25);  // Set position 1/4" from bottom of page. 
+        // $this->SetFont('Arial', 'I', 8);  // Select Arial italic 8
+        // $this->SetTextColor(128);  // Text color in gray
+        // $page_no = $this->PageNo();
+        // $footer_text = "Page " . $page_no;
+        // $this->SetY(-0.25);  // Set position 1/4" from bottom of page. 
 
-        if ( $page_no==1 ) return; // no footer on 1st page. 
+        // if ( $page_no==1 ) return; // no footer on 1st page. 
 
-        if ( $page_no % 2 == 0 ) {  // even number page, left justify the footer. 
-            $this->just_this_text($footer_text, $align='L');
-        } else { // odd number page, right justify the footer
-            $this->just_this_text($footer_text, $align='R');   
-        }
+        // if ( $page_no % 2 == 0 ) {  // even number page, left justify the footer. 
+        //     $this->just_this_text($footer_text, $align='L');
+        // } else { // odd number page, right justify the footer
+        //     $this->just_this_text($footer_text, $align='R');   
+        // }
     }
 
-
-    function ChapterTitle($num, $label)
-    {
-        // Arial 12
-        $this->SetFont('Arial','',12);
-        $chapter_title = "Chapter $num : $label";
-        $this->center_this_text( $chapter_title, 1);
-    }
-
-    function ChapterBody($file)
-    {
-        $line_height = 0.2;
-        // Read text file
-        $content = file_get_contents($file);
-        // Ouput file contents
-        $this->SetXY(1, 2); // 1 inch from left, 2 inches from top
-        if ($content !== false) {
-            $this->MultiCell(6.5, 0.2, $content); // 6.5" width, 0.2" height per line
-        } else {
-            $this->SetTextColor(255, 0, 0);
-            $this->MultiCell(6.5, 0.2, 'Could not load {$file}.');
-        }
-    }
-
-    function PrintChapter($num, $title, $file)
-    {
-        $this->SetFont('Times','',12);
-        $this->AddPage();
-        $this->ChapterTitle($num,$title);
-        $this->ChapterBody($file);
-    }
-
-    function back_cover($label)
-    {
-
-        $this->AddPage();
-        $this->SetFont('Arial', '', 8);
-        $text = "Printed " . date('F j, Y');
-        $this->center_this_text($text, 5 );
-    }
-
-    function front_cover($title, $author, $logoFile )
-    {
-        // Background color
-        $this->SetFillColor(200,220,255);
-        // $this->AddPage();
-        $this->Ln(4);
-        $this->SetY(-1);
-        $this->SetFont('Arial', 'I', 20);
-
-        // Center the title
-        $this->center_this_text( $title, 1 );
-        $this->SetFontSize(12);
-        // Output the author
-        $this->center_this_text( $author, 1.5 );
-        $this->Ln(10);
-
-        // Center the logo
-        $pageWidth = $this->GetPageWidth();
-        // $logowidth = 200;
-        $imageWidth = 7; // image size
-        $x = ($pageWidth - $imageWidth ) / 2;
-        $this->SetXY($x, 3 );  // Place it in the center 3" from top. 
-        $this->Image( $logoFile );
-
-        // $this->SetFontSize(8);
-        // Center the date.
-        // $datetext = "Created: " . date('F j, Y');
-        // $this->center_this_text( $datetext, -1 );
-
-    }
-
-/**
+    /**
 	 * print_family_array_headings
 	 *
 	 * @param [bool] $first_time
@@ -361,8 +301,6 @@ class PDF extends FPDF {
 				1 => [array] $field_widths
 			)
 	 */
-
-        // @TODO Add new add_booklet_page functionality into here. 
 
     function print_family_array_headings( $first_time ) {
         $this->SetFont('Arial', '', 8);
@@ -453,7 +391,7 @@ class PDF extends FPDF {
 
         // Output a divider with a blank line above it. 
         $this->Ln($line_height);
-        $current_y = $this->GetY();  //Where are we on the page?
+        $current_y = $this->GetY();
         $this->line($left_margin, $current_y+$line_height, ($this->w)-$left_margin, $current_y+$line_height);
         $next_row = $this->GetY() + $line_height;
 

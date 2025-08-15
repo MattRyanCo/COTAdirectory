@@ -1,6 +1,5 @@
-<?php
-
-class MembershipDirectoryPrinter
+<?php 
+class Membership_Directory_Printer
 {
 
     public function generateRTFHeader()
@@ -14,16 +13,14 @@ class MembershipDirectoryPrinter
     }
 
     /**
-     * Undocumented function
+     * Format Family Listings
      *
      * @param [type] $families all family data 
      * @return void
      */
     public function formatFamilyListings($families)
     {
-        require_once '../app-includes/settings.php';
-
-        global $cotadb, $conn;
+        global $cota_db, $connect;
 
         $ictr = 1;
         $listing =" ";
@@ -70,7 +67,7 @@ class MembershipDirectoryPrinter
             if ( $cell2 || $email2 ) $listing .= "\\par\\pard\\keepn   " . $name2;
 
             // Get family members
-            $individuals = $conn->query("SELECT * FROM members WHERE family_id = " . $one_family['id'] . " ORDER BY `first_name`");
+            $individuals = $connect->query("SELECT * FROM members WHERE family_id = " . $one_family['id'] . " ORDER BY `first_name`");
             if ( ! $individuals->num_rows == 0) {
                 $listing .= "   \\par\\pard\\keepn\\i " . "    Family Members \\plain";
                 foreach ($individuals as $individual) {
@@ -100,15 +97,3 @@ class MembershipDirectoryPrinter
         return $rtfContent;
     }
 }
-
-global $cotadb, $conn, $cota_constants;
-
-require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
-
-$families = $conn->query("SELECT * FROM families ORDER BY `familyname`");
-$num_families = $families->num_rows;
-$ictr = 1;
-
-$printer = new MembershipDirectoryPrinter();
-  
-?>

@@ -8,31 +8,17 @@
  * 2-sided, 4 to a page format.
  */
 
-// New header info
-// require_once __DIR__ . '/bootstrap.php';
-/**
- * COTA Membership Directory PDF Generation Script
- * This script prints the COTA directory in booklet format for 2-up printing
- * on 8.5 x 11" paper in landscape mode with 2 pages per sheet.
- */
+require_once __DIR__ . '/bootstrap.php';
+
 // END New header info
 
-global $cotadb, $conn, $cota_constants;
-
-require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'format-family-listing.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'print.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'class-print-booklet.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
-require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
-// Create a new PDF instance
-// $pdf = new PDF(); // Landscape, Inches, Half-page Letter Size
-// $pdf = new PDF('P', 'in', 'Letter'); // Portrait, Inches, Letter Size
-
-// This to use new half page format
+// Create a new PDF instance - half page format
 $pdf = new PDF( 'P', 'in', 'HalfLetter' ); // Portrait, Inches, Half-Letter Size
-
 
 $pdf->AddPage();
 
@@ -42,11 +28,9 @@ $author = 'Vestry & Wardens of Church of the Ascension, Parkesburg';
 $pdf->SetFont( 'Arial', '', 12 );
 $logoFile = '../app-assets/images/cota-logo.png';
 
-// Initialize database connection
-$cotadb = new COTA_Database();
 
 // Retrieve and Format Membership Entries; Get number of families
-$families     = $cotadb->read_family_database();
+$families     = $cota_db->read_family_database();
 $num_families = $families->num_rows;
 
 // Add front cover page to booklet
@@ -87,10 +71,11 @@ $family_count          = 0;
 
 while ( $family = $families->fetch_assoc() ) {
 	// Get family members
-	$individuals  = $cotadb->read_members_of_family( $family['id'] );
+	$individuals  = $cota_db->read_members_of_family( $family['id'] );
+	// $var_dump($individuals);
 	$family_array = cota_format_family_listing_for_print( $family, $individuals );
-
-	// Get field info for the first family (we'll reuse this)
+	// var_dump($family_array);
+	// Get field info for the first family
 	if ( $family_count === 0 ) {
 		$field_info = $pdf->print_family_array_headings( true );
 	}
@@ -102,7 +87,7 @@ while ( $family = $families->fetch_assoc() ) {
 
 	++$family_count;
 
-	// When we reach the limit, add a new page
+	// When we reach the limit, add the page and reset the current page families
 	if ( $family_count % $families_per_page === 0 ) {
 		$pdf->add_booklet_page(
 			'family',
@@ -146,7 +131,7 @@ $output_filename = $_SERVER['DOCUMENT_ROOT'] . $output_basename;
 // Output the final booklet PDF
 $final_pdf->Output( 'F', $output_filename ); // Save to server
 
-$cotadb->close_connection();
+$cota_db->close_connection();
 
 // Echo header
 echo cota_page_header();

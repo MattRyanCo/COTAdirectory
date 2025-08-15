@@ -1,15 +1,16 @@
 <?php
-global $cotadb, $conn, $cota_constants;
 
-require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once __DIR__ . '/bootstrap.php';
+global $cota_db, $connect,  $cota_constants;
+
+// require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'format-family-listing.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
-require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
 // Echo page header
 echo cota_page_header();
 
-$families = $cotadb->read_family_database();
+$families = $cota_db->read_family_database();
 $num_families = $families->num_rows;
 $ictr = 1;
 
@@ -28,11 +29,11 @@ if ( 0 == $num_families ) {
 			// Get family details
 			$family = $families->fetch_assoc();
 			// Get all family members
-			$individuals = $cotadb->read_members_of_family( $family['id'] );
+			$individuals = $cota_db->read_members_of_family( $family['id'] );
 			echo cota_format_family_listing_for_display($family, $individuals);	
 			$ictr++;
 		} 
 	echo "\n</table></body></html>"; 
 }
 // Close the file 
-$cotadb->close_connection();
+$cota_db->close_connection();

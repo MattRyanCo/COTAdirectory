@@ -1,10 +1,7 @@
 <?php
-
-global $cotadb, $conn, $cota_constants;
-
-require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
+require_once __DIR__ . '/bootstrap.php';
+global $cota_db, $connect,  $cota_constants;
 require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
-require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
 $mid = -1; // Default for new family member
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
@@ -21,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
     $annday = !empty($_POST['annday']) ? $_POST['annday'] : null;
 
     // Update family record
-    $stmt = $conn->prepare("UPDATE families SET familyname=?, address=?, city=?, state=?, zip=?, homephone=?, annday=? WHERE id=?");
+    $stmt = $connect->prepare("UPDATE families SET familyname=?, address=?, city=?, state=?, zip=?, homephone=?, annday=? WHERE id=?");
     $stmt->bind_param("sssssssi", $familyname, $address, $city, $state, $zip, $homephone, $annday, $family_id);
     $stmt->execute();
     $stmt->close();
@@ -57,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
             $bap = ($bap === '' ? null : $bap);
 
             // Insert new member
-            $stmt = $conn->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt = $connect->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism) VALUES (?, ?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("issssss", $family_id, $fname, $lname, $cell, $email, $bday, $bap);
             $stmt->execute();
             $stmt->close();
@@ -73,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
             $bday = ($bday === '' ? null : $bday);
             $bap = ($bap === '' ? null : $bap);
 
-            $stmt = $conn->prepare("UPDATE members SET first_name=?, last_name=?, cell_phone=?, email=?, birthday=?, baptism=? WHERE id=? AND family_id=?");
+            $stmt = $connect->prepare("UPDATE members SET first_name=?, last_name=?, cell_phone=?, email=?, birthday=?, baptism=? WHERE id=? AND family_id=?");
             $stmt->bind_param("ssssssii", $fname, $lname, $cell, $email, $bday, $bap, $mid, $family_id);
             $stmt->execute();
             $stmt->close();
@@ -100,4 +97,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
     echo "<button class='main-menu-return' type='button' ><a href='index.php'>Return to Main Menu</a></button>";
 }
 
-$cotadb->close_connection();
+$cota_db->close_connection();
