@@ -44,79 +44,42 @@ $pdf->SetAuthor($author);
 $pdf->SetFont('Arial', '', 12 );
 $logoFile = '../app-assets/images/cota-logo.png';
 
-// Render the cover page with title, author, and logo
+// Direct print -> Render the cover page with title, author, and logo
 $data = [
     'title'=>$title, 
     'author'=> $author, 
     'logo' => $logoFile
 ];
 $position = 'center';
-$pdf->render_cover_page($pdf, $data, $position );
+// $pdf->render_cover_page($pdf, $data, $position );
+$pdf->add_booklet_page( 'cover', $data );
+// END New front cover page loading
 
-// Retrieve and Format Membership Entries
+// Retrieve and Format Membership Entries; Get number of families
 $families = $cotadb->read_family_database();
 $num_families = $families->num_rows;
 $field_positions = $field_widths = $field_info = [];
 
-// Load and insert static pages.
+// Direct print -> Load and insert static pages.
 for ($i = 1; $i <= 3; $i++) {
-    // $pdf->PrintChapter($i,'intro'.$i.'.txt','../uploads/intro'.$i.'.txt');
-
-    // Call new page function.
+    $intro_content = file_get_contents('../uploads/intro' . $i . '.txt');
     $data = [
-        'title'=> 'intro'.$i.'.txt', 
-        'content'=> '../uploads/intro'.$i.'.txt'
+        'title'=> 'Introduction '.$i, 
+        'content'=> $intro_content
     ];
     $position = 'center';
-    $pdf->render_intro_page( $pdf, $data, $position ); 
+    // $pdf->render_intro_page( $pdf, $data, $position ); 
+    $pdf->add_booklet_page( 'intro', $data ); // New intro print
 }
 
-// New front cover page loading into temp booklet for pagination
-// Add front cover page
-$pdf->add_booklet_page(
-	'cover',
-	array(
-		'title'  => $title,
-		'author' => $author,
-		'logo'   => $logofile,
-	)
-);
-// END New front cover page loading
-
-
-// New intro pages loading. 
-
-// Load and insert static intro pages into temp booklet for pagination
-for ( $i = 1; $i <= 3; $i++ ) {
-	$intro_content = file_get_contents( '../uploads/intro' . $i . '.txt' );
-	$pdf->add_booklet_page(
-		'intro',
-		array(
-			'title'   => 'Introduction ' . $i,
-			'content' => $intro_content,
-		)
-	);
-}
-// END New intro pages loading. 
-
-// This is direct outputs. Not being included in booklet for pagination. 
-$pdf->AddPage();
-$pdf->SetFont('Arial', 'B', 12 );
-$pdf->center_this_text('Family & Members Listing - '.$num_families . ' families', 0.75);
-$pdf->SetFont('Arial', 'I', 10);
-$pdf->center_this_text('Other misc info may be shared here about the membership numbers.', 3);
-
-
-// @TODO Convert above comments and family counter to booklet page 
-
-// $pdf->add_booklet_page(
-// 	'family_summary',
-// 	array(
-// 		'title'    => 'Family & Members Listing - '.$num_families . ' families',
-// 		'content' => 'Other misc info may be shared here about the membership numbers.'
-//         )
-// );
-
+// Initial Family Listing Title Page. 
+$data = [
+    'title'=> 'Family & Members Listing - '.$num_families . ' families', 
+    'content'=> 'Other misc info may be shared here about the membership numbers.'
+];
+$position = 'center';
+// $pdf->render_family_summary_page($pdf, $data, $position );
+$pdf->add_booklet_page( 'family_summary', $data );
 
 
 $pdf->SetFont('Arial', '', 8);  // Reset to normal font
