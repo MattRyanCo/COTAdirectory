@@ -213,15 +213,11 @@ class PDF extends FPDF
 	 * Render back cover
 	 */
 	public function render_back_cover( $pdf, $data, $position ) {
+        $pdf->AddPage();
 		$pdf->SetFont( 'Arial', '', 6 );
 		$text = 'Printed ' . date( 'F j, Y' );
 		$pdf->center_this_text( $text, 3.5 );
 	}
-
-
-
-
-
 
 
 
@@ -331,7 +327,7 @@ class PDF extends FPDF
 
         $this->AddPage();
         $this->SetFont('Arial', '', 8);
-        $text = " Printed " . date('F j, Y');
+        $text = "Printed " . date('F j, Y');
         $this->center_this_text($text, 5 );
     }
 
@@ -409,7 +405,6 @@ class PDF extends FPDF
                 $left_margin+$large_field_width+$wline2[1]+$wline2[2]+$wline2[3],           // 4 DOB
                 $left_margin+$large_field_width+$wline2[1]+$wline2[2]+$wline2[3]+$wline2[4] // 5 Bap
             ];  // X position for start of label / fields to write
-            // var_dump($field_positions);
         }
 
         // Output headings here. 

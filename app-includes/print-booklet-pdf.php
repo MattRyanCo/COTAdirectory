@@ -110,11 +110,16 @@ while ($family = $families->fetch_assoc()) {
         $pdf->AddPage();
         $pdf->print_family_array($family_array, $field_info );
     }
-
 }
 
 // Add the rear cover
-$pdf->back_cover(1, 'Back Cover');
+// $pdf->back_cover('Back Cover');
+$data = [];
+$position = 'center';
+// $pdf->render_family_summary_page($pdf, $data, $position );
+// $pdf->render_back_cover( $pdf, $data, $position );
+$pdf->add_booklet_page( 'back_cover', $data );
+
 
 $output_basename = '/downloads/directory_booklet_' . date('Y-m-d') . '.pdf';
 // Ensure the downloads directory exists
