@@ -8,7 +8,8 @@
  * 2-sided, 4 to a page format. 
  */
 
-global $cotadb, $conn, $cota_constants, $header_height;
+// global $cotadb, $conn, $cota_constants, $header_height;
+global $cotadb, $conn, $cota_constants;
 
 require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
 require_once $cota_constants->COTA_APP_INCLUDES . 'format-family-listing.php';
@@ -73,9 +74,9 @@ $pdf->SetFont('Arial', '', 10);
 $pdf->center_this_text('Other misc info may be shared here about the membership numbers.', 3);
 
 
-$pdf->SetFont('Arial', '', 8);  // Reset to normal font
+$pdf->SetFont('Arial', '', $cota_constants->FAMILY_LISTING_FONT );  // Reset to normal font
 $pdf->AddPage(); // Start the alpha listing on a new page
-$line_height = 0.25;  // Set basic line height
+$line_height = $cota_constants->FAMILY_LISTING_LINE_HEIGHT;  // Set basic line height
 
 // Get things started with headings below titles. 
 $field_info = $pdf->print_family_array_headings( TRUE );  // print headings
@@ -91,13 +92,13 @@ while ($family = $families->fetch_assoc()) {
 
     if ( $pdf->enough_room_for_family( $family_listing_height_in_lines, $line_height ) ) {
         // Enough space to print out this family. 
-        $pdf->SetFont('Arial', '', 7); // Ensure font is reset before headings
+        $pdf->SetFont('Arial', '', $cota_constants->FAMILY_LISTING_FONT ); // Ensure font is reset before headings
         $pdf->print_family_array($family_array, $field_info );
     } else {
         // Not enough room for family. 
         // Add new page. 
         // Print out headings on new page
-        $pdf->SetFont('Arial', '', 10); // Ensure font is reset before headings
+        $pdf->SetFont('Arial', '', $cota_constants->FAMILY_HEADING_FONT); // Ensure font is reset before headings
         $pdf->AddPage();
         $pdf->print_family_array($family_array, $field_info );
     }
