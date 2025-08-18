@@ -8,6 +8,8 @@ class PDF extends FPDF {
 	public $pageWidth            = 0;
 	private $current_page_number = 0;
 	private $header_height       = 0.0;  // Height of family listing page header.
+	private $footer_position     = null; // 'left' or 'right' for current page
+	public $booklet_page_numbers = array(); // Holds the booklet page number for each output page
 
 	/**
 	 * Constructor for booklet PDF
@@ -70,22 +72,25 @@ class PDF extends FPDF {
 
 	/**
 	 * Generate the final booklet PDF with correct page ordering
-	 */
+	 * 
+	 * */
 	public function generate_booklet_pdf() {
 		$total_pages   = count( $this->booklet_pages );
 		$booklet_order = $this->generate_booklet_order( $total_pages );
-
 		// Create a new PDF for the final booklet
 		$final_pdf = new PDF( 'P', 'in', 'HalfLetter' );
-		// Render pages in booklet order`
+		$final_pdf->booklet_page_numbers = array(); // Track booklet page numbers for each output page
+
+		$page_number_in_booklet = 1;
 		foreach ( $booklet_order as $page_pair ) {
 			// Left page
+			$final_pdf->footer_position = 'left';
+			$final_pdf->AddPage();
 			if ( $page_pair[0] <= $total_pages ) {
-				$final_pdf->AddPage();
+				$final_pdf->booklet_page_numbers[] = $page_pair[0];
 				$this->render_page_content( $final_pdf, $this->booklet_pages[ $page_pair[0] - 1 ], 'left' );
 			} else {
-				// Blank page or back cover
-				$final_pdf->AddPage();
+				$final_pdf->booklet_page_numbers[] = $page_pair[0];
 				if ($page_pair[0] == $total_pages + 1) {
 					$this->render_back_cover($final_pdf, array('content' => ''), 'left');
 				} else {
@@ -95,12 +100,13 @@ class PDF extends FPDF {
 			}
 
 			// Right page
+			$final_pdf->footer_position = 'right';
+			$final_pdf->AddPage();
 			if ( $page_pair[1] <= $total_pages ) {
-				$final_pdf->AddPage();
+				$final_pdf->booklet_page_numbers[] = $page_pair[1];
 				$this->render_page_content( $final_pdf, $this->booklet_pages[ $page_pair[1] - 1 ], 'right' );
 			} else {
-				// Blank page
-				$final_pdf->AddPage();
+				$final_pdf->booklet_page_numbers[] = $page_pair[1];
 				$final_pdf->SetFont( 'Arial', '', 8 );
 				$final_pdf->center_this_text( '(Blank)', 4 );
 			}
@@ -108,7 +114,6 @@ class PDF extends FPDF {
 
 		return $final_pdf;
 	}
-
 
 	/**
 	 * Render individual page content
@@ -259,27 +264,38 @@ class PDF extends FPDF {
         $this->header_height = $this->GetY() + 0.5;
     }
 
-    public function getHeaderHeight(): float
+	public function getHeaderHeight(): float
     {
         return $this->header_height;
     }
+	function Footer()
+	{
+		$this->SetFont('Arial', 'I', 8);  // Select Arial italic 8
+		$this->SetTextColor(128);  // Text color in gray
 
-    function Footer()
-    {
-        // $this->SetFont('Arial', 'I', 8);  // Select Arial italic 8
-        // $this->SetTextColor(128);  // Text color in gray
-        // $page_no = $this->PageNo();
-        // $footer_text = "Page " . $page_no;
-        // $this->SetY(-0.25);  // Set position 1/4" from bottom of page. 
+		// Get the correct booklet page number for this output page
+		$output_page_index = $this->page - 1; // FPDF's $this->page is 1-based
+		$booklet_page_no = isset($this->booklet_page_numbers[$output_page_index]) ? $this->booklet_page_numbers[$output_page_index] : $this->PageNo();
 
-        // if ( $page_no==1 ) return; // no footer on 1st page. 
+		$footer_text = "Page " . $booklet_page_no;
+		$this->SetY(-0.25);  // Set position 1/4" from bottom of page. 
 
-        // if ( $page_no % 2 == 0 ) {  // even number page, left justify the footer. 
-        //     $this->just_this_text($footer_text, $align='L');
-        // } else { // odd number page, right justify the footer
-        //     $this->just_this_text($footer_text, $align='R');   
-        // }
-    }
+		if ( $output_page_index == 1 ) return; // no footer on 1st output page (starts on right)
+
+		// Use the footer_position property to determine justification
+		if ($this->footer_position === 'left') {
+			$this->just_this_text($footer_text, $align='L');
+		} elseif ($this->footer_position === 'right') {
+			$this->just_this_text($footer_text, $align='R');
+		} else {
+			// fallback to even/odd logic if position is not set
+			if ( $booklet_page_no % 2 == 0 ) {
+				$this->just_this_text($footer_text, $align='L');
+			} else {
+				$this->just_this_text($footer_text, $align='R');
+			}
+		}
+	}
 
     /**
 	 * print_family_array_headings
