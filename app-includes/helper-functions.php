@@ -45,7 +45,7 @@ function cota_page_header() {
 	<div id="main-header" class="container">
 	<div id="pre-header">
 		App ' . $app_version . '<br>
-		<a href="' . $app_github_url . '" target="_blank">Source</a>  
+		<a href="' . $app_github_url . '" target="_blank">Source</a> |  <a href="' . $app_github_url . '/wiki" target="_blank">Wiki</a>
 	</div>
 	<h1>Church of the Ascension, Parkesburg</h1>
 	<h2><a href="/">Family Directory Management</a></h2>
