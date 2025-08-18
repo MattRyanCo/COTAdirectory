@@ -218,11 +218,9 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
      */
     function cota_insert_member($family_id, $first_name, $last_name, $cell_phone, $email, $birthday, $baptism) {
         global $cota_constants;
-        global $cota_db, $conn;
+        global $cota_db, $connect;
 
-        require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
         require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
-        require_once $cota_constants->COTA_APP_INCLUDES . 'settings.php';
 
         $stmt = $cota_db->conn->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $cellphone  = cota_format_phone($cell_phone);
