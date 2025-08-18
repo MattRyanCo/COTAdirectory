@@ -82,7 +82,6 @@ while ( $family = $families->fetch_assoc() ) {
 		'family_array' => $family_array,
 		'field_info'   => $field_info,
 	);
-	var_dump($current_page_families);
 	++$family_count;
 
 	// When we reach the limit, add the page and reset the current page families

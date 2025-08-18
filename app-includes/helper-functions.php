@@ -36,7 +36,6 @@ function cota_page_header() {
 <title>COTA Family Directory Management</title>
 <meta name="application-name" content="COTA Family Directory Management">
 <link rel="icon" type="image/x-icon" href="/app-assets/images/favicon.ico">
-<!-- <link rel="stylesheet" type="text/css" href="/app-assets/css/all_style.css.php"> -->
 <link rel="stylesheet" href="/app-assets/css/styles.css">
 </head>
 <body>
@@ -45,7 +44,7 @@ function cota_page_header() {
 	<div id="main-header" class="container">
 	<div id="pre-header">
 		App ' . $app_version . '<br>
-		<a href="' . $app_github_url . '" target="_blank">Source</a>  
+		<a href="' . $app_github_url . '" target="_blank">Source</a> | <a href="' . $app_github_url . '/wiki" target="_blank">Wiki</a>
 	</div>
 	<h1>Church of the Ascension, Parkesburg</h1>
 	<h2><a href="/">Family Directory Management</a></h2>
@@ -256,6 +255,6 @@ function empty_database_alert( $text ) {
 	echo '<h3 style="color:red; font-weight: 700;"> 0 Families</h3>';
 	echo '<h4>Directory Database is Empty</h4>';
 	echo '<div id="empty-notice">The directory database has been recently reset.<br>';
-	echo 'Use <a href="http://cotadirectory.test/app-includes/import.php">Import CSV Data</a> or <a href="http://cotadirectory.test/app-includes/add-family-form.php">Add New Family</a> to add data to database.</div>';
+	echo 'Use <a href="/app-includes/import.php">Import CSV Data</a> or <a href="/app-includes/add-family-form.php">Add New Family</a> to add data to database.</div>';
 	echo '</div>';
 }

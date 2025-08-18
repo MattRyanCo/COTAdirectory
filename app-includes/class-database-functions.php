@@ -1,8 +1,7 @@
 <?php
+require_once __DIR__ . '/bootstrap.php';
 
 class COTA_Database {
-	// private $connect;
-
 	// Local
 	private const LOCAL_DB_NAME     = 'cotadirectory';
 	private const LOCAL_DB_USER     = 'root';
@@ -15,7 +14,6 @@ class COTA_Database {
 	private const LIVE_DB_PASSWORD = null; // Set via environment variable DB_PASSWORD
 	private const LIVE_DB_HOST     = null; // Set via environment variable DB_HOST
 
-
 	public function __construct() {
 		$this->conn = new \mysqli(
 			self::get_db_host(),
@@ -23,7 +21,6 @@ class COTA_Database {
 			self::get_db_password(),
 			self::get_db_name()
 		);
-		// var_dump($this->conn);
 		if ( $this->conn->connect_error ) {
 			die( 'Connection failed: Errno ' . $this->conn->connect_errno . ' Error ' . $this->conn->connect_error );
 		}
@@ -45,7 +42,6 @@ class COTA_Database {
 	public static function get_db_host() {
 		return PHP_OS_FAMILY === 'Windows' ? self::LOCAL_DB_HOST : ( $_ENV['DB_HOST'] ?? self::LIVE_DB_HOST );
 	}
-
 
 	public function get_connection() {
 		return $this->conn;
