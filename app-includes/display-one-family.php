@@ -1,93 +1,89 @@
 <?php
 require_once __DIR__ . '/bootstrap.php';
-require_once $constants->COTA_APP_INCLUDES . 'format-family-listing.php';
+global $cota_db, $connect,  $cota_constants;
 
+require_once $cota_constants->COTA_APP_INCLUDES . 'format-family-listing.php';
+require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
 
-if ( $_SERVER['REQUEST_METHOD'] === 'GET' && isset( $_GET['familyname'] ) ) {
-	$family_name = cota_sanitize( $_GET['familyname'] );
+if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {
+    $familyname = $_GET["familyname"];
 
-	// Check optional search fields
-	$address_entered   = ! empty( trim( $_GET['address'] ?? '' ) );
-	$address_2_entered = ! empty( trim( $_GET['address2'] ?? '' ) );
+    // Check optional search fields
+    $addressEntered = !empty(trim($_GET['address'] ?? ''));
+    $address2Entered = !empty(trim($_GET['address2'] ?? ''));
 
-	// Fetch family record
-	if ( ! $address_entered && ! $address_2_entered ) {
-		// No extra search fields
-		$statement = $connect->prepare(
-			'SELECT * FROM families 
-            WHERE familyname = ?'
-		);
-		$statement->bind_param( 's', $family_name );
-	} elseif ( $address_entered && ! $address_2_entered ) {
-		// Extra search field address only entered
-		$address_like = '%' . $_GET['address'] . '%';
-		$statement    = $connect->prepare(
-			'SELECT * FROM families 
-            WHERE familyname = ? AND address LIKE ?'
-		);
-		$statement->bind_param( 'ss', $family_name, $address_like );
-	} elseif ( ! $address_entered && $address_2_entered ) {
-		// Extra search field address2 only entered
-		$address_2_like = '%' . $_GET['address2'] . '%';
-		$statement      = $connect->prepare(
-			'SELECT * FROM families 
-            WHERE familyname = ? AND address2 LIKE ?'
-		);
-		$statement->bind_param( 'ss', $family_name, $address_2_like );
-	} elseif ( $address_entered && $address_2_entered ) {
-		// Extra search field address and address2 entered
-		$address_like   = '%' . $_GET['address'] . '%';
-		$address_2_like = '%' . $_GET['address2'] . '%';
-		$statement      = $connect->prepare(
-			'SELECT * FROM families 
+    // Fetch family record
+    if ( !$addressEntered && !$address2Entered ) {
+        // No extra search fields
+        $stmt = $connect->prepare(
+            "SELECT * FROM families 
+            WHERE familyname = ?");
+        $stmt->bind_param("s", $familyname);
+    } elseif ($addressEntered && !$address2Entered ) {
+        // Extra search field address only entered 
+        $addresslike = '%'. $_GET['address'] . '%';
+        $stmt = $connect->prepare(
+            "SELECT * FROM families 
+            WHERE familyname = ? AND address LIKE ?");
+        $stmt->bind_param("ss", $familyname, $addresslike);
+    } elseif (!$addressEntered && $address2Entered) {
+        // Extra search field address2 only entered 
+        $address2like = '%'. $_GET['address2'] . '%';
+        $stmt = $connect->prepare(
+            "SELECT * FROM families 
+            WHERE familyname = ? AND address2 LIKE ?");
+        $stmt->bind_param("ss", $familyname, $address2like);
+    } elseif ($addressEntered && $address2Entered ) {
+        // Extra search field address and address2 entered 
+        $addresslike = '%'. $_GET['address'] . '%';
+        $address2like = '%'. $_GET['address2'] . '%';
+        $stmt = $connect->prepare(
+        "SELECT * FROM families 
         WHERE familyname = ? 
-        AND ( address LIKE ? OR address2 LIKE ?) '
-		);
-		$statement->bind_param( 'sss', $family_name, $address_like, $address_2_like );
-	}
+        AND ( address LIKE ? OR address2 LIKE ?) ");
+        $stmt->bind_param("sss", $familyname, $addresslike, $address2like );
+    }
 }
-	// Execute search
-	$statement->execute();
-	$result = $statement->get_result();
-	$family = $result->fetch_assoc();
-	$statement->close();
+    // Execute search
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $family = $result->fetch_assoc();
+    $stmt->close();
 
-		// Echo header
-	echo cota_page_header();
-if ( ! $family ) {
+        // Echo header
+    echo cota_page_header();
+    if (!$family) {
 
-	?>
-		<div id="display-family" class="cota-display-container">
-			<h2>Display Family</h2>
-			<div class="container error-message"><?php echo htmlspecialchars( ucfirst( $family_name ) ); ?> family not found<br><br>
-			<a href="../app-includes/display-family.php">Try again with a different spelling.</a></div>
-		<?php
-			die();
-}
+        ?>
+        <div id="display-family" class="cota-display-container">
+            <h2>Display Family</h2>
+            <div class="container error-message"><?php echo ucfirst($familyname);?> family not found<br><br>
+            <a href="../app-includes/display-family.php">Try again with a different spelling.</a></div>
+            <?php die();
+    } 
 
-if ( $result->num_rows > 1 ) {
-	// More than 1 result, need to refine.
-	?>
-		<div id="display-family" class="cota-display-container">
-			<h2>Display Family</h2>
-			<div class="container error-message">
-						<?php echo htmlspecialchars( $family_name ); ?> family search returned multiple results.<br><br>
-			<a href="../app-includes/display-family.php?familyname=<?php echo urlencode( $family_name ); ?>&address=&address2=">Please refine your search with the address fields.</a>
+    if ( $result->num_rows > 1 ) {
+    // More than 1 result, need to refine. 
+        ?>
+        <div id="display-family" class="cota-display-container">
+            <h2>Display Family</h2>
+            <div class="container error-message">
+                <?php echo $familyname;?> family search returned multiple results.<br><br> 
+                <a href="../app-includes/display-family.php?familyname=<?php echo $familyname;?>&address=&address2=">Please refine your search with the address fields.</a>
 
-			</div>
-		<?php
-			die();
-}
+            </div>
+            <?php die();
+    }
 
-	// Fetch members
-	$statement = $connect->prepare( 'SELECT * FROM members WHERE family_id = ?' );
-	$statement->bind_param( 'i', $family['id'] );
-	$statement->execute();
-	$members = $statement->get_result();
-	$statement->close();
+    // Fetch members
+    $stmt = $connect->prepare("SELECT * FROM members WHERE family_id = ?");
+    $stmt->bind_param("i", $family["id"]);
+    $stmt->execute();
+    $members = $stmt->get_result();
+    $stmt->close();
 
 
-// Dump out remainder of import page.
+// Dump out remainder of import page. 
 
 	echo '<div class="cota-display-one-container">';
 	echo '<table class="directory-one-table">';
@@ -95,5 +91,5 @@ if ( $result->num_rows > 1 ) {
 		echo '<tr><th>Home Phone<td><i>Name</i></td><td><i>Email</i></td><td><i>Cell</i></td><td><i>DoB</i></td><td><i>DoBaptism</i></td></th></tr>';
 
 		$individuals = $cota_db->read_members_of_family( $family['id'] );
-		echo cota_format_family_listing_for_display( $family, $individuals );
-	echo "\n</table></body></html>";
+		echo cota_format_family_listing_for_display($family, $individuals);	
+	echo "\n</table></body></html>"; 

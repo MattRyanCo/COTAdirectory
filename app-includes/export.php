@@ -1,88 +1,91 @@
 <?php
-require_once __DIR__ . '/bootstrap.php';
 /**
  * Export directory data to CSV
  */
 
-header( 'Content-Type: text/csv' );
-header( 'Content-Disposition: attachment; filename="directory_export.csv"' );
-$output = fopen( 'php://output', 'w' );
+require_once __DIR__ . '/bootstrap.php';
+
+global $cota_db, $connect,  $cota_constants;
+
+require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+
+header('Content-Type: text/csv');
+header('Content-Disposition: attachment; filename="directory_export.csv"');
+$output = fopen('php://output', 'w');
 
 // Static columns before dynamic member columns
-$header = array(
-	'familyname',
-	'fname1',
-	'fname2',
-	'lname2',
-	'address',
-	'address2',
-	'city',
-	'state',
-	'zip',
-	'homephone',
-	'cellphone1',
-	'cellphone2',
-	'email1',
-	'email2',
-	'bday1',
-	'bday2',
-	'bap1',
-	'bap2',
-	'annday',
-);
+$header = [
+    "familyname",
+    "fname1",
+    "fname2",
+    "lname2",
+    "address",
+    "address2",
+    "city",
+    "state",
+    "zip",
+    "homephone",
+    "cellphone1",
+    "cellphone2",
+    "email1",
+    "email2",
+    "bday1",
+    "bday2",
+    "bap1",
+    "bap2",
+    "annday"
+];
 
 // Add dynamic member columns to header row
-$max_members = ( isset( $constants->MAX_FAMILY_MEMBER ) )
-	? (int) $constants->MAX_FAMILY_MEMBER
-	: 9;
-for ( $i = 3; $i <= $max_members; $i++ ) {
-	$header[] = "otherfname{$i}";
-	$header[] = "otherlname{$i}";
-	$header[] = "otherbday{$i}";
-	$header[] = "otherbap{$i}";
-	$header[] = "othercell{$i}";
-	$header[] = "otherem{$i}";
+$max_members = (isset($cota_constants->MAX_FAMILY_MEMBER))
+    ? (int)$cota_constants->MAX_FAMILY_MEMBER
+    : 9;
+for ($i = 3; $i <= $max_members; $i++) {
+    $header[] = "otherfname{$i}";
+    $header[] = "otherlname{$i}";
+    $header[] = "otherbday{$i}";
+    $header[] = "otherbap{$i}";
+    $header[] = "othercell{$i}";
+    $header[] = "otherem{$i}";
 }
 
-fputcsv( $output, $header );
+fputcsv($output, $header);
 
-$families = $connect->query( 'SELECT * FROM families' );
-while ( $family = $families->fetch_assoc() ) {
-	// Initialize family data
-	$one_family = sprintf(
-		'%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s',
-		$family['familyname'],
-		$family['fname1'],
-		$family['fname2'],
-		$family['lname2'],
-		$family['address'],
-		$family['address2'],
-		$family['city'],
-		$family['state'],
-		$family['zip'],
-		$family['homephone'],
-		$family['cellphone1'],
-		$family['cellphone2'],
-		$family['email1'],
-		$family['email2'],
-		$family['bday1'],
-		$family['bday2'],
-		$family['bap1'],
-		$family['bap2'],
-		$family['annday']
-	);
+$families = $connect->query("SELECT * FROM families");
+while ($family = $families->fetch_assoc()) {
+    // Initialize family data
+    $one_family = sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", 
+        $family['familyname'],
+        $family['fname1'],
+        $family['fname2'],
+        $family['lname2'],
+        $family['address'],
+        $family['address2'],
+        $family['city'],
+        $family['state'],
+        $family['zip'],
+        $family['homephone'],
+        $family['cellphone1'], 
+        $family['cellphone2'],
+        $family['email1'], 
+        $family['email2'], 
+        $family['bday1'],
+        $family['bday2'],
+        $family['bap1'],
+        $family['bap2'],
+        $family['annday']);
 
-	// Fetch members of this family
-	$members     = $connect->query( 'SELECT * FROM members WHERE family_id = ' . $family['id'] );
-	$all_members = array();
-	$one_family .= ',';
-	// Loop through each member and append their data
-	while ( $member = $members->fetch_assoc() ) {
+    // Fetch members of this family
+    $members = $connect->query("SELECT * FROM members WHERE family_id = " . $family['id']);
+    $all_members = [];
+    $one_family .= ',';
+    // Loop through each member and append their data
+    while ($member = $members->fetch_assoc()) {
 
-		$one_family .= sprintf( '%s,%s,%s,%s,%s,%s,', $member['first_name'], $member['last_name'], $member['birthday'], $member['baptism'], $member['cell_phone'], $member['email'] );
-	}
-	// write out all data on a single csv record
-	fputcsv( $output, explode( ',', $one_family ) );
+        $one_family .= sprintf("%s,%s,%s,%s,%s,%s,",$member['first_name'],$member['last_name'], $member['birthday'], $member['baptism'] ,$member['cell_phone'],$member['email']);
+    }
+    // write out all data on a single csv record
+    fputcsv($output, explode(",", $one_family));
 }
-fclose( $output );
+fclose($output);
 $cota_db->close_connection();

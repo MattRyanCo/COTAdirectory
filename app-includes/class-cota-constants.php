@@ -2,16 +2,27 @@
 // require_once __DIR__ . '/bootstrap.php';
 
 class Constants {
-	const MAX_FAMILY_MEMBERS = 10; // Maximum number of family members
-	const ENVIRONMENT_TYPE   = 'laragon';
-	const COTA_APP_ASSETS        = __DIR__ . '/app-assets/';
-	const COTA_APP_INCLUDES      = __DIR__ . '/app-includes/';
-	const COTA_APP_LIBRARIES     = __DIR__ . '/app-libraries/';
+	const MAX_FAMILY_MEMBERS     = 10; // Maximum number of family members
 	const MAX_INFORMATIONAL_DOCS = 5; // Maximum number of informational documents
-	const UPLOAD_DIR             = '../uploads/'; // Directory for uploaded files
 
+	public $UPLOAD_DIR;
+
+	public $COTA_APP;
 	public $COTA_APP_FILE;
+	public $COTA_APP_ASSETS;
+	public $COTA_APP_INCLUDES;
+	public $COTA_APP_LIBRARIES;
+	public $FAMILIES_PER_PAGE;
+	// Define constants for app paths
+
 	public function __construct() {
-		$this->$COTA_APP_FILE = dirname( __DIR__ ) . '/index.php';
+		$this->COTA_APP           = dirname( __DIR__ );
+		$this->COTA_APP_FILE      = $this->COTA_APP . '/index.php';
+		$this->COTA_APP_ASSETS    = $this->COTA_APP . '/app-assets/';
+		$this->COTA_APP_INCLUDES  = $this->COTA_APP . '/app-includes/';
+		$this->COTA_APP_LIBRARIES = $this->COTA_APP . '/app-libraries/';
+		$this->UPLOAD_DIR         = '../uploads/'; // Directory for uploaded files
+
+		$this->FAMILIES_PER_PAGE = 5;
 	}
 }
