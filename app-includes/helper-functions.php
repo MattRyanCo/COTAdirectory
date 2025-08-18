@@ -48,11 +48,10 @@ function cota_page_header() {
 		<a href="' . $app_github_url . '" target="_blank">Source</a>  
 	</div>
 	<h1>Church of the Ascension, Parkesburg</h1>
-	<h2>Family Directory Management</h2>
+	<h2><a href="/">Family Directory Management</a></h2>
 
 	<nav class="main-menu">
 		<ul>
-			<li><a href="/">Home</a></li>
 			<li class="has-submenu">
 				<a href="#">Main Menu</a>
 				<ul class="submenu">
