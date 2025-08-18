@@ -77,7 +77,7 @@ function cota_page_header() {
 				<a href="#">Print Options</a>
 				<ul class="submenu">
 					<li><a href="../app-includes/print-booklet-rtf.php">RTF for External Use</a></li>
-					<li><a href="../app-includes/print-booklet-pdf.php">PDF for Printing</a></li>
+					<li><a href="../app-includes/print-booklet-pdf.php">PDF for Booklet Printing</a></li>
 				</ul>
 			</li>
 			<li class="has-submenu">
