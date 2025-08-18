@@ -72,9 +72,7 @@ $family_count          = 0;
 while ( $family = $families->fetch_assoc() ) {
 	// Get family members
 	$individuals  = $cota_db->read_members_of_family( $family['id'] );
-	// $var_dump($individuals);
 	$family_array = cota_format_family_listing_for_print( $family, $individuals );
-	// var_dump($family_array);
 	// Get field info for the first family
 	if ( $family_count === 0 ) {
 		$field_info = $pdf->print_family_array_headings( true );
@@ -84,7 +82,7 @@ while ( $family = $families->fetch_assoc() ) {
 		'family_array' => $family_array,
 		'field_info'   => $field_info,
 	);
-
+	var_dump($current_page_families);
 	++$family_count;
 
 	// When we reach the limit, add the page and reset the current page families
