@@ -51,18 +51,6 @@ class PDF extends FPDF {
 			// Back of sheet: first_page + 1 (left) | last_page - 1 (right)
 			$booklet_order[] = array( $first_page + 1, $last_page - 1 );
 		}
-
-        // Below is a prior version of the page ordering. 
-        // $booklet_order = array();
-        // $front_cover   = 1;
-        // $back_cover    = $pages_to_print;
-        // for ( $i = 0; $i < $pages_to_print / 2; $i++ ) {
-        //     $left_page  = $pages_to_print - $i;  // Back side of a sheet
-        //     $right_page = $i + 1;             // Front side of a sheet
-
-        //     $booklet_order[] = array( $left_page, $right_page ); // Front of sheet
-        //     $booklet_order[] = array( $right_page + 1, $left_page - 1 ); // Back of sheet
-        // }
 		return $booklet_order;
 	}
 
@@ -86,23 +74,24 @@ class PDF extends FPDF {
 	public function generate_booklet_pdf() {
 		$total_pages   = count( $this->booklet_pages );
 		$booklet_order = $this->generate_booklet_order( $total_pages );
-        var_dump($total_pages);
-        var_dump($booklet_order);
 
 		// Create a new PDF for the final booklet
 		$final_pdf = new PDF( 'P', 'in', 'HalfLetter' );
-
-		// Render pages in booklet order
+		// Render pages in booklet order`
 		foreach ( $booklet_order as $page_pair ) {
 			// Left page
 			if ( $page_pair[0] <= $total_pages ) {
 				$final_pdf->AddPage();
 				$this->render_page_content( $final_pdf, $this->booklet_pages[ $page_pair[0] - 1 ], 'left' );
 			} else {
-				// Blank page
+				// Blank page or back cover
 				$final_pdf->AddPage();
-				$final_pdf->SetFont( 'Arial', '', 8 );
-				$final_pdf->center_this_text( '(Blank)', 4 );
+				if ($page_pair[0] == $total_pages + 1) {
+					$this->render_back_cover($final_pdf, array('content' => ''), 'left');
+				} else {
+					$final_pdf->SetFont( 'Arial', '', 8 );
+					$final_pdf->center_this_text( '(Blank)', 4 );
+				}
 			}
 
 			// Right page
