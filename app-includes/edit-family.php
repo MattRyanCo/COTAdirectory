@@ -2,9 +2,9 @@
 
 require_once __DIR__ . '/bootstrap.php';
 
-global $cota_db, $connect,  $cota_constants;
+global $cota_db, $connect,  $cota_app_settings;
 
-require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
 // $addresslike = $address2like = '';
 if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["familyname"])) {

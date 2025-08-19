@@ -3,8 +3,8 @@
  * Get upcoming anniversary dates within the next 15 days.
  */
 require_once __DIR__ . '/bootstrap.php';
-global $cota_db, $connect,  $cota_constants;
-require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+global $cota_db, $connect,  $cota_app_settings;
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
 function cota_get_last_name($family_id, $conn) {
     $family = $connect->query("SELECT familyname FROM families WHERE id = " . intval($family_id))->fetch_assoc();

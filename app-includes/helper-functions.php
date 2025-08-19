@@ -4,16 +4,16 @@
  * Helper functions.
  *
  */
-function cota_page_header() {
-	global $cota_constants, $meta;
+function cota_page_header( ) {
+	global $cota_app_settings, $meta;
 
 	if (!isset($meta) || !is_object($meta)) {
 		// Attempt to initialize $meta if not set
-		if (file_exists($cota_constants->COTA_APP_INCLUDES . 'class-app-meta-data.php')) {
-			require_once $cota_constants->COTA_APP_INCLUDES . 'class-app-meta-data.php';
-			if (class_exists('AppMetadata')) {
-				$meta_file = $cota_constants->COTA_APP_FILE ?? '../index.php';
-				$meta = new AppMetadata($meta_file);
+		if (file_exists($cota_app_settings->COTA_APP_INCLUDES . 'class-app-meta-data.php')) {
+			require_once $cota_app_settings->COTA_APP_INCLUDES . 'class-app-meta-data.php';
+			if (class_exists('App_Meta_Data')) {
+				$meta_file = $cota_app_settings->COTA_APP_FILE ?? '../index.php';
+				$meta = new App_Meta_Data($meta_file);
 			}
 		}
 	}
@@ -25,7 +25,7 @@ function cota_page_header() {
 		$app_github_url = $meta->getGitHubUrl();
 	}
 
-	$scripts = $cota_constants->COTA_APP_ASSETS; 
+	$scripts = $cota_app_settings->COTA_APP_ASSETS; 
 
 	return '
 <!DOCTYPE html>

@@ -4,9 +4,9 @@
  */
 
 require_once __DIR__ . '/bootstrap.php';
-global $cota_constants, $cota_db, $connect;
+global $cota_app_settings, $cota_db, $connect;
 
-require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+// require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
     function cota_read_csv_to_assoc_array($filename) {
         $data = [];
@@ -33,10 +33,10 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
     }
 
     function cota_import($filename ) {
-        global $cota_constants;
-        global $cota_db, $conn;
+        global $cota_app_settings;
+        global $cota_db, $connect;
 
-        require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+        require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
         if (!file_exists($filename)) {
             die("Error: CSV file not found.");
@@ -67,7 +67,7 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
             }
 
             // Insert other members (children, etc.)
-            // for ($i = 1; $i <= $cota_constants->MAX_FAMILY_MEMBERS; $i++) {
+            // for ($i = 1; $i <= $cota_app_settings->MAX_FAMILY_MEMBERS; $i++) {
             for ($i = 1; $i <= 9; $i++) {
                 $name = $row["otherfname$i"] ?? '';
                 if (!empty($name)) {
@@ -150,10 +150,10 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
     function cota_insert_family_and_get_id($data) {
         require_once __DIR__ . '/bootstrap.php';
 
-        global $cota_constants;
+        global $cota_app_settings;
         global $cota_db, $connect;
 
-        require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+        require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
         $stmt = $cota_db->conn->prepare("INSERT INTO families (
             familyname, fname1, fname2, lname2, address, address2, city, state, zip, homephone,
@@ -217,10 +217,10 @@ require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
      * @param string $baptism
      */
     function cota_insert_member($family_id, $first_name, $last_name, $cell_phone, $email, $birthday, $baptism) {
-        global $cota_constants;
+        global $cota_app_settings;
         global $cota_db, $connect;
 
-        require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+        require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
         $stmt = $cota_db->conn->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $cellphone  = cota_format_phone($cell_phone);

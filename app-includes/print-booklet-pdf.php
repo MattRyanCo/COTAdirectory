@@ -12,10 +12,10 @@ require_once __DIR__ . '/bootstrap.php';
 
 // END New header info
 
-require_once $cota_constants->COTA_APP_INCLUDES . 'format-family-listing.php';
-require_once $cota_constants->COTA_APP_INCLUDES . 'print.php';
-require_once $cota_constants->COTA_APP_INCLUDES . 'class-print-booklet.php';
-require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'format-family-listing.php';
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'print.php';
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'class-print-booklet.php';
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
 // Create a new PDF instance - half page format
 $pdf = new PDF( 'P', 'in', 'HalfLetter' ); // Portrait, Inches, Half-Letter Size
