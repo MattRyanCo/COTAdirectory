@@ -5,9 +5,9 @@
 
 require_once __DIR__ . '/bootstrap.php';
 
-global $cota_db, $connect,  $cota_constants;
+global $cota_db, $connect,  $cota_app_settings;
 
-require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
 header('Content-Type: text/csv');
 header('Content-Disposition: attachment; filename="directory_export.csv"');
@@ -37,8 +37,8 @@ $header = [
 ];
 
 // Add dynamic member columns to header row
-$max_members = (isset($cota_constants->MAX_FAMILY_MEMBER))
-    ? (int)$cota_constants->MAX_FAMILY_MEMBER
+$max_members = (isset($cota_app_settings->MAX_FAMILY_MEMBER))
+    ? (int)$cota_app_settings->MAX_FAMILY_MEMBER
     : 9;
 for ($i = 3; $i <= $max_members; $i++) {
     $header[] = "otherfname{$i}";

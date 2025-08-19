@@ -1,12 +1,12 @@
 <?php
 require_once __DIR__ . '/bootstrap.php';
 require_once __DIR__ . '/class-membership-directory-printer.php';
-global $cota_db, $connect, $cota_constants;
+global $cota_db, $connect, $cota_app_settings;
 
-// require_once $cota_constants->COTA_APP_INCLUDES . 'database-functions.php';
-require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
-require_once $cota_constants->COTA_APP_INCLUDES . 'format-family-listing.php';
-// require_once $cota_constants->COTA_APP_INCLUDES . 'print.php';
+// require_once $cota_app_settings->COTA_APP_INCLUDES . 'database-functions.php';
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'format-family-listing.php';
+// require_once $cota_app_settings->COTA_APP_INCLUDES . 'print.php';
 
 $printBooklet = new Membership_Directory_Printer();
 

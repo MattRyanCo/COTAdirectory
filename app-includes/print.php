@@ -2,7 +2,7 @@
 require_once __DIR__ . '/bootstrap.php';
 require_once __DIR__ . '/class-membership-directory-printer.php';
 
-global $cota_db, $connect, $cota_constants;
+global $cota_db, $connect, $cota_app_settings;
 
 $families = $connect->query("SELECT * FROM families ORDER BY `familyname`");
 $num_families = $families->num_rows;

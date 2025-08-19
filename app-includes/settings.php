@@ -5,7 +5,7 @@
  *
  */
 // require_once '../app-includes/helper-functions.php';
-global $cota_constants;
+global $cota_app_settings;
 if ( !defined( 'ENVIRONMENT_TYPE' ) ) {
     define( 'ENVIRONMENT_TYPE', 'laragon' );
 }

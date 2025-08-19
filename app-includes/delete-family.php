@@ -2,9 +2,9 @@
 
 require_once __DIR__ . '/bootstrap.php';
 
-global $cota_db, $connect,  $cota_constants;
+global $cota_db, $connect,  $cota_app_settings;
 
-require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
 // Get ful URL with query string
 $full_url = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];

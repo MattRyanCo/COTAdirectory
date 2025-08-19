@@ -8,8 +8,8 @@
 
 require_once __DIR__ . '/bootstrap.php';
 
-global $cota_db, $connect,  $cota_constants;
-require_once $cota_constants->COTA_APP_INCLUDES . 'helper-functions.php';
+global $cota_db, $connect,  $cota_app_settings;
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
 echo cota_page_header();
 $families = $cota_db->read_family_database();
