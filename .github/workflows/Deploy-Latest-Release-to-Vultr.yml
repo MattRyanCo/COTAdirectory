@@ -34,7 +34,7 @@ jobs:
             cd /root/www/cotadirectory
             unzip -o cotadirectory.zip
             # Copy contents from cotadirectory-${{ github.event.release.tag_name }} to current directory
-            cp -rf cotadirectory-${{ github.event.release.tag_name }}/* .
-            rm -rf cotadirectory-${{ github.event.release.tag_name }}
+            cp -rf COTAdirectory-${{ github.event.release.tag_name }}/* .
+            # rm -rf COTAdirectory-${{ github.event.release.tag_name }}
             rm cotadirectory.zip
             chown -R www-data:www-data /root/www/cotadirectory
