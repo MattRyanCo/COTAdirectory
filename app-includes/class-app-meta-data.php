@@ -1,6 +1,6 @@
 <?php 
 
-class AppMetadata {
+class App_Meta_Data {
     private string $filePath;
     private array $metadata = [];
     private array $defaults = [
