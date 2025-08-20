@@ -1,4 +1,8 @@
 <?php
+// Pull in library for .env handling
+require_once __DIR__ . '/../vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
 
 /** Initialize app settings. */
 require_once __DIR__ . '/class-app-settings.php';
