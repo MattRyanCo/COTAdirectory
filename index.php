@@ -2,7 +2,7 @@
 /**
  * App Name:    Family Directory Management
  * Description: A simple family directory management system.
- * Version:     3.1.2
+ * Version:     3.1.3
  * 
  * @package     FamilyDirectory
  * @author      Matt Ryan
@@ -12,21 +12,20 @@
  * 
  */
 
-global $cota_app_settings, $meta;
-
-/** Absolute path to the app's root directory. */
-if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', __DIR__ . '/' );
-}
-require_once ABSPATH . 'app-includes/class-app-settings.php';
-
 /** Initialize app settings. */
+require_once __DIR__ . '/app-includes/class-app-settings.php';
 $cota_app_settings = new App_Settings();
 
-/** Sets up the app vars and included files. */
-require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
-require_once $cota_app_settings->COTA_APP_INCLUDES . 'class-app-meta-data.php';
 
+// Initialize database connection.
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'bootstrap.php';
+
+/** Sets up the misc utility functions */
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
+($cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php');
+
+// Set up meta data for app 
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'class-app-meta-data.php';
 $meta = new App_Meta_Data($cota_app_settings->COTA_APP_FILE);
 
 // Echo page header using $meta

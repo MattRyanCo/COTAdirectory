@@ -202,8 +202,8 @@ function cota_format_family_listing_for_display($family, $members) {
                     $individual['last_name'] ?? '',
                     $individual['email'] ?? '',
                     $individual['cell_phone'] ?? '',
-                    ($individual['birthday'] ? date('m/d', strtotime($individual['birthday'])) : ''),
-                    ($individual['baptism'] ? date('m/d', strtotime($individual['baptism'])) : '')
+                    (is_array($individual) && !empty($individual['birthday'])) ? date('m/d/y', strtotime($individual['birthday'])) : '',
+                    (is_array($individual) && !empty($individual['baptism'])) ? date('m/d/y', strtotime($individual['baptism'])) : ''
                 );
 
             } else {
@@ -236,7 +236,8 @@ function cota_format_family_listing_for_display($family, $members) {
                 $addr2 = false;
                 $city = false;
             }
-            if ( $individual['first_name'] == $family['fname1'] ||  $individual['first_name'] == $family['fname2'] ) {
+            if ((is_array($individual) && !empty($individual['first_name']) && $individual['first_name'] == $family['fname1']) ||  
+                (is_array($individual) && !empty($individual['first_name']) && $individual['first_name'] == $family['fname2']) ) {
                 $formatted_family .= sprintf(
                     $format_string, 
                     $left_side,
@@ -244,8 +245,8 @@ function cota_format_family_listing_for_display($family, $members) {
                     $individual['last_name'] ?? '',
                     $individual['email'] ?? '',
                     $individual['cell_phone'] ?? '',
-                    ($individual['birthday'] ? date('m/d', strtotime($individual['birthday'])) : ''),
-                    ($individual['baptism'] ? date('m/d', strtotime($individual['baptism'])) : '')
+                    (is_array($individual) && !empty($individual['birthday'])) ? date('m/d/y', strtotime($individual['birthday'])) : '',
+                    (is_array($individual) && !empty($individual['baptism'])) ? date('m/d/y', strtotime($individual['baptism'])) : ''
                 );
             } else { // Add year to non-primary family members DoB.
                 $formatted_family .= sprintf(
@@ -255,8 +256,8 @@ function cota_format_family_listing_for_display($family, $members) {
                     $individual['last_name'] ?? '',
                     $individual['email'] ?? '',
                     $individual['cell_phone'] ?? '',
-                    ($individual['birthday'] ? date('m/d/y', strtotime($individual['birthday'])) : ''),
-                    ($individual['baptism'] ? date('m/d/y', strtotime($individual['baptism'])) : '') 
+                    (is_array($individual) && !empty($individual['birthday'])) ? date('m/d/y', strtotime($individual['birthday'])) : '',
+                    (is_array($individual) && !empty($individual['baptism'])) ? date('m/d/y', strtotime($individual['baptism'])) : '' 
                 );
             }
 
@@ -287,8 +288,8 @@ function cota_format_family_listing_for_display($family, $members) {
                 $individual['last_name'] ?? '',
                 $individual['email'] ?? '',
                 $individual['cell_phone'] ?? '',
-                ($individual['birthday'] ? date('m/d/y', strtotime($individual['birthday'])) : ''),
-                ($individual['baptism'] ? date('m/d/y', strtotime($individual['baptism'])) : '')
+                (is_array($individual) && !empty($individual['birthday'])) ? date('m/d/y', strtotime($individual['birthday'])) : '',
+                (is_array($individual) && !empty($individual['baptism'])) ? date('m/d/y', strtotime($individual['baptism'])) : ''
             );
 
         } elseif ( $left_row_ctr == 4 ) {
@@ -318,8 +319,8 @@ function cota_format_family_listing_for_display($family, $members) {
                 $individual['last_name'] ?? '',
                 $individual['email'] ?? '',
                 $individual['cell_phone'] ?? '',
-                ($individual['birthday'] ? date('m/d/y', strtotime($individual['birthday'])) : ''),
-                ($individual['baptism'] ? date('m/d/y', strtotime($individual['baptism'])) : '')
+                (is_array($individual) && !empty($individual['birthday'])) ? date('m/d/y', strtotime($individual['birthday'])) : '',
+                (is_array($individual) && !empty($individual['baptism'])) ? date('m/d/y', strtotime($individual['baptism'])) : ''
             );
 
         } else {
@@ -338,8 +339,8 @@ function cota_format_family_listing_for_display($family, $members) {
             $individual['last_name'] ?? '',
             $individual['email'] ?? '',
             $individual['cell_phone'] ?? '',
-            ($individual['birthday'] ? date('m/d/y', strtotime($individual['birthday'])) : ''),
-            ($individual['baptism'] ? date('m/d/y', strtotime($individual['baptism'])) : '')
+            (is_array($individual) && !empty($individual['birthday'])) ? date('m/d/y', strtotime($individual['birthday'])) : '',
+            (is_array($individual) && !empty($individual['baptism'])) ? date('m/d/y', strtotime($individual['baptism'])) : ''
         );
 
         $member_ctr++;
@@ -348,7 +349,6 @@ function cota_format_family_listing_for_display($family, $members) {
 }
 
 function get_next_member($members) {
-
     $individual = $members->fetch_assoc();
     if (!$individual) return false;
     return $individual;

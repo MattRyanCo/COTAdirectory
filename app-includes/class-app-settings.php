@@ -44,6 +44,5 @@ class App_Settings {
 		$this->FAMILY_HEADING_FONT = 10;
 		$this->DIRECTORY_HEADING_FONT = 12;
 		$this->DIRECTORY_HEADING_FONT_SMALL = 10;
-
 	}
 }

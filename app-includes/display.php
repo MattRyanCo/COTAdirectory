@@ -1,11 +1,12 @@
 <?php
+/**
+ * Display the family listing.
+ *
+ * @package COTAdirectory
+ */
+require_once __DIR__ . '\bootstrap.php';
 
-require_once __DIR__ . '/bootstrap.php';
-global $cota_db, $connect,  $cota_app_settings;
-
-// require_once $cota_app_settings->COTA_APP_INCLUDES . 'database-functions.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'format-family-listing.php';
-require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
 // Echo page header
 echo cota_page_header();

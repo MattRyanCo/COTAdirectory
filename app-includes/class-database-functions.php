@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . '/bootstrap.php';
-
 class COTA_Database {
 	// Local
 	private const LOCAL_DB_NAME     = 'cotadirectory';
@@ -13,6 +11,8 @@ class COTA_Database {
 	private const LIVE_DB_USER     = null; // Set via environment variable DB_USER
 	private const LIVE_DB_PASSWORD = null; // Set via environment variable DB_PASSWORD
 	private const LIVE_DB_HOST     = null; // Set via environment variable DB_HOST
+
+	public $conn;
 
 	public function __construct() {
 		$this->conn = new \mysqli(
@@ -72,10 +72,7 @@ class COTA_Database {
 	}
 
 	public function read_members_of_family( $family_id ) {
-		// @TODO Modify this to return the 1 or 2 primary members first (as noted in family table)
-		//  followed by all the other family members in birthday order.
 		$statement = $this->conn->prepare( 'SELECT * FROM members WHERE family_id = ? ' );
-		// $statement = $this->conn->prepare( 'SELECT * FROM members WHERE family_id = ? ORDER BY `birthday`' );
 		$statement->bind_param( 'i', $family_id );
 		$statement->execute();
 		$members = $statement->get_result();
@@ -111,22 +108,20 @@ class COTA_Database {
 		$host         = $this->conn->host_info;
 		$host_parts   = explode( ':', $this->conn->host_info );
 		$host_display = $host_parts[0];
-		$port_display = isset( $host_parts[1] ) ? $host_parts[1] : 'default';
+		$port = isset( $host_parts[1] ) ? $host_parts[1] : 'default';
 
 		echo '<h3>Retrieved Database Connection Information</h3>';
 		echo '<ul>';
 		echo '<li><strong>Database Name:</strong> ' . htmlspecialchars( $db_name ) . '</li>';
 		echo '<li><strong>User:</strong> ' . htmlspecialchars( $user ) . '</li>';
-		echo '<li><strong>Host:</strong> ' . htmlspecialchars( $this->conn->host ) . '</li>';
-		echo '<li><strong>Port:</strong> ' . htmlspecialchars( $this->conn->port ) . '</li>';
+		echo '<li><strong>Host:</strong> ' . htmlspecialchars( $this->conn->host_info ) . '</li>';
+		echo '<li><strong>Port:</strong> ' . htmlspecialchars( $port ) . '</li>';
 		echo '<li><strong>client_info:</strong> ' . htmlspecialchars( $this->conn->client_info ) . '</li>';
 		echo '<li><strong>server_info:</strong> ' . htmlspecialchars( $this->conn->server_info ) . '</li>';
 		echo '</ul>';
 	}
 
 	public function show_structure() {
-		// echo nl2br(' Method ' . __METHOD__ . ' loaded' . PHP_EOL);
-
 		$result = $this->conn->query( 'SHOW TABLES' );
 		if ( $result === false ) {
 			echo 'Error: ' . $this->conn->error;

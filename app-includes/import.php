@@ -169,11 +169,6 @@ global $cota_app_settings, $cota_db, $connect;
         $bap1        = cota_format_date($data['bap1']);
         $bap2        = cota_format_date($data['bap2']);
         $annday      = cota_format_date($data['annday']);
-        // $bday1       = $data['bday1'] ?? null;
-        // $bday2       = $data['bday2'] ?? null;
-        // $bap1        = $data['bap1'] ?? null;
-        // $bap2        = $data['bap2'] ?? null;
-        // $annday      = $data['annday'] ?? null;
 
         $stmt->bind_param(
             "sssssssssssssssssss",
