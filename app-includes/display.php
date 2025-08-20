@@ -7,7 +7,7 @@ error_reporting(E_ALL);
  *
  * @package COTAdirectory
  */
-require_once __DIR__ . '\bootstrap.php';
+require_once __DIR__ . '/bootstrap.php';
 
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'format-family-listing.php';
 
