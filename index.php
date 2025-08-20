@@ -2,7 +2,7 @@
 /**
  * App Name:    Family Directory Management
  * Description: A simple family directory management system.
- * Version:     3.1.3
+ * Version:     3.1.4
  * 
  * @package     FamilyDirectory
  * @author      Matt Ryan
@@ -11,6 +11,9 @@
  * Github URL:  https://github.com/MattRyanCo/COTAdirectory
  * 
  */
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 /** Initialize app settings. */
 require_once __DIR__ . '/app-includes/class-app-settings.php';
