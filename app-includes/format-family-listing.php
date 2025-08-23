@@ -42,93 +42,107 @@ function cota_format_family_listing_for_print($family, $members) {
 
         } elseif ( $left_row_ctr == 2 ) {
             $individual = get_next_member($members);
-            if ( $individual['last_name'] == $family['familyname'] ) $individual['last_name'] = '';
-            if ( $addr1 ) {
-                $left_side = $family['address'] . ' ';
-                if ($print_it) $formatted_family_array[$left_row_ctr][1] = $family['address'];
-                $addr1 = false;
-                if ( $addr2 ) {
-                    $left_side .= ', ' . $family['address2'] . ' ';
-                    if ($print_it) $formatted_family_array[$left_row_ctr][1] = $family['address'] . ', ' . $family['address2'];
-                    $addr2 = false;
-                }
-            } elseif ( $homephone ){
-                $left_side = 'Home: ' . $family['homephone'] . ' ';
-                if ($print_it) $formatted_family_array[$left_row_ctr][1] = 'Home: ' . $family['homephone'];
-                $addr2 = false;
-                $city = false;
-                $homephone = false;
-            } else {
-                // If no address, use placeholder. 
-                // Remaining left side address will be blank. 
-                $left_side = $placeholder;
-                If ($print_it) $formatted_family_array[$left_row_ctr][1] = $formatted_family_array[$left_row_ctr][2] = $formatted_family_array[$left_row_ctr][3] = '';
-                $addr2 = false;
-                $city = false;
-            }
+            // If there are more members, format their listing. 
+            if ( (is_array($individual) && !empty($individual['last_name']) ) ) {
+                if ( $individual['last_name'] == $family['familyname'] ) {
+                    $individual['last_name'] = '';
+                    if ( $addr1 ) {
+                        $left_side = $family['address'] . ' ';
+                        if ($print_it) $formatted_family_array[$left_row_ctr][1] = $family['address'];
+                        $addr1 = false;
+                        if ( $addr2 ) {
+                            $left_side .= ', ' . $family['address2'] . ' ';
+                            if ($print_it) $formatted_family_array[$left_row_ctr][1] = $family['address'] . ', ' . $family['address2'];
+                            $addr2 = false;
+                        }
+                    } elseif ( $homephone ){
+                        $left_side = 'Home: ' . $family['homephone'] . ' ';
+                        if ($print_it) $formatted_family_array[$left_row_ctr][1] = 'Home: ' . $family['homephone'];
+                        $addr2 = false;
+                        $city = false;
+                        $homephone = false;
+                    } else {
+                        // If no address, use placeholder. 
+                        // Remaining left side address will be blank. 
+                        $left_side = $placeholder;
+                        If ($print_it) $formatted_family_array[$left_row_ctr][1] = $formatted_family_array[$left_row_ctr][2] = $formatted_family_array[$left_row_ctr][3] = '';
+                        $addr2 = false;
+                        $city = false;
+                    }
                     // Format for printing
-            $formatted_family_array[$left_row_ctr][4] = $individual['first_name'] ?? '';
-            $formatted_family_array[$left_row_ctr][5] = $individual['last_name'] ?? '';
-            $formatted_family_array[$left_row_ctr][6] = $individual['email'] ?? '';
-            $formatted_family_array[$left_row_ctr][7] = $individual['cell_phone'] ?? '';
-            $formatted_family_array[$left_row_ctr][8] = (!empty($individual['birthday'])) ? date('m/d', strtotime($individual['birthday'])) : null;
-            $formatted_family_array[$left_row_ctr][9] = (!empty($individual['baptism'])) ? date('m/d', strtotime($individual['baptism'])) : null;
-            $formatted_family_array[0][0] = $left_row_ctr; // Number of left side lines 
+                    $formatted_family_array[$left_row_ctr][4] = $individual['first_name'] ?? '';
+                    $formatted_family_array[$left_row_ctr][5] = $individual['last_name'] ?? '';
+                    $formatted_family_array[$left_row_ctr][6] = $individual['email'] ?? '';
+                    $formatted_family_array[$left_row_ctr][7] = $individual['cell_phone'] ?? '';
+                    $formatted_family_array[$left_row_ctr][8] = (!empty($individual['birthday'])) ? date('m/d', strtotime($individual['birthday'])) : null;
+                    $formatted_family_array[$left_row_ctr][9] = (!empty($individual['baptism'])) ? date('m/d', strtotime($individual['baptism'])) : null;
+                    $formatted_family_array[0][0] = $left_row_ctr; // Number of left side lines 
+                }
+            }
 
         } elseif ( $left_row_ctr == 3 ) {
             $individual = get_next_member($members);
-            if ( $individual['last_name'] == $family['familyname'] ) $individual['last_name'] = '';
 
-            if ( $addr2 ) {
-                $left_side = $family['address2'] . ' ';
-                If ($print_it) {
-                    $formatted_family_array[$left_row_ctr][1] = $family['address2'] ?? '';
+            // If there are more members, format their listing. 
+            if ( (is_array($individual) && !empty($individual['last_name']) ) ) {
+                if ( $individual['last_name'] == $family['familyname'] ) {
+                    $individual['last_name'] = '';
+                    if ( $addr2 ) {
+                        $left_side = $family['address2'] . ' ';
+                        If ($print_it) {
+                            $formatted_family_array[$left_row_ctr][1] = $family['address2'] ?? '';
+                        }
+                        $addr2 = false;
+                    } elseif ( $city ) {
+                        $left_side = $family['city'] . ', ' . 
+                            $family['state'] . ' ' . 
+                            $family['zip'];
+                        $city = false;
+                        If ($print_it) {
+                            $formatted_family_array[$left_row_ctr][1] = $family['city'] . ', '. $family['state'] . ' ' . $family['zip'] ; 
+                        }
+                    } else {
+                        // If no address, use placeholder. 
+                        // Remaining left side address will be blank. 
+                        $left_side = $placeholder;
+                        If ($print_it) $formatted_family_array[$left_row_ctr][1] = ' ';
+                    }
+                        // Format for printing
+                    $formatted_family_array[$left_row_ctr][4] = $individual['first_name'] . ' ' . $individual['last_name'];
+                    $formatted_family_array[$left_row_ctr][6] = $individual['email'] ?? '';
+                    $formatted_family_array[$left_row_ctr][7] = $individual['cell_phone'] ?? '';
+                    $formatted_family_array[$left_row_ctr][8] = (!empty($individual['birthday'])) ? date('m/d', strtotime($individual['birthday'])) : null;
+                    $formatted_family_array[$left_row_ctr][9] = (!empty($individual['baptism'])) ? date('m/d', strtotime($individual['baptism'])) : null;
+                    $formatted_family_array[0][0] = $left_row_ctr; // Number of left side lines 
                 }
-                $addr2 = false;
-            } elseif ( $city ) {
-                $left_side = $family['city'] . ', ' . 
-                    $family['state'] . ' ' . 
-                    $family['zip'];
-                $city = false;
-                If ($print_it) {
-                    $formatted_family_array[$left_row_ctr][1] = $family['city'] . ', '. $family['state'] . ' ' . $family['zip'] ; 
-                }
-            } else {
-                // If no address, use placeholder. 
-                // Remaining left side address will be blank. 
-                $left_side = $placeholder;
-                If ($print_it) $formatted_family_array[$left_row_ctr][1] = ' ';
             }
-                // Format for printing
-            $formatted_family_array[$left_row_ctr][4] = $individual['first_name'] . ' ' . $individual['last_name'];
-            $formatted_family_array[$left_row_ctr][6] = $individual['email'] ?? '';
-            $formatted_family_array[$left_row_ctr][7] = $individual['cell_phone'] ?? '';
-            $formatted_family_array[$left_row_ctr][8] = (!empty($individual['birthday'])) ? date('m/d', strtotime($individual['birthday'])) : null;
-            $formatted_family_array[$left_row_ctr][9] = (!empty($individual['baptism'])) ? date('m/d', strtotime($individual['baptism'])) : null;
-            $formatted_family_array[0][0] = $left_row_ctr; // Number of left side lines 
         } elseif ( $left_row_ctr == 4 ) {
             $individual = get_next_member($members);
-            if ( $individual['last_name'] == $family['familyname'] ) $individual['last_name'] = '';
+            if ( (is_array($individual) && !empty($individual['last_name']) ) ) {
+                if ( $individual['last_name'] == $family['familyname'] ) {
+                    $individual['last_name'] = '';
 
-            if ( $homephone ) {
-                $left_side = 'Home: ' . $family['homephone'] . ' ';
-                if ($print_it) $formatted_family_array[$left_row_ctr][1] = 'Home: ' . $family['homephone'];
-                $addr2 = false;
-                $city = false;
-                $homephone = false;
-            } else {
-                // If no address or phone, use placeholder. 
-                $left_side = $placeholder;
-                If ($print_it) $formatted_family_array[$left_row_ctr][1] = '';
+                    if ( $homephone ) {
+                        $left_side = 'Home: ' . $family['homephone'] . ' ';
+                        if ($print_it) $formatted_family_array[$left_row_ctr][1] = 'Home: ' . $family['homephone'];
+                        $addr2 = false;
+                        $city = false;
+                        $homephone = false;
+                    } else {
+                        // If no address or phone, use placeholder. 
+                        $left_side = $placeholder;
+                        If ($print_it) $formatted_family_array[$left_row_ctr][1] = '';
+                    }
+                    // Format for printing
+                    $formatted_family_array[$left_row_ctr][4] = $individual['first_name'] ?? '';
+                    $formatted_family_array[$left_row_ctr][5] = $individual['last_name'] ?? '';
+                    $formatted_family_array[$left_row_ctr][6] = $individual['email'] ?? '';
+                    $formatted_family_array[$left_row_ctr][7] = $individual['cell_phone'] ?? '';
+                    $formatted_family_array[$left_row_ctr][8] = (!empty($individual['birthday'])) ? date('m/d', strtotime($individual['birthday'])) : null;
+                    $formatted_family_array[$left_row_ctr][9] = (!empty($individual['baptism'])) ? date('m/d', strtotime($individual['baptism'])) : null;
+                    $formatted_family_array[0][0] = $left_row_ctr; // Number of left side lines 
+                }
             }
-                // Format for printing
-            $formatted_family_array[$left_row_ctr][4] = $individual['first_name'] ?? '';
-            $formatted_family_array[$left_row_ctr][5] = $individual['last_name'] ?? '';
-            $formatted_family_array[$left_row_ctr][6] = $individual['email'] ?? '';
-            $formatted_family_array[$left_row_ctr][7] = $individual['cell_phone'] ?? '';
-            $formatted_family_array[$left_row_ctr][8] = (!empty($individual['birthday'])) ? date('m/d', strtotime($individual['birthday'])) : null;
-            $formatted_family_array[$left_row_ctr][9] = (!empty($individual['baptism'])) ? date('m/d', strtotime($individual['baptism'])) : null;
-            $formatted_family_array[0][0] = $left_row_ctr; // Number of left side lines 
         }
         $right_side_ctr+=1;  // Next line on right side.
     }
