@@ -1,6 +1,7 @@
 <?php 
 class Membership_Directory_Printer
 {
+    public string $rtfContent;
 
     public function generateRTFHeader()
     {
@@ -72,7 +73,11 @@ class Membership_Directory_Printer
                 $listing .= "   \\par\\pard\\keepn\\i " . "    Family Members \\plain";
                 foreach ($individuals as $individual) {
                     // $listing .= "\\par\\pard\\keepn " . "    " . $individual['first_name'] . " DoB: " . date('m/d', strtotime($individual['birthday'])). " " . htmlspecialchars($individual['cell_phone']) . " " . htmlspecialchars($individual['email']);
-                    $listing .= "\\par\\pard\\keepn " . "    " . $individual['first_name'] . " DoB: " . date('m/d', strtotime($individual['birthday']));
+                    if (!empty($individual['birthday'])) {
+                        $listing .= "\\par\\pard\\keepn " . "    " . $individual['first_name'] . "    DoB: " . date('m/d', strtotime($individual['birthday']));
+                    } else {
+                        $listing .= "\\par\\pard\\keepn " . "    " . $individual['first_name'];
+                    }
                 }
             }
             $ictr++;
@@ -83,6 +88,7 @@ class Membership_Directory_Printer
 
     public function print_intro_pages( $num_intro_pages=3) {
         // Load and insert static pages.
+        $rtfContent = '';
         for ($i = 1; $i <= $num_intro_pages; $i++) {
             $file = '../uploads/intro'.$i.'.txt';
             if (file_exists($file)) {
