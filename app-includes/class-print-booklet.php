@@ -391,8 +391,11 @@ class PDF extends FPDF {
         $left_margin = $this->lMargin;
         $field_positions = $field_info[0];
         $field_widths = $field_info[1];
-        $family_listing_height_in_lines = max($family_array[0][0], $family_array[0][1]);
-
+        // $family_listing_height_in_lines = max($family_array[0][0], $family_array[0][1]);
+		$family_listing_height_in_lines = max(
+			$family_array[0]['left_side_ctr'], 
+			$family_array[0]['member_ctr']
+		);
 
         // Output a divider with a blank line above it. 
         $this->Ln($line_height);
@@ -403,25 +406,31 @@ class PDF extends FPDF {
         // Process family listing for 1 family
         for ( $i=1; $i<=$family_listing_height_in_lines; $i++) {
 
-            $this->SetXY($field_positions[0], $next_row);
-            $this->Cell( $field_widths[0], $line_height, $family_array[$i][1]);  // Left side of listing. 
+			if ( (is_array($family_array) && !empty($family_array[$i][1]) ) ) {
 
-            $this->SetX($field_positions[1]);
-            $this->Cell($field_widths[1], $line_height, $family_array[$i][4] . ' ' . $family_array[$i][5]);  // Name
+				$this->SetXY($field_positions[0], $next_row);
+				$this->Cell( $field_widths[0], $line_height, $family_array[$i][1]);  // Left side of listing. 
 
-            $this->SetX($field_positions[2]);
-            $this->Cell($field_widths[2], $line_height, $family_array[$i][6]); // em
+				$this->SetX($field_positions[1]);
+				if ( isset($family_array[$i][3]) && !empty($family_array[$i][3]) ) {
+					$this->Cell($field_widths[1], $line_height, $family_array[$i][2] . ' ' . $family_array[$i][3]);  // Name
+				} else{
+					$this->Cell($field_widths[1], $line_height, $family_array[$i][2]);  // Name
+				}
+				$this->SetX($field_positions[2]);
+				$this->Cell($field_widths[2], $line_height, $family_array[$i][4]); // em
 
-            $this->SetX($field_positions[3]);
-            $this->Cell($field_widths[3], $line_height, $family_array[$i][7]); // cell
+				$this->SetX($field_positions[3]);
+				$this->Cell($field_widths[3], $line_height, $family_array[$i][5]); // cell
 
-            $this->SetX($field_positions[4]);
-            $this->Cell($field_widths[4], $line_height, $family_array[$i][8]); // DoB
+				$this->SetX($field_positions[4]);
+				$this->Cell($field_widths[4], $line_height, $family_array[$i][6]); // DoB
 
-            $this->SetX($field_positions[5]);
-            $this->Cell($field_widths[5], $line_height, $family_array[$i][9]); // DoBap
+				$this->SetX($field_positions[5]);
+				$this->Cell($field_widths[5], $line_height, $family_array[$i][7]); // DoBap
 
-            $next_row = $this->GetY() + $line_height;
+				$next_row = $this->GetY() + $line_height;
+			}
         }
 
 		// return where we are.
