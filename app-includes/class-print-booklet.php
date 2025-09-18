@@ -90,13 +90,10 @@ class PDF extends FPDF {
 				$final_pdf->booklet_page_numbers[] = $page_pair[0];
 				$this->render_page_content( $final_pdf, $this->booklet_pages[ $page_pair[0] - 1 ], 'left' );
 			} else {
-				$final_pdf->booklet_page_numbers[] = $page_pair[0];
-				if ($page_pair[0] == $total_pages + 1) {
-					$this->render_back_cover($final_pdf, array('content' => ''), 'left');
-				} else {
-					$final_pdf->SetFont( 'Arial', '', 8 );
-					$final_pdf->center_this_text( '(Blank)', 4 );
-				}
+				// Padded blank page for imposition; suppress footer numbering
+				$final_pdf->booklet_page_numbers[] = 0;
+				$final_pdf->SetFont( 'Arial', '', 8 );
+				$final_pdf->center_this_text( '(Blank)', 4 );
 			}
 
 			// Right page
@@ -106,7 +103,8 @@ class PDF extends FPDF {
 				$final_pdf->booklet_page_numbers[] = $page_pair[1];
 				$this->render_page_content( $final_pdf, $this->booklet_pages[ $page_pair[1] - 1 ], 'right' );
 			} else {
-				$final_pdf->booklet_page_numbers[] = $page_pair[1];
+				// Padded blank page for imposition; suppress footer numbering
+				$final_pdf->booklet_page_numbers[] = 0;
 				$final_pdf->SetFont( 'Arial', '', 8 );
 				$final_pdf->center_this_text( '(Blank)', 4 );
 			}
@@ -276,6 +274,11 @@ class PDF extends FPDF {
 		// Get the correct booklet page number for this output page
 		$output_page_index = $this->page - 1; // FPDF's $this->page is 1-based
 		$booklet_page_no = isset($this->booklet_page_numbers[$output_page_index]) ? $this->booklet_page_numbers[$output_page_index] : $this->PageNo();
+
+		// Suppress footer on padded blank pages
+		if ( $booklet_page_no === 0 ) {
+			return;
+		}
 
 		$footer_text = "Page " . $booklet_page_no;
 		$this->SetY(-0.25);  // Set position 1/4" from bottom of page. 
