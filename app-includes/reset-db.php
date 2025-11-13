@@ -29,42 +29,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // $cota_db->show_structure();
     if (isset($_POST["confirm"]) && $_POST["confirm"] === "YES") {
 
-        // Check if the members table exists before deleting rows
+        // Check if both tables exist before attempting any DELETE or DROP operations
+        $membersTableExists = false;
+        $familiesTableExists = false;
+
         $result = $cota_db->query("SHOW TABLES LIKE 'members'");
         if ($result && $result->num_rows > 0) {
-            $cota_db->query("DELETE FROM members");
+            $membersTableExists = true;
         }
 
-        // Check if the families table exists before deleting rows
         $result = $cota_db->query("SHOW TABLES LIKE 'families'");
         if ($result && $result->num_rows > 0) {
-            $cota_db->query("DELETE FROM families");
+            $familiesTableExists = true;
         }
 
-        // Disable foreign key checks to avoid constraint errors
-        // Drop and recreate the members table
-        $cota_db->query("SET FOREIGN_KEY_CHECKS=0");
-        $cota_db->query("DROP TABLE IF EXISTS members");
-        $cota_db->query("SET FOREIGN_KEY_CHECKS=1"); // Re-enable constraints
-        $createMembersTableSQL = "
-            CREATE TABLE members (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                family_id INT NOT NULL,
-                first_name VARCHAR(100),
-                last_name VARCHAR(100),
-                cell_phone VARCHAR(20),
-                email VARCHAR(255),
-                birthday DATE,
-                baptism DATE,
-                FOREIGN KEY (family_id) REFERENCES families(id) ON DELETE CASCADE
-            )
-        ";
-        if ($cota_db->query($createMembersTableSQL) === TRUE) {
-            write_success_notice("Database table 'Members' has been reset successfully!");
-        } else {
-            echo "<p style='color: red;'>Error recreating members table: " . $cota_db->conn->error . "</p>";
-            $cota_db->close_connection();
-            exit(1);
+        // Only attempt DELETE if the table exists
+        if ($membersTableExists) {
+            $cota_db->query("DELETE FROM members");
+        }
+        if ($familiesTableExists) {
+            $cota_db->query("DELETE FROM families");
         }
 
         // Drop and recreate the families table
@@ -74,33 +58,52 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $createFamiliesTableSQL = "
             CREATE TABLE families (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                familyname VARCHAR(255) NOT NULL,
-                fname1 VARCHAR(50),
-                fname2 VARCHAR(50),
-                lname2 VARCHAR(50),
-                address VARCHAR(255),
-                address2 VARCHAR(255),
-                city VARCHAR(100),
+                familyname VARCHAR(50) NOT NULL,
+                address VARCHAR(50),
+                address2 VARCHAR(20),
+                city VARCHAR(20),
                 state VARCHAR(10),
-                zip VARCHAR(20),
-                homephone VARCHAR(20),
-                cellphone1 VARCHAR(20),
-                cellphone2 VARCHAR(20),
-                email1 VARCHAR(50),
-                email2 VARCHAR(50),
-                bday1 DATE,
-                bday2 DATE,
-                bap1 DATE,
-                bap2 DATE,
-                annday DATE
+                zip VARCHAR(10),
+                homephone VARCHAR(20)
             )
         ";
 
         if ($cota_db->query($createFamiliesTableSQL) === TRUE) {
-            write_success_notice("Database tables have been reset successfully!");
+            write_success_notice("Database table 'Families' has been reset successfully!");
         } else {
             write_error_notice('Error recreating families table: " . $cota_db->conn->error . "</p>"');
         }
+
+
+        // Disable foreign key checks to avoid constraint errors
+        // Drop and recreate the members table
+        $cota_db->query("SET FOREIGN_KEY_CHECKS=0");
+        $cota_db->query("DROP TABLE IF EXISTS members");
+        $cota_db->query("SET FOREIGN_KEY_CHECKS=1"); // Re-enable constraints
+        $createMembersTableSQL = "CREATE TABLE members (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                family_id INT NOT NULL,
+                first_name VARCHAR(20),
+                last_name VARCHAR(50),
+                cell_phone VARCHAR(20),
+                email VARCHAR(100),
+                birthday DATE,
+                baptism DATE,
+                anniversary DATE,
+                FOREIGN KEY (family_id) REFERENCES families(id) ON DELETE CASCADE )";
+                
+        $cota_db->query($createMembersTableSQL);
+        if ($cota_db->query($createMembersTableSQL) === TRUE) {
+            write_success_notice("Database table 'Members' has been reset successfully!");
+            write_success_notice("Database tables have been reset successfully!");
+        } else {
+            echo "<p style='color: red;'>Error recreating members table: " . $cota_db->conn->error . "</p>";
+            $cota_db->close_connection();
+            exit(1);
+        }
+
+
+
     } else {
         // echo "<p style='color: red;'>Action canceled. No changes were made.</p>";
         write_error_notice('Action canceled. No changes were made.');
