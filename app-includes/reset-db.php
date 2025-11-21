@@ -83,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $createMembersTableSQL = "CREATE TABLE members (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 family_id INT NOT NULL,
-                first_name VARCHAR(20),
+                first_name VARCHAR(50),
                 last_name VARCHAR(50),
                 cell_phone VARCHAR(20),
                 email VARCHAR(100),

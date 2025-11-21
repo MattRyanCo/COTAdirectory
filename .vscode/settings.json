@@ -1,6 +1,0 @@
-{
-    "phpCodeStandardSelector.executablePathCS": "D:\\laragon\\www\\COTAdirectory\\vendor\\bin\\phpcs",
-    "phpcbf.executablePath": "D:\\laragon\\www\\COTAdirectory\\vendor\\bin\\phpcbf",
-    "phpsab.executablePathCBF": "D:\\laragon\\www\\COTAdirectory\\vendor\\bin\\phpcbf",
-    "phpcbf.standard": ""
-}

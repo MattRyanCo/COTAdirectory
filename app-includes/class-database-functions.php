@@ -72,14 +72,19 @@ class COTA_Database {
 	}
 
 	public function read_members_of_family( $family_id ) {
+		// echo nl2br( PHP_EOL . ' Method ' . __METHOD__ . ' loaded' . PHP_EOL );
+		// echo nl2br( PHP_EOL . ' $members of family =========>>> ' . $family_id . PHP_EOL );
+
 		$statement = $this->conn->prepare( 'SELECT * FROM members WHERE family_id = ? ' );
 		$statement->bind_param( 'i', $family_id );
 		$statement->execute();
 		$members = $statement->get_result();
-		if ( $members === false ) {
+		if ( false === $members ) {
 			die( 'Error: ' . $this->conn->error );
 		}
 		$statement->close();
+		// var_dump( $members );
+
 		return $members;
 	}
 
@@ -97,7 +102,7 @@ class COTA_Database {
 	// }
 
 	public function show_connection_info() {
-		// echo nl2br(' Method ' . __METHOD__ . ' loaded' . PHP_EOL);
+		echo nl2br(' Method ' . __METHOD__ . ' loaded' . PHP_EOL);
 
 		// Get connection info
 		$host_info = $this->conn->host_info;

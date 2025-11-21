@@ -236,7 +236,6 @@ function cota_format_family_listing_for_display($family, $members) {
     $format_string_city = "<tr><td>%s, %s %s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
     $format_string_homephone = "<tr><td>Home: %s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
 
-
     // Outer loop through left side of display - $left_side_ctr is line in left side
     for ( $left_side_ctr = 1; $left_side_ctr <= 4; $left_side_ctr++ ) {
         if ( $left_side_ctr == 1 ) {
@@ -250,8 +249,8 @@ function cota_format_family_listing_for_display($family, $members) {
                     $individual['last_name'] ?? '',
                     $individual['email'] ?? '',
                     $individual['cell_phone'] ?? '',
-                    (is_array($individual) && !empty($individual['birthday'])) ? date('m/d/y', strtotime($individual['birthday'])) : '',
-                    (is_array($individual) && !empty($individual['baptism'])) ? date('m/d/y', strtotime($individual['baptism'])) : ''
+                    (is_array($individual) && !empty($individual['birthday'])) ? date('m/d', strtotime($individual['birthday'])) : '',
+                    (is_array($individual) && !empty($individual['baptism'])) ? date('m/d', strtotime($individual['baptism'])) : ''
                 );
 
             } else {
@@ -284,8 +283,8 @@ function cota_format_family_listing_for_display($family, $members) {
                 $addr2 = false;
                 $city = false;
             }
-            if ((is_array($individual) && !empty($individual['first_name']) && $individual['first_name'] == $family['fname1']) ||  
-                (is_array($individual) && !empty($individual['first_name']) && $individual['first_name'] == $family['fname2']) ) {
+            if ((is_array($individual) && !empty($individual['first_name']) ) && ($member_ctr == 2) ) {
+                    // Processing a primary or secondary family member - no year on DoB
                 $formatted_family .= sprintf(
                     $format_string, 
                     $left_side,
@@ -293,8 +292,8 @@ function cota_format_family_listing_for_display($family, $members) {
                     $individual['last_name'] ?? '',
                     $individual['email'] ?? '',
                     $individual['cell_phone'] ?? '',
-                    (is_array($individual) && !empty($individual['birthday'])) ? date('m/d/y', strtotime($individual['birthday'])) : '',
-                    (is_array($individual) && !empty($individual['baptism'])) ? date('m/d/y', strtotime($individual['baptism'])) : ''
+                    (is_array($individual) && !empty($individual['birthday'])) ? date('m/d', strtotime($individual['birthday'])) : '',
+                    (is_array($individual) && !empty($individual['baptism'])) ? date('m/d', strtotime($individual['baptism'])) : ''
                 );
             } else { // Add year to non-primary family members DoB.
                 $formatted_family .= sprintf(
@@ -304,8 +303,8 @@ function cota_format_family_listing_for_display($family, $members) {
                     $individual['last_name'] ?? '',
                     $individual['email'] ?? '',
                     $individual['cell_phone'] ?? '',
-                    (is_array($individual) && !empty($individual['birthday'])) ? date('m/d/y', strtotime($individual['birthday'])) : '',
-                    (is_array($individual) && !empty($individual['baptism'])) ? date('m/d/y', strtotime($individual['baptism'])) : '' 
+                    (is_array($individual) && !empty($individual['birthday'])) ? date('m/d', strtotime($individual['birthday'])) : '',
+                    (is_array($individual) && !empty($individual['baptism'])) ? date('m/d', strtotime($individual['baptism'])) : '' 
                 );
             }
 
@@ -336,8 +335,8 @@ function cota_format_family_listing_for_display($family, $members) {
                 $individual['last_name'] ?? '',
                 $individual['email'] ?? '',
                 $individual['cell_phone'] ?? '',
-                (is_array($individual) && !empty($individual['birthday'])) ? date('m/d/y', strtotime($individual['birthday'])) : '',
-                (is_array($individual) && !empty($individual['baptism'])) ? date('m/d/y', strtotime($individual['baptism'])) : ''
+                (is_array($individual) && !empty($individual['birthday'])) ? date('m/d', strtotime($individual['birthday'])) : '',
+                (is_array($individual) && !empty($individual['baptism'])) ? date('m/d', strtotime($individual['baptism'])) : ''
             );
 
         } elseif ( $left_side_ctr == 4 ) {
@@ -367,8 +366,8 @@ function cota_format_family_listing_for_display($family, $members) {
                 $individual['last_name'] ?? '',
                 $individual['email'] ?? '',
                 $individual['cell_phone'] ?? '',
-                (is_array($individual) && !empty($individual['birthday'])) ? date('m/d/y', strtotime($individual['birthday'])) : '',
-                (is_array($individual) && !empty($individual['baptism'])) ? date('m/d/y', strtotime($individual['baptism'])) : ''
+                (is_array($individual) && !empty($individual['birthday'])) ? date('m/d', strtotime($individual['birthday'])) : '',
+                (is_array($individual) && !empty($individual['baptism'])) ? date('m/d', strtotime($individual['baptism'])) : ''
             );
 
         } else {
@@ -387,8 +386,8 @@ function cota_format_family_listing_for_display($family, $members) {
             $individual['last_name'] ?? '',
             $individual['email'] ?? '',
             $individual['cell_phone'] ?? '',
-            (is_array($individual) && !empty($individual['birthday'])) ? date('m/d/y', strtotime($individual['birthday'])) : '',
-            (is_array($individual) && !empty($individual['baptism'])) ? date('m/d/y', strtotime($individual['baptism'])) : ''
+            (is_array($individual) && !empty($individual['birthday'])) ? date('m/d', strtotime($individual['birthday'])) : '',
+            (is_array($individual) && !empty($individual['baptism'])) ? date('m/d', strtotime($individual['baptism'])) : ''
         );
 
         $member_ctr++;
