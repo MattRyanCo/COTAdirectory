@@ -80,10 +80,10 @@ function cota_page_header( ) {
 				</ul>
 			</li>
 			<li class="has-submenu">
-				<a href="#">Google Connect</a>
+				<a href="#">Cloud Connect</a>
 				<ul class="submenu">
-					<li><a href="https://forms.gle/AriY71y8gvhyNkv77">Google Form Based Family Entry</a></li>
-					<li><a href="https://docs.google.com/spreadsheets/d/1anupShYGmySUjrA16yGC5HQ3uucfi6HdMm-CujOqHxc/edit?usp=sharing">Google Form Sheet</a></li>
+ 					<li><a href="https://airtable.com/appDcjdkTREcNBq0C/pagWCpvzJva4WXDkN?aLHIC=sfspiZsSOXNCl25vI">COTA Family Entry Dashboard</a></li>
+					<li><a href="https://airtable.com/appDcjdkTREcNBq0C/pagKuXDbnoe2YatAq/form">Family Form Entry</a></li>
 					<li><a href="../app-includes/form-display.php">FORM: Add Family</a></li>
 				</ul>
 			</li>
