@@ -22,7 +22,7 @@ class Membership_Directory_Printer {
 
 		$ictr    = 1;
 		$listing = ' ';
-		while ( $ictr < $families->num_rows ) {
+		while ( $ictr <= $families->num_rows ) {
 			$one_family = $families->fetch_assoc();
 
 			// Get family members

@@ -29,7 +29,7 @@ if ( 0 == $num_families ) {
 		echo '<tr><th>Family Name</th><th><i>Family Members</i></th></tr>';
 		echo '<tr><th>Address<td><i>Name</i></td><td><i>Email</i></td><td><i>Cell</i></td><td><i>DoB</i></td><td><i>Baptism</i></td><td><i>Anniversary</i></td></th></tr>';
 
-		while ($ictr < $num_families ) {
+		while ($ictr <= $num_families ) {
 			// Get family details
 			$family = $families->fetch_assoc();
 			// Get all family members
