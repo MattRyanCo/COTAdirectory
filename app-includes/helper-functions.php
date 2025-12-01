@@ -118,7 +118,9 @@ function cota_add_member_script() {
                 <label for="members[birthday][]">Birthday</label>
                 <input type="date" id="members[birthday][]" name="members[birthday][]" placeholder="mm/dd"><br>
                 <label for="members[baptism][]">Anniversary of Baptism</label>
-                <input type="date" id="members[baptism]" name="members[baptism][]" placeholder="mm/dd"><br><br><br>
+                <input type="date" id="members[baptism]" name="members[baptism][]" placeholder="mm/dd"><br>
+				<label for="members[anniversary][]">Marrage Anniversary</label>
+                <input type="date" id="members[anniversary]" name="members[anniversary][]" placeholder="mm/dd"><br><br><br>
                 `;
                 membersDiv.appendChild(newMember);
             } else {

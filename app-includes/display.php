@@ -26,8 +26,8 @@ if ( 0 == $num_families ) {
 	echo '<h3>Member Listing</h3>';
 	echo '<h3>' . $num_families . ' Families</h3>';
 	echo '<table class="directory-table">';
-		echo '<tr><th>Family Name/Address</th><th><i>Family Members</i></th></tr>';
-		echo '<tr><th>Home Phone<td><i>Name</i></td><td><i>Email</i></td><td><i>Cell</i></td><td><i>DoB</i></td><td><i>DoBaptism</i></td></th></tr>';
+		echo '<tr><th>Family Name</th><th><i>Family Members</i></th></tr>';
+		echo '<tr><th>Address<td><i>Name</i></td><td><i>Email</i></td><td><i>Cell</i></td><td><i>DoB</i></td><td><i>Baptism</i></td><td><i>Anniversary</i></td></th></tr>';
 
 		while ($ictr < $num_families ) {
 			// Get family details

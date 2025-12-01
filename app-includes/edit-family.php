@@ -65,26 +65,26 @@ if ( $_SERVER['REQUEST_METHOD'] === 'GET' && isset( $_GET['familyname'] ) ) {
 if ( ! $family ) {
 
 	?>
-		<div id="edit-family" class="cota-edit-container">
-			<h2>Search / Edit Family</h2>
-			<div class="container error-message"><?php echo ucfirst( $familyname ); ?> family not found<br>
-			<a href="../app-includes/search-edit.php">Try again with a different spelling</a></div>
-		<?php
-			die();
+	<div id="edit-family" class="cota-edit-container">
+		<h2>Search / Edit Family</h2>
+		<div class="container error-message"><?php echo ucfirst( $familyname ); ?> family not found<br>
+		<a href="../app-includes/search-edit.php">Try again with a different spelling</a></div>
+	<?php
+	die();
 }
 
 if ( $result->num_rows > 1 ) {
 	// More than 1 result, need to refine.
 	// echo cota_page_header();
 	?>
-		<div id="edit-family" class="cota-delete-container">
-			<h2>Search / Edit Family</h2>
-			<div class="container error-message">
-			<?php echo $familyname; ?> family search returned multiple results.<br><br> 
-				<a href="../app-includes/search-delete.php?familyname=<?php echo $familyname; ?>&address=&address2=">Please refine your search with the address fields.</a>
-			</div>
-		<?php
-			die();
+	<div id="edit-family" class="cota-delete-container">
+		<h2>Search / Edit Family</h2>
+		<div class="container error-message">
+		<?php echo $familyname; ?> family search returned multiple results.<br><br> 
+			<a href="../app-includes/search-delete.php?familyname=<?php echo $familyname; ?>&address=&address2=">Please refine your search with the address fields.</a>
+		</div>
+	<?php
+	die();
 }
 
 	// Fetch members
@@ -113,8 +113,6 @@ if ( $result->num_rows > 1 ) {
 		<input type="text" name="zip" value="<?php echo htmlspecialchars( $family['zip'] ); ?>">
 		<label>Home Phone</label>
 		<input type="text" name="homephone" value="<?php echo htmlspecialchars( $family['homephone'] ?? '' ); ?>">
-		<label>Anniversary</label>
-		<input type="date" name="annday" value="<?php echo htmlspecialchars( $family['annday'] ?? '' ); ?>">
 
 		<h3>Family Members</h3>
 
@@ -131,10 +129,11 @@ if ( $result->num_rows > 1 ) {
 					<span>Email</span>
 					<span>Birthday</span>
 					<span>Baptism</span>
+					<span>Anniversary</span>
 				</div>
-					<?php
-					$first = false;
-endif;
+				<?php
+				$first = false;
+				endif;
 				?>
 			<div class="member-row">
 
@@ -144,12 +143,13 @@ endif;
 				<input type="email" name="members[email][]" value="<?php echo htmlspecialchars( $member['email'] ); ?>">
 				<input type="date" name="members[birthday][]" value="<?php echo htmlspecialchars( $member['birthday'] ); ?>">
 				<input type="date" name="members[baptism][]" value="<?php echo htmlspecialchars( $member['baptism'] ); ?>">
+				<input type="date" name="members[anniversary][]" value="<?php echo htmlspecialchars( $member['anniversary'] ); ?>">
 				<input type="hidden" name="members[id][]" value="<?php echo $member['id']; ?>">
 			</div>
 			<?php endwhile; ?>
 		</div><br><br>
 
-		<h3>Add NEW Family Members</h3>
+		<h3>Add New Family Member(s)</h3>
 		<div id="add-members">
 			<div class="member-header">
 				<span>First</span>
@@ -168,23 +168,6 @@ endif;
 				<input type="date" name="members[baptism][]" value="<?php echo htmlspecialchars( $member['baptism'] ?? '' ); ?>">
 				<input type="hidden" name="members[id][]" value="-1">
 			</div>
-			<!-- <div>
-				<label >Name</label>
-				<input type="text" name="members[first_name][]" style="text-transform:capitalize;" placeholder="First" >
-				<label for="members[last_name][]">Last (only needed if different from family name)</label>
-				<input type="text" id="members[last_name][]" name="members[last_name][]" style="text-transform:capitalize;" placeholder="Last"><br>
-				<label for="members[cell_phone][]">Cell Phone</label>
-				<input type="text" id="members[cell_phone][]" name="members[cell_phone][]" placeholder="xxx-xxx-xxxx"><br>
-				<label for="members[email][]">Email</label>
-				<input type="email" id="members[email][]" name="members[email][]"><br>
-				<label for="members[birthday][]">Birthday</label>
-				<input type="date" id="members[birthday][]" name="members[birthday][]" placeholder="mm/dd/yyyy"><br>
-				<label for="members[baptism][]">Anniversary of Baptism</label>
-				<input type="date" id="members[baptism]" name="members[baptism][]" placeholder="mm/dd/yyyy"><br><br><br>
-				<input type="hidden" name="members[id][]" value="-1">
-			</div> -->
-		<!-- </div> -->
-
 		<div class="three-button-grid">
 			<div><button class="cota-add-another" type="button" onclick="cota_add_member()">Add Another Family Member</button></div>
 			<div><button class="cota-submit-family" type="submit">Submit Update</button></div>
