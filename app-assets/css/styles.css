@@ -253,7 +253,10 @@ form.cota-upload-info {
     grid-template-columns: 210px 1fr;
     gap: 10px 20px;
     align-items: center;
-    width: 63vw;
+    width: 70vw;
+}
+form.cota-family-edit {
+    width: 72vw;
 }
 
 form.cota-reset-db {
@@ -299,7 +302,7 @@ form br {
 .member-row,
 #add-members > .member-row {
     display: grid;
-    grid-template-columns: 120px 120px 120px 180px 100px 100px;
+    grid-template-columns: 120px 120px 120px 180px 100px 100px 100px;
     align-items: center;
     gap: 8px;
 }
@@ -316,14 +319,14 @@ form br {
 #members-delete > div.member-header, 
 #members-delete > div.member-row {
     display: grid;
-    grid-template-columns: 50px 120px 120px 120px 180px 100px 100px;
+    grid-template-columns: 50px 120px 120px 120px 180px 100px 100px 100px;
     align-items: left;
     gap: 8px;
 }
 #add-members > div.member-header,
 #add-members > div.member-row {
     display: grid;
-    grid-template-columns: 120px 120px 120px 180px 100px 100px;
+    grid-template-columns: 120px 120px 120px 180px 100px 100px 100px;
     align-items: left;
     gap: 8px;
 }
