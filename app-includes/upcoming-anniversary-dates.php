@@ -20,7 +20,7 @@ function get_anniversary_members($family_id) {
     while ($row = $result->fetch_assoc()) {
         $members[] = trim($row['first_name'] . ' ' . $row['last_name']);
     }
-    var_dump($members);
+    // var_dump($members);
     return implode(' & ', $members);
 }
 
@@ -54,7 +54,7 @@ function cota_get_upcoming_anniversaries( $look_forward ) {
     // Helper to check if MM/DD is in the next 14 days
     function cota_is_upcoming($mmdd, $today, $end) {
         global $cota_db, $connect;
-        var_dump($mmdd, $today->format('m/d'), $end->format('m/d'));
+        // var_dump($mmdd, $today->format('m/d'), $end->format('m/d'));
 
         if (!$mmdd || !preg_match('/^\d{2}\/\d{2}$/', $mmdd)) return false;
         $date = DateTime::createFromFormat('m/d/Y', $mmdd . '/' . $today->format('Y'));
@@ -72,9 +72,9 @@ function cota_get_upcoming_anniversaries( $look_forward ) {
     // $families = $connect->query("SELECT familyname, annday FROM families WHERE annday IS NOT NULL");
     $members = $connect->query("SELECT family_id, first_name, last_name, anniversary FROM members WHERE anniversary IS NOT NULL");
     while ($mem = $members->fetch_assoc()) {
-        var_dump($mem);
+        // var_dump($mem);
         if (cota_is_upcoming($mem['anniversary'], $today, $end)) {
-                    var_dump($mem);
+                    // var_dump($mem);
             $names = get_anniversary_members( $mem['family_id'] );
             // $names = trim($fam['fname1'] . ' & ' . $fam['fname2'], ' &');
             $results['Marriage Anniversaries'][] = "{$mem['anniversary']} - {$names} {$fam['familyname']}";
