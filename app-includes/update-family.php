@@ -3,7 +3,7 @@ require_once __DIR__ . '/bootstrap.php';
 global $cota_db, $connect,  $cota_app_settings;
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
-$mid = -1; // Default for new family member
+$m_id = -1; // Default for new family member
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
 
     // Pull off family info from form. 
@@ -15,11 +15,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
     $zip = trim($_POST["zip"]);
     $homephone = trim($_POST["homephone"]);
     // Anniversary date is NULL if blank. All dates are optional and are set to Null if blank. 
-    $annday = !empty($_POST['annday']) ? $_POST['annday'] : null;
 
     // Update family record
-    $stmt = $connect->prepare("UPDATE families SET familyname=?, address=?, city=?, state=?, zip=?, homephone=?, annday=? WHERE id=?");
-    $stmt->bind_param("sssssssi", $familyname, $address, $city, $state, $zip, $homephone, $annday, $family_id);
+    $stmt = $connect->prepare("UPDATE families SET familyname=?, address=?, city=?, state=?, zip=?, homephone=? WHERE id=?");
+    $stmt->bind_param("ssssssi", $familyname, $address, $city, $state, $zip, $homephone, $family_id);
     $stmt->execute();
     $stmt->close();
 
@@ -32,15 +31,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
         $cell_phones = $_POST["members"]["cell_phone"];
         $emails = $_POST["members"]["email"];
 
-        // Ensure birthdays and baptisms are arrays and set empty values to null
+        // Ensure dates are arrays and set empty values to null
         $birthdays = isset($_POST['members']['birthday']) ? $_POST['members']['birthday'] : [];
         $baptisms = isset($_POST['members']['baptism']) ? $_POST['members']['baptism'] : [];
+        $anniversary = isset($_POST['members']['anniversary']) ? $_POST['members']['anniversary'] : [];
     }
 
     for ($i = 0; $i < count($member_ids); $i++) {
-        $mid = intval($member_ids[$i]);
+        $m_id = intval($member_ids[$i]);
         // Check for and add new member here. 
-        if ( -1 == $mid && isset($_POST["members"]["first_name"][$i]) && !empty(trim($_POST["members"]["first_name"][$i])) ) {
+        if ( -1 == $m_id && isset($_POST["members"]["first_name"][$i]) && !empty(trim($_POST["members"]["first_name"][$i])) ) {
         // We do have a new member to add. 
             $fname = trim($_POST["members"]["first_name"][$i]);
             $lname = trim($_POST["members"]["last_name"][$i]);
@@ -53,9 +53,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
             $bday = ($bday === '' ? null : $bday);
             $bap = ($bap === '' ? null : $bap);
 
-            // Insert new member
-            $stmt = $connect->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("issssss", $family_id, $fname, $lname, $cell, $email, $bday, $bap);
+            // Insert new member - they are not expected to have anniversary date.
+            $stmt = $connect->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism ) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("issssss", $family_id, $fname, $lname, $cell, $email, $bday, $bap );
             $stmt->execute();
             $stmt->close();
         } else {
@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
             $bap = ($bap === '' ? null : $bap);
 
             $stmt = $connect->prepare("UPDATE members SET first_name=?, last_name=?, cell_phone=?, email=?, birthday=?, baptism=? WHERE id=? AND family_id=?");
-            $stmt->bind_param("ssssssii", $fname, $lname, $cell, $email, $bday, $bap, $mid, $family_id);
+            $stmt->bind_param("ssssssii", $fname, $lname, $cell, $email, $bday, $bap, $m_id, $family_id);
             $stmt->execute();
             $stmt->close();
         }

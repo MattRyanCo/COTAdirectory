@@ -80,10 +80,10 @@ function cota_page_header( ) {
 				</ul>
 			</li>
 			<li class="has-submenu">
-				<a href="#">Google Connect</a>
+				<a href="#">Cloud Connect</a>
 				<ul class="submenu">
-					<li><a href="https://forms.gle/AriY71y8gvhyNkv77">Google Form Based Family Entry</a></li>
-					<li><a href="https://docs.google.com/spreadsheets/d/1anupShYGmySUjrA16yGC5HQ3uucfi6HdMm-CujOqHxc/edit?usp=sharing">Google Form Sheet</a></li>
+ 					<li><a href="https://airtable.com/appDcjdkTREcNBq0C/pagWCpvzJva4WXDkN?aLHIC=sfspiZsSOXNCl25vI">COTA Family Entry Dashboard</a></li>
+					<li><a href="https://airtable.com/appDcjdkTREcNBq0C/pagKuXDbnoe2YatAq/form">Family Form Entry</a></li>
 					<li><a href="../app-includes/form-display.php">FORM: Add Family</a></li>
 				</ul>
 			</li>
@@ -118,7 +118,9 @@ function cota_add_member_script() {
                 <label for="members[birthday][]">Birthday</label>
                 <input type="date" id="members[birthday][]" name="members[birthday][]" placeholder="mm/dd"><br>
                 <label for="members[baptism][]">Anniversary of Baptism</label>
-                <input type="date" id="members[baptism]" name="members[baptism][]" placeholder="mm/dd"><br><br><br>
+                <input type="date" id="members[baptism]" name="members[baptism][]" placeholder="mm/dd"><br>
+				<label for="members[anniversary][]">Marrage Anniversary</label>
+                <input type="date" id="members[anniversary]" name="members[anniversary][]" placeholder="mm/dd"><br><br><br>
                 `;
                 membersDiv.appendChild(newMember);
             } else {
