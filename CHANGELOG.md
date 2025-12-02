@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.3] - 2025-12-02
+
+### Changed
+
+- Correct issues with Display Directory adding blank lines on secondary rows. 
+- Lint some source.
+
+### Fixed
+
+- Reworked sample csv export to align with new table definitions.
+- Adjusted array processing to start export field numbering at 1 to align with new layout.
+
 ## [4.0.2] - 2025-12-02
 
 ### Changed

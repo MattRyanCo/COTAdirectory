@@ -28,12 +28,13 @@ $header = [
 $max_members = (isset($cota_app_settings->MAX_FAMILY_MEMBER))
     ? (int)$cota_app_settings->MAX_FAMILY_MEMBER
     : 9;
-for ($i = 3; $i <= $max_members; $i++) {
+for ($i = 1; $i <= $max_members; $i++) {
     $header[] = "fname{$i}";
     $header[] = "lname{$i}";
     $header[] = "bday{$i}";
     $header[] = "bap{$i}";
     $header[] = "cell{$i}";
+    $header[] = "email{$i}";
 }
 $header[] = "annday";
 

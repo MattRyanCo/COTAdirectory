@@ -21,7 +21,7 @@ $ictr = 1;
 if ( 0 == $num_families ) {
 	empty_database_alert('Member Listing Display');
 } else {
-	// Dump out remainder of page. 
+	// Dump out remainder of page.
 	echo '<div class="cota-display-container">';
 	echo '<h3>Member Listing</h3>';
 	echo '<h3>' . $num_families . ' Families</h3>';
@@ -39,5 +39,5 @@ if ( 0 == $num_families ) {
 		} 
 	echo "\n</table></body></html>"; 
 }
-// Close the file 
+// Close the file
 $cota_db->close_connection();
