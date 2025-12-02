@@ -2,7 +2,7 @@
 /**
  * App Name:    Family Directory Management
  * Description: A simple family directory management system.
- * Version:     3.1.10
+ * Version:     4.0.1
  * 
  * @package     FamilyDirectory
  * @author      Matt Ryan

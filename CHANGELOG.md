@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.1] - 2025-12-02
+
+### Changed
+
+- Adjusted styling of login form. 
+- Move all inline styles to style.css file. 
+
+## [4.0.0] - 2025-12-02
+
+### Add
+
+- Added authentication to app. Enables users to register with their email address (which must be present in the members table). Prevents unauthorized users from access.
+
 ## [3.1.10] - 2025-12-01
 
 ### Change
