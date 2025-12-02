@@ -598,7 +598,8 @@ nav#main-menu a.down:hover {
     visibility: hidden;
 }
 
-.cota-login-container {
+.cota-login-container,
+.cota-setup-password-container {
     max-width: 630px;
     margin: 50px auto;
     padding: 30px;
@@ -606,11 +607,13 @@ nav#main-menu a.down:hover {
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
-.cota-login-container h2 {
+.cota-login-container h2,
+.cota-setup-password-container h2 {
     text-align: center;
     margin-bottom: 20px;
 }
-.cota-login-container .login-success {
+.cota-login-container .login-success,
+.cota-setup-password-container .login-success {
     padding: 12px;
     background: #d4edda;
     color: #155724;
@@ -618,7 +621,8 @@ nav#main-menu a.down:hover {
     border-radius: 4px;
     margin-bottom: 20px;
 }
-.cota-login-container .login-error {
+.cota-login-container .login-error,
+.cota-setup-password-container .login-error {
     padding: 12px;
     background: #f8d7da;
     color: #721c24;
@@ -626,23 +630,27 @@ nav#main-menu a.down:hover {
     border-radius: 4px;
     margin-bottom: 20px;
 }
-.cota-login-container .login-form-group {
+.cota-login-container .login-form-group,
+.cota-setup-password-container .login-form-group {
     margin-bottom: 15px;
 }
-.cota-login-container .login-form-label {
+.cota-login-container .login-form-label,
+.cota-setup-password-container .login-form-label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
     text-align: left;
 }
-.cota-login-container .login-form-input {
+.cota-login-container .login-form-input,
+.cota-setup-password-container .login-form-input {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
     box-sizing: border-box;
 }
-.cota-login-container button {
+.cota-login-container button,
+.cota-setup-password-container button {
     width: 100%;
     padding: 12px;
     background: #007bff;
@@ -652,7 +660,8 @@ nav#main-menu a.down:hover {
     font-size: 16px;
     cursor: pointer;
 }
-.cota-login-container .login-form-footer {
+.cota-login-container .login-form-footer, 
+.cota-setup-password-container .login-form-footer {
     margin-top: 20px;
     padding-top: 20px;
     border-top: 1px solid #ddd;
