@@ -24,9 +24,9 @@ class COTA_Member_Auth {
 	 */
 	public static function is_auth_enabled() {
 		// Disable authentication on Windows (local development)
-		if ( PHP_OS_FAMILY === 'Windows' ) {
-			return false;
-		}
+		// if ( PHP_OS_FAMILY === 'Windows' ) {
+		// 	return false;
+		// }
 		
 		// Check environment variable to enable/disable auth
 		$auth_enabled = $_ENV['AUTH_ENABLED'] ?? 'true';
