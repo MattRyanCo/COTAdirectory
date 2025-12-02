@@ -80,58 +80,49 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['login'] ) ) {
 echo cota_page_header();
 ?>
 
-<div class="cota-login-container" style="max-width: 400px; margin: 50px auto; padding: 30px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-	<h2 style="text-align: center; margin-bottom: 20px;">Member Login</h2>
+<div class="cota-login-container">
+	<h2>Member Login</h2>
 	
 	<?php if ( ! empty( $success ) ) : ?>
-		<div style="padding: 12px; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 4px; margin-bottom: 20px;">
+		<div class="login-success">
 			<?php echo htmlspecialchars( $success ); ?>
 		</div>
 	<?php endif; ?>
 	
 	<?php if ( ! empty( $error ) ) : ?>
-		<div style="padding: 12px; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px; margin-bottom: 20px;">
+		<div class="login-error">
 			<?php echo htmlspecialchars( $error ); ?>
 		</div>
 	<?php endif; ?>
 	
 	<form method="post" action="">
-		<div style="margin-bottom: 15px;">
-			<label for="email" style="display: block; margin-bottom: 5px; font-weight: bold;">Email Address:</label>
-			<input 
+		<div class="login-form-group">
+			<label class="login-form-label" for="email">Email Address:</label>
+			<input class="login-form-input"
 				type="email" 
 				id="email" 
 				name="email" 
 				value="<?php echo htmlspecialchars( $email ); ?>" 
 				required 
 				autofocus
-				style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;"
 			>
 		</div>
 		
 		<div style="margin-bottom: 20px;">
-			<label for="password" style="display: block; margin-bottom: 5px; font-weight: bold;">Password:</label>
-			<input 
+			<label class="login-form-label" for="password">Password:</label>
+			<input class="login-form-input"
 				type="password" 
 				id="password" 
 				name="password" 
 				required
-				style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;"
 			>
 		</div>
 		
-		<button 
-			type="submit" 
-			name="login" 
-			value="1"
-			style="width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer;"
-		>
-			Login
-		</button>
+		<button class="login-form-button" type="submit" name="login" value="1">Login</button>
 	</form>
 	
-	<div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 14px;">
-		<p>First time logging in? You'll be prompted to set up your password.</p>
+	<div class="login-form-footer">
+		<p>First time user? You'll be prompted to set up your password.</p>
 	</div>
 </div>
 
