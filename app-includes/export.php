@@ -16,24 +16,12 @@ $output = fopen('php://output', 'w');
 // Static columns before dynamic member columns
 $header = [
     "familyname",
-    "fname1",
-    "fname2",
-    "lname2",
     "address",
     "address2",
     "city",
     "state",
     "zip",
-    "homephone",
-    "cellphone1",
-    "cellphone2",
-    "email1",
-    "email2",
-    "bday1",
-    "bday2",
-    "bap1",
-    "bap2",
-    "annday"
+    "homephone"
 ];
 
 // Add dynamic member columns to header row
@@ -41,39 +29,27 @@ $max_members = (isset($cota_app_settings->MAX_FAMILY_MEMBER))
     ? (int)$cota_app_settings->MAX_FAMILY_MEMBER
     : 9;
 for ($i = 3; $i <= $max_members; $i++) {
-    $header[] = "otherfname{$i}";
-    $header[] = "otherlname{$i}";
-    $header[] = "otherbday{$i}";
-    $header[] = "otherbap{$i}";
-    $header[] = "othercell{$i}";
-    $header[] = "otherem{$i}";
+    $header[] = "fname{$i}";
+    $header[] = "lname{$i}";
+    $header[] = "bday{$i}";
+    $header[] = "bap{$i}";
+    $header[] = "cell{$i}";
 }
+$header[] = "annday";
 
 fputcsv($output, $header);
 
 $families = $connect->query("SELECT * FROM families");
 while ($family = $families->fetch_assoc()) {
     // Initialize family data
-    $one_family = sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", 
+    $one_family = sprintf("%s,%s,%s,%s,%s,%s,%s", 
         $family['familyname'],
-        $family['fname1'],
-        $family['fname2'],
-        $family['lname2'],
         $family['address'],
         $family['address2'],
         $family['city'],
         $family['state'],
         $family['zip'],
-        $family['homephone'],
-        $family['cellphone1'], 
-        $family['cellphone2'],
-        $family['email1'], 
-        $family['email2'], 
-        $family['bday1'],
-        $family['bday2'],
-        $family['bap1'],
-        $family['bap2'],
-        $family['annday']);
+        $family['homephone']);
 
     // Fetch members of this family
     $members = $connect->query("SELECT * FROM members WHERE family_id = " . $family['id']);

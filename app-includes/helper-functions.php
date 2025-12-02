@@ -44,7 +44,10 @@ function cota_page_header( ) {
 	<div id="main-header" class="container">
 	<div id="pre-header">
 		App ' . $app_version . '<br>
-		<a href="' . $app_github_url . '" target="_blank">Source</a> | <a href="' . $app_github_url . '/wiki" target="_blank">Wiki</a>
+		<a href="' . $app_github_url . '" target="_blank">Source</a> | <a href="' . $app_github_url . '/wiki" target="_blank">Wiki</a>' . 
+		( ( isset( $GLOBALS['cota_member_auth'] ) && $GLOBALS['cota_member_auth']->is_authenticated() ) 
+			? ' | <a href="/app-includes/logout.php">Logout (' . htmlspecialchars( $GLOBALS['cota_member_auth']->get_authenticated_email() ) . ')</a>' 
+			: '' ) . '
 	</div>
 	<h1>Church of the Ascension, Parkesburg</h1>
 	<h2><a href="/">Family Directory Management</a></h2>
