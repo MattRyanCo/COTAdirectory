@@ -156,25 +156,6 @@ class PDF extends FPDF {
 			$x           = ( $page_width - $image_width ) / 2;
 			$pdf->Image( $data['logo'], $x, 1.5, $image_width );
 		}
-
-		// Render cover intro text.
-// 		$pdf->center_this_text('
-// 		The Rev. Steve Lindsay, Rector
-
-// 406 Second Avenue
-// PO Box 193
-// Parkesburg, PA 19365
-
-// Phone 610-857-9176
-// ascensionparkesburg.org
-
-// The Episcopal Church of the Ascension
-// Parkesburg, Pennsylvania
-
-// A loving community in relationship with God
-// Serving Christ and respecting the dignity of all', 0.75 );
-
-
 	}
 
 	/**
