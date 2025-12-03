@@ -241,22 +241,23 @@ function cota_format_family_listing_for_display( $family, $members ) {
 	$addr2       = ( isset( $family['address2'] ) && $family['address2'] !== '' ) ? $family['address2'] : false;
 	$city        = ( isset( $family['city'] ) && $family['city'] !== '' ) ? $family['city'] : false;
 	$homephone   = ( isset( $family['homephone'] ) && $family['homephone'] !== '' ) ? $family['homephone'] : false;
-	$placeholder = '';
+	// set placeholders.
+    $placeholder      = '';
     $formatted_family = '';
-	// $anniversary = (isset($members['anniversary']) && $members['anniversary'] !== "") ? $members['anniversary'] : '';
-		// Format for 1st row of family listing - bolded Family name,  first, last, email, cell, birthday, baptism, anniversary
-	$format_string_row_1 = "<tr class='cota-new-family' ><td><h3>%s</h3></td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
 
-	// Secondary format for family listing - Address component, first, last, email, cell, birthday, baptism, anniversary
-	$format_string           = "<tr class='format_string'><td>%s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
-	$format_string_city      = "<tr class='format_string_city'><td>%s, %s %s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
-	$format_string_homephone = "<tr class='format_string_homephone'><td>Home: %s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
+    // Format strings for various outputs.
+    $format_string_row_1       = "<tr class='cota-new-family' ><td><h3>%s</h3></td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
+	$format_string             = "<tr class='format_string'><td>%s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
+	$format_string_city        = "<tr class='format_string_city'><td>%s, %s %s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
+	$format_string_homephone   = "<tr class='format_string_homephone'><td>Home: %s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
+	$format_string_anniversary = "<tr class='format_string_anniversary'><td>%s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
 
 	// Outer loop through left side of display - $left_side_ctr is line in left side
 	for ( $left_side_ctr = 1; $left_side_ctr <= 4; $left_side_ctr++ ) {
 		if ( 1 === $left_side_ctr ) {
 				// Get 1st member of family
 			$individual = $members->fetch_assoc();
+            $is_there_anniversary = $individual['anniversary'] ?? '';
 			if ( $individual ) {
 				$formatted_family = sprintf(
 					$format_string_row_1,
@@ -266,7 +267,9 @@ function cota_format_family_listing_for_display( $family, $members ) {
 					$individual['email'] ?? '',
 					$individual['cell_phone'] ?? '',
 					( is_array( $individual ) && ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : '',
-					( is_array( $individual ) && ! empty( $individual['baptism'] ) ) ? date( 'm/d', strtotime( $individual['baptism'] ) ) : ''
+					( is_array( $individual ) && ! empty( $individual['baptism'] ) ) ? date( 'm/d', strtotime( $individual['baptism'] ) ) : '',
+                    ( $is_there_anniversary ) ? date( 'm/d', strtotime( $individual['anniversary'] ) ) : ''
+
 				);
 
 			} else {
@@ -285,7 +288,7 @@ function cota_format_family_listing_for_display( $family, $members ) {
 				}
 			} elseif ( $homephone ) {
 				$left_side = sprintf(
-					'<tr><td>Home: %s</td>',
+					'Home: %s',
 					$family['homephone']
 				);
 				$addr2     = false;

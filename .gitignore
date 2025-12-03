@@ -71,7 +71,7 @@ uploads/
 *.rtf
 
 downloads/
-app-libraries/fpdf/
+app-libraries/
 libraries/fpdf/font/
 
 *.log
