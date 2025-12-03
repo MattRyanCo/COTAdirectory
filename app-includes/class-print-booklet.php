@@ -414,10 +414,18 @@ class PDF extends FPDF {
 
 				$this->SetX( $field_positions[1] );
 				if ( isset( $family_array[ $i ][3] ) && ! empty( $family_array[ $i ][3] ) ) {
+					// For long names, reduce font size for this line only.
+					if ( ! empty( $family_array[ $i ][2] ) && ( 15 <= ( strlen($family_array[ $i ][2]) + strlen($family_array[ $i ][3] ) ) ) ) {
+						// save font size, set font size to smaller for long names
+						$original_font_size = $this->FontSizePt;
+						$this->SetFontSize( $original_font_size - 2 );
+					}
 					$this->Cell( $field_widths[1], $line_height, $family_array[ $i ][2] . ' ' . $family_array[ $i ][3] );  // Name
+					$this->SetFont( 'Arial', '', 7 );
 				} else {
 					$this->Cell( $field_widths[1], $line_height, $family_array[ $i ][2] );  // Name
 				}
+
 				$this->SetX( $field_positions[2] );
 				$this->Cell( $field_widths[2], $line_height, $family_array[ $i ][4] ); // em
 
