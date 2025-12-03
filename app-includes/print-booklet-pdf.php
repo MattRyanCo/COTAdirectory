@@ -17,19 +17,16 @@ require_once $cota_app_settings->COTA_APP_INCLUDES . 'print.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'class-print-booklet.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
-
-
 // Create a new PDF instance - half page format
 $pdf = new PDF( 'P', 'in', 'HalfLetter' ); // Portrait, Inches, Half-Letter Size
 
 $pdf->AddPage();
 
-$title  = 'Church of the Ascension Directory 2025';
-$author = 'Vestry & Wardens of Church of the Ascension, Parkesburg';
-
 $pdf->SetFont( 'Arial', '', 12 );
 $logoFile = '../app-assets/images/cota-logo.png';
 
+$title  = 'Church of the Ascension Directory ' . (string) date( 'Y' );
+$author = 'Vestry & Wardens of Church of the Ascension, Parkesburg';
 
 // Retrieve and Format Membership Entries; Get number of families
 $families     = $cota_db->read_family_database();
@@ -48,21 +45,27 @@ $pdf->add_booklet_page(
 // Load and insert static intro pages
 for ( $i = 1; $i <= 3; $i++ ) {
 	$intro_content = file_get_contents( '../uploads/intro' . $i . '.txt' );
+	$first_line = strtok( $intro_content, "\n" );
+	$intro_title = trim( $first_line );
+	$intro_content = substr( $intro_content, strlen( $first_line ) + 1 );
 	$pdf->add_booklet_page(
 		'intro',
 		array(
-			'title'   => 'Introduction ' . $i,
+			'title'   => $intro_title,
 			'content' => $intro_content,
 		)
 	);
 }
+// Generate family summary content
+$family_summary_content  = 'This directory contains ' . $num_families . ' families.';
+$family_summary_content .= "\n\nOther misc info may be shared here about the membership numbers.";
 
-// Add family listing header page
+// Add family listing page
 $pdf->add_booklet_page(
 	'family_summary',
 	array(
-		'title'   => 'Family & Members Listing - ' . $num_families . ' families',
-		'content' => 'Other misc info may be shared here about the membership numbers.',
+		'title'   => 'Family & Members Listing Summary',
+		'content' => $family_summary_content,
 	)
 );
 
@@ -137,10 +140,18 @@ echo cota_page_header();
 
 // Dump out remainder of import page.
 echo "<div id='cota-print' class='container'>";
-echo '<h2>Booklet PDF file generated successfully!</h2>';
+echo '<h2>Booklet-formatted PDF file generated successfully!</h2>';
 echo '<h4>File: ' . basename( $output_filename ) . '</h4>';
-echo '<p><strong>Booklet Format:</strong> This PDF is configured for 2-up printing on 8.5 x 11" paper in portrait mode.</p>';
-echo '<p><strong>Printing Instructions:</strong> When printing, select "2 pages per sheet" and "Portrait" orientation for proper booklet format.</p>';
+echo '<p><strong>Printing Instructions:</strong><br>Download the booklet PDF and open in your PDF applicaiton.<br>
+Select the following options in the PDF app for the printer<br>to print the booklet ready for binding and folding.<br>
+You may need to adjust these settings based on your specific printer and PDF application, but generally look for the following:<br>
+	<ul>
+	<li>2 pages per sheet on 8 1/2 x 11" paper</li>
+	<li>2-sided printing -> flip on the short edge</li>
+	<li>Orientation: portrait<li>
+	<li>Scale: to fit</li>
+	</ul>
+	Confirm the order of the pages prior to copying.</p>';
 echo '<p><strong>Total Pages:</strong> ' . count( $pdf->booklet_pages ) . ' content pages</p>';
 echo "<button class='cota-print' type='button' ><a href='.." . $output_basename . "' download >Download Booklet PDF</a></button>";
 echo '</div></body></html>';
