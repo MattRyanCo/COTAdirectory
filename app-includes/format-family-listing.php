@@ -59,8 +59,8 @@ function cota_format_family_listing_for_print( $family, $members ) {
 
 			// Format for printing
 			$formatted_family_array[ $left_side_ctr ][1] = $family['familyname'];
-			$formatted_family_array[ $left_side_ctr ][2] = $individual['first_name'] ?? '';
-			$formatted_family_array[ $left_side_ctr ][3] = $individual['last_name'] ?? '';
+			$formatted_family_array[ $left_side_ctr ][2] = ucwords($individual['first_name'] ?? '');
+			$formatted_family_array[ $left_side_ctr ][3] = ucwords($individual['last_name'] ?? '');
 			$formatted_family_array[ $left_side_ctr ][4] = $individual['email'] ?? '';
 			$formatted_family_array[ $left_side_ctr ][5] = $individual['cell_phone'] ?? '';
 			$formatted_family_array[ $left_side_ctr ][6] = ( ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : null;
@@ -105,8 +105,8 @@ function cota_format_family_listing_for_print( $family, $members ) {
 				$city      = false;
 			}
 			// Format for printing
-			$formatted_family_array[ $left_side_ctr ][2] = $individual['first_name'] ?? '';
-			$formatted_family_array[ $left_side_ctr ][3] = $individual['last_name'] ?? '';
+			$formatted_family_array[ $left_side_ctr ][2] = ucwords($individual['first_name'] ?? '');
+			$formatted_family_array[ $left_side_ctr ][3] = ucwords($individual['last_name'] ?? '');
 			$formatted_family_array[ $left_side_ctr ][4] = $individual['email'] ?? '';
 			$formatted_family_array[ $left_side_ctr ][5] = $individual['cell_phone'] ?? '';
 			$formatted_family_array[ $left_side_ctr ][6] = ( ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : null;
@@ -144,8 +144,8 @@ function cota_format_family_listing_for_print( $family, $members ) {
 				$left_side = $placeholder;
 			}
 				// Format for printing
-			$formatted_family_array[ $left_side_ctr ][2]  = $individual['first_name'] ?? ' ';
-			$formatted_family_array[ $left_side_ctr ][2] .= ' ' . $individual['last_name'] ?? ' ';
+			$formatted_family_array[ $left_side_ctr ][2]  = ucwords($individual['first_name'] ?? ' ');
+			$formatted_family_array[ $left_side_ctr ][2] .= ' ' . ucwords($individual['last_name'] ?? ' ');
 
 			$formatted_family_array[ $left_side_ctr ][4] = $individual['email'] ?? ' ';
 			$formatted_family_array[ $left_side_ctr ][5] = $individual['cell_phone'] ?? ' ';
@@ -181,8 +181,8 @@ function cota_format_family_listing_for_print( $family, $members ) {
 
 			}
 			// Format for printing
-			$formatted_family_array[ $left_side_ctr ][2] = $individual['first_name'] ?? ' ';
-			$formatted_family_array[ $left_side_ctr ][3] = $individual['last_name'] ?? ' ';
+			$formatted_family_array[ $left_side_ctr ][2] = ucwords($individual['first_name'] ?? ' ');
+			$formatted_family_array[ $left_side_ctr ][3] = ucwords($individual['last_name'] ?? ' ');
 			$formatted_family_array[ $left_side_ctr ][4] = $individual['email'] ?? ' ';
 			$formatted_family_array[ $left_side_ctr ][5] = $individual['cell_phone'] ?? ' ';
 			$formatted_family_array[ $left_side_ctr ][6] = ( ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : null;
@@ -213,8 +213,8 @@ function cota_format_family_listing_for_print( $family, $members ) {
 
 		// Format for printing
 		$formatted_family_array[ $member_ctr ][1] = ' '; // These members have no address components.
-		$formatted_family_array[ $member_ctr ][2] = $individual['first_name'] ?? ' ';
-		$formatted_family_array[ $member_ctr ][3] = $individual['last_name'] ?? ' ';
+		$formatted_family_array[ $member_ctr ][2] = ucwords($individual['first_name'] ?? ' ');
+		$formatted_family_array[ $member_ctr ][3] = ucwords($individual['last_name'] ?? ' ');
 		$formatted_family_array[ $member_ctr ][4] = $individual['email'] ?? ' ';
 		$formatted_family_array[ $member_ctr ][5] = $individual['cell_phone'] ?? ' ';
 		$formatted_family_array[ $member_ctr ][6] = ( ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : null;
@@ -262,8 +262,8 @@ function cota_format_family_listing_for_display( $family, $members ) {
 				$formatted_family = sprintf(
 					$format_string_row_1,
 					$family['familyname'],
-					$individual['first_name'] ?? '',
-					$individual['last_name'] ?? '',
+					ucwords( $individual['first_name'] ?? ''),
+					ucwords($individual['last_name'] ?? ''),
 					$individual['email'] ?? '',
 					$individual['cell_phone'] ?? '',
 					( is_array( $individual ) && ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : '',
@@ -305,8 +305,8 @@ function cota_format_family_listing_for_display( $family, $members ) {
 			$formatted_family .= sprintf(
 				$format_string,
 				$left_side,
-				$individual['first_name'] ?? '',
-				$individual['last_name'] ?? '',
+				ucwords($individual['first_name'] ?? ''),
+				ucwords($individual['last_name'] ?? ''),
 				$individual['email'] ?? '',
 				$individual['cell_phone'] ?? '',
 				( is_array( $individual ) && ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : '',
@@ -336,8 +336,8 @@ function cota_format_family_listing_for_display( $family, $members ) {
 			$formatted_family .= sprintf(
 				$format_string,
 				$left_side,
-				$individual['first_name'] ?? '',
-				$individual['last_name'] ?? '',
+				ucwords($individual['first_name'] ?? ''),
+				ucwords($individual['last_name'] ?? ''),
 				$individual['email'] ?? '',
 				$individual['cell_phone'] ?? '',
 				( is_array( $individual ) && ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : '',
@@ -367,8 +367,8 @@ function cota_format_family_listing_for_display( $family, $members ) {
 			$formatted_family .= sprintf(
 				$format_string,
 				$left_side,
-				$individual['first_name'] ?? '',
-				$individual['last_name'] ?? '',
+				ucwords($individual['first_name'] ?? ''),
+				ucwords($individual['last_name'] ?? ''),
 				$individual['email'] ?? '',
 				$individual['cell_phone'] ?? '',
 				( is_array( $individual ) && ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : '',
@@ -387,8 +387,8 @@ function cota_format_family_listing_for_display( $family, $members ) {
 		$formatted_family .= sprintf(
 			$format_string,
 			$left_side,
-			$individual['first_name'] ?? '',
-			$individual['last_name'] ?? '',
+			ucwords($individual['first_name'] ?? ''),
+			ucwords($individual['last_name'] ?? ''),
 			$individual['email'] ?? '',
 			$individual['cell_phone'] ?? '',
 			( is_array( $individual ) && ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : '',

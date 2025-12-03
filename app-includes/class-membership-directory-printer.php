@@ -47,9 +47,9 @@ class Membership_Directory_Printer {
 				$listing .= '   \\par\\pard\\keepn\\i ' . $tabStop . '    Family Members \\plain';
 				foreach ( $individuals as $individual ) {
 					if ( $individual['last_name'] !== $family_name ) {
-						$individual_name_listing = $individual['first_name'] . ' ' . $individual['last_name'];
+						$individual_name_listing = ucwords($individual['first_name']) . ' ' . ucwords($individual['last_name']);
 					} else {
-						$individual_name_listing = $individual['first_name'];
+						$individual_name_listing = ucwords($individual['first_name']);
 					}
 
 					$linePrefix = '\\par\\pard\\keepn' . $tabStop . '    ';
