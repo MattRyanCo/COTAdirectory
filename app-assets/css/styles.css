@@ -253,9 +253,6 @@ form.cota-upload-info {
     grid-template-columns: 210px 1fr;
     gap: 10px 20px;
     align-items: center;
-    width: 70vw;
-}
-form.cota-family-edit {
     width: 75vw;
 }
 
