@@ -4,7 +4,7 @@ require_once '../app-libraries/fpdf/fpdf.php';
 class PDF extends FPDF {
 
 	public $booklet_pages        = array();
-	public $pageWidth            = 0;
+	public $page_width            = 0;
 	private $current_page_number = 0;
 	private $header_height       = 0.0;  // Height of family listing page header.
 	private $footer_position     = null; // 'left' or 'right' for current page
@@ -223,12 +223,12 @@ class PDF extends FPDF {
 	// }
 
 	function center_this_text( $text, $vertical_position ) {
-		$pageWidth = $this->GetPageWidth();
-		$textWidth = $this->GetStringWidth( $text );
+		$page_width = $this->GetPageWidth();
+		$text_width = $this->GetStringWidth( $text );
 		// Calculate X position to center
-		$x = ( $pageWidth - $textWidth ) / 2;
+		$x = ( $page_width - $text_width ) / 2;
 		$this->SetXY( $x, $vertical_position ); // 1 inch from the top
-		$this->Cell( $textWidth, 0.25, $text );
+		$this->Cell( $text_width, 0.25, $text );
 	}
 
 	/**
@@ -467,11 +467,11 @@ class PDF extends FPDF {
 	function dummy_up_pages( $pdfobject, $no_of_pages ) {
 		foreach ( $no_of_pages as $pair ) {
 			$pdfobject->AddPage();
-			foreach ( $pair as $pageNum ) {
-				if ( $pageNum > $no_of_pages ) {
+			foreach ( $pair as $page_num ) {
+				if ( $page_num > $no_of_pages ) {
 					$pdfobject->Cell( 0, 5, '(Blank)', 0, 1, 'C' ); // Handle extra blank pages
 				} else {
-					$pdfobject->Cell( 0, 5, 'Page ' . $pageNum, 0, 1, 'C' );
+					$pdfobject->Cell( 0, 5, 'Page ' . $page_num, 0, 1, 'C' );
 				}
 			}
 		}

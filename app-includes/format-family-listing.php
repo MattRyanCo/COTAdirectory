@@ -10,17 +10,18 @@
  * [x][1]                              [x][4]               [x][5]    [x][6]  [x][7]       [x][8] [x][9]
  * [x][1]                              [x][2]               [x][3]    [x][4]  [x][5]       [x][6] [x][7]
  * [1]Family_Name                      Member 1 First Name  Last Name Email   Cell Phone   DoB    DoBaptism Anniversary
- * [2]Address Line 1, Address Line 2   Member 2 First Name  Last Name Email   Cell Phone   DoB    DoBaptism Anniversary
- * [3]City, State Zip                  Member 3 First Name  Last Name Email   Cell Phone   DoB    DoBaptism Anniversary
- * [4]Home Phone: (xxx) xxx-xxxx       Member 4 First Name  Last Name Email   Cell Phone   DoB    DoBaptism Anniversary
- * [5]                                 Member 5 First Name  Last Name Email   Cell Phone   DoB    DoBaptism Anniversary
- * [6]                                 Member 6 First Name  Last Name Email   Cell Phone   DoB    DoBaptism Anniversary
- * [7]                                 Member 7 First Name  Last Name Email   Cell Phone   DoB    DoBaptism Anniversary
+ * [2]Address Line 1                   Member 2 First Name  Last Name Email   Cell Phone   DoB    DoBaptism
+ * [3]Address Line 2                   Member 3 First Name  Last Name Email   Cell Phone   DoB    DoBaptism
+ * [4]Address Line 3                   Member 4 First Name  Last Name Email   Cell Phone   DoB    DoBaptism
+ * [5]City State Zip                   Member 5 First Name  Last Name Email   Cell Phone   DoB    DoBaptism
+ * [6]Home Phone: (xxx) xxx-xxxx       Member 6 First Name  Last Name Email   Cell Phone   DoB    DoBaptism
+ * [7]                                 Member 7 First Name  Last Name Email   Cell Phone   DoB    DoBaptism
  *
  * If any address fields on left side are blank, those entries will be omitted from the output.
  * If any member fields on the right are blank, those entries will also be omitted from the output.
  * The Last Name of a member is displayed only if it differs from the Family_Name.
  * The Family_Name and Member 1 First Name fields will always be output. They are required for a db entry.
+ * Anniversary field only shown on Family_Name row if it exists for Member 1.
  */
 
 function cota_format_family_listing_for_print( $family, $members ) {
@@ -28,8 +29,9 @@ function cota_format_family_listing_for_print( $family, $members ) {
 	// Initialize key variables
 	$num_members = $members->num_rows;
 	// $member_ctr = $left_side_ctr = 1;
-	$addr1       = ( isset( $family['address'] ) && $family['address'] !== '' ) ? $family['address'] : false;
+	$addr1       = ( isset( $family['address'] )  && $family['address']  !== '' ) ? $family['address']  : false;
 	$addr2       = ( isset( $family['address2'] ) && $family['address2'] !== '' ) ? $family['address2'] : false;
+	$addr3       = ( isset( $family['address3'] ) && $family['address3'] !== '' ) ? $family['address3'] : false;
 	$city        = ( isset( $family['city'] ) && $family['city'] !== '' ) ? $family['city'] : false;
 	$homephone   = ( isset( $family['homephone'] ) && $family['homephone'] !== '' ) ? $family['homephone'] : false;
 	$placeholder = '';
@@ -41,15 +43,10 @@ function cota_format_family_listing_for_print( $family, $members ) {
 	$formatted_family_array[0]['member_ctr']    = 0;
 
 	// Outer loop through left side of printed entry block
-	for ( $left_side_ctr = 1; $left_side_ctr <= 4; $left_side_ctr++ ) {
+	for ( $left_side_ctr = 1; $left_side_ctr <= 6; $left_side_ctr++ ) {
 
-		if ( $left_side_ctr == 1 ) {  // First time through the left listing block
+		if ( 1 === $left_side_ctr ) {  // First time through the left listing block
 			$individual = $members->fetch_assoc(); // Already have member. Parse row.
-
-			if ( ! $individual ) {
-				// No members found
-				break;
-			}
 			$member_ctr = 1;
 
 			// Clear last names if they match the family name. No need to output it.
@@ -69,10 +66,10 @@ function cota_format_family_listing_for_print( $family, $members ) {
 			// $formatted_family_array[0][0] = $left_side_ctr; // Number of left side lines
 			$formatted_family_array[0]['left_side_ctr'] = $left_side_ctr;
 
-		} elseif ( $left_side_ctr == 2 ) {
+		} elseif ( 2 === $left_side_ctr ) {
 			$individual = get_next_member( $members );
-			if ( ! $individual ) {
-				// No members found
+			if ( ! $individual && ! $addr1 ) {
+				// No more members found and no address line 1
 				break;
 			}
 			$member_ctr += 1;
@@ -83,26 +80,18 @@ function cota_format_family_listing_for_print( $family, $members ) {
 				$individual['last_name'] = '';
 			}
 			if ( $addr1 ) {
-				$left_side                                   = $family['address'] . ' ';
+				// $left_side = $family['address'];
 				$formatted_family_array[ $left_side_ctr ][1] = $family['address'];
-				$addr1                                       = false;
-				if ( $addr2 ) {
-					$left_side                                  .= ', ' . $family['address2'] . ' ';
-					$formatted_family_array[ $left_side_ctr ][1] = $family['address'] . ', ' . $family['address2'];
-					$addr2                                       = false;
-				}
+				$addr1 = false;
+
 			} elseif ( $homephone ) {
-				$left_side                                   = 'Home: ' . $family['homephone'] . ' ';
+				// $left_side = 'Home: ' . $family['homephone'] . ' ';
 				$formatted_family_array[ $left_side_ctr ][1] = 'Home: ' . $family['homephone'];
-				$addr2                                       = false;
-				$city                                        = false;
-				$homephone                                   = false;
+				$homephone = false;
 			} else {
 				// If no address, use placeholder.
 				// Remaining left side address will be blank.
-				$left_side = $placeholder;
-				$addr2     = false;
-				$city      = false;
+				$formatted_family_array[ $left_side_ctr ][1] = ' ';
 			}
 			// Format for printing
 			$formatted_family_array[ $left_side_ctr ][2] = ucwords($individual['first_name'] ?? '');
@@ -113,11 +102,9 @@ function cota_format_family_listing_for_print( $family, $members ) {
 			$formatted_family_array[ $left_side_ctr ][7] = ( ! empty( $individual['baptism'] ) ) ? date( 'm/d', strtotime( $individual['baptism'] ) ) : null;
 			$formatted_family_array[ $left_side_ctr ][8] = ( ! empty( $individual['anniversary'] ) ) ? date( 'm/d', strtotime( $individual['anniversary'] ) ) : null;
 
-			$formatted_family_array[0]['left_side_ctr'] = $left_side_ctr;
-
-		} elseif ( $left_side_ctr === 3 ) {
+		} elseif ( 3 === $left_side_ctr ) {
 			$individual = get_next_member( $members );
-			if ( ! $individual ) {
+			if ( ! $individual && ! $addr2 && ! $city ) {
 				// No members found
 				break;
 			}
@@ -129,35 +116,28 @@ function cota_format_family_listing_for_print( $family, $members ) {
 				$individual['last_name'] = ' ';
 			}
 			if ( $addr2 ) {
-				$left_side                                   = $family['address2'] . ' ';
-				$formatted_family_array[ $left_side_ctr ][1] = 'l3-' . $family['address2'] ?? ' ';
-				$addr2                                       = false;
+				$formatted_family_array[ $left_side_ctr ][1] = $family['address2'] ?? ' ';
+				$addr2 = false;
 			} elseif ( $city ) {
-				$left_side                                   = $family['city'] . ', ' .
-					$family['state'] . ' ' .
-					$family['zip'];
-				$city                                        = false;
-				$formatted_family_array[ $left_side_ctr ][1] = $family['city'] . ', ' . $family['state'] . ' ' . $family['zip'];
+				$city = false;
+				$formatted_family_array[ $left_side_ctr ][1] = $family['city'] . ' ' . $family['state'] . ' ' . $family['zip'];
 			} else {
 				// If no address, use placeholder.
 				// Remaining left side address will be blank.
-				$left_side = $placeholder;
+				$formatted_family_array[ $left_side_ctr ][1] = ' ';
 			}
 				// Format for printing
 			$formatted_family_array[ $left_side_ctr ][2]  = ucwords($individual['first_name'] ?? ' ');
 			$formatted_family_array[ $left_side_ctr ][2] .= ' ' . ucwords($individual['last_name'] ?? ' ');
-
 			$formatted_family_array[ $left_side_ctr ][4] = $individual['email'] ?? ' ';
 			$formatted_family_array[ $left_side_ctr ][5] = $individual['cell_phone'] ?? ' ';
 			$formatted_family_array[ $left_side_ctr ][6] = ( ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : null;
 			$formatted_family_array[ $left_side_ctr ][7] = ( ! empty( $individual['baptism'] ) ) ? date( 'm/d', strtotime( $individual['baptism'] ) ) : null;
 			$formatted_family_array[ $left_side_ctr ][8] = ( ! empty( $individual['anniversary'] ) ) ? date( 'm/d', strtotime( $individual['anniversary'] ) ) : null;
 
-			$formatted_family_array[0]['left_side_ctr'] = $left_side_ctr; // Number of left side lines
-
 		} elseif ( 4 === $left_side_ctr ) {
 			$individual = get_next_member( $members );
-			if ( ! $individual ) {
+			if ( ! $individual && ! $addr3 && ! $city && ! $homephone ) {
 				// No members found
 				break;
 			}
@@ -167,18 +147,19 @@ function cota_format_family_listing_for_print( $family, $members ) {
 				( $individual['last_name'] == $family['familyname'] ) ) {
 				$individual['last_name'] = ' ';
 			}
-
-			if ( $homephone ) {
-				$left_side                                   = 'Home: ' . $family['homephone'] . ' ';
+			if ( $addr3 ) {
+				$formatted_family_array[ $left_side_ctr ][1] = $family['address3'] ?? ' ';
+				$addr3 = false;
+			} elseif ( $city ) {
+				$formatted_family_array[ $left_side_ctr ][1] = $family['city'] . ' ' . $family['state'] . ' ' . $family['zip'];
+				$city = false;
+			} elseif ( $homephone ) {
 				$formatted_family_array[ $left_side_ctr ][1] = 'Home: ' . $family['homephone'];
-				$addr2                                       = false;
-				$city                                        = false;
-				$homephone                                   = false;
+				$homephone = false;
 			} else {
 				// If no address or phone, use placeholder.
-				$left_side                                   = $placeholder;
+				// $left_side = $placeholder;
 				$formatted_family_array[ $left_side_ctr ][1] = ' ';
-
 			}
 			// Format for printing
 			$formatted_family_array[ $left_side_ctr ][2] = ucwords($individual['first_name'] ?? ' ');
@@ -189,13 +170,70 @@ function cota_format_family_listing_for_print( $family, $members ) {
 			$formatted_family_array[ $left_side_ctr ][7] = ( ! empty( $individual['baptism'] ) ) ? date( 'm/d', strtotime( $individual['baptism'] ) ) : null;
 			$formatted_family_array[ $left_side_ctr ][8] = ( ! empty( $individual['anniversary'] ) ) ? date( 'm/d', strtotime( $individual['anniversary'] ) ) : null;
 
-			$formatted_family_array[0]['left_side_ctr'] = $left_side_ctr; // Number of left side lines
+		} elseif ( 5 === $left_side_ctr ) {
+			$individual = get_next_member( $members );
+			if ( ! $individual && ! $city && ! $homephone ) {
+				// No more members found
+				break;
+			}
+			$member_ctr += 1;
+			
+			// Clear last name if same as family name
+			if ( ( is_array( $individual ) && ! empty( $individual['last_name'] ) ) &&
+				( $individual['last_name'] == $family['familyname'] ) ) {
+				$individual['last_name'] = ' ';
+			}
+			if ( $city ) {
+				$formatted_family_array[ $left_side_ctr ][1] = $family['city'] . ' ' . $family['state'] . ' ' . $family['zip'];
+				$city = false;
+			} elseif ( $homephone ) {
+				$formatted_family_array[ $left_side_ctr ][1] = 'Home: ' . $family['homephone'];
+				$homephone = false;
+			} else {
+				// If no address or phone, use placeholder.
+				// $left_side = $placeholder;
+				$formatted_family_array[ $left_side_ctr ][1] = ' ';
+			}
+			// Format for printing
+			$formatted_family_array[ $left_side_ctr ][2] = ucwords($individual['first_name'] ?? ' ');
+			$formatted_family_array[ $left_side_ctr ][3] = ucwords($individual['last_name'] ?? ' ');
+			$formatted_family_array[ $left_side_ctr ][4] = $individual['email'] ?? ' ';
+			$formatted_family_array[ $left_side_ctr ][5] = $individual['cell_phone'] ?? ' ';
+			$formatted_family_array[ $left_side_ctr ][6] = ( ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : null;
+			$formatted_family_array[ $left_side_ctr ][7] = ( ! empty( $individual['baptism'] ) ) ? date( 'm/d', strtotime( $individual['baptism'] ) ) : null;
+			$formatted_family_array[ $left_side_ctr ][8] = ( ! empty( $individual['anniversary'] ) ) ? date( 'm/d', strtotime( $individual['anniversary'] ) ) : null;
+
+		} elseif ( 6 === $left_side_ctr ) {
+			$individual = get_next_member( $members );
+			if ( ! $individual && ! $homephone ) {
+				// No more members found
+				break;
+			}
+			$member_ctr += 1;
+			// Clear last name if same as family name
+			if ( ( is_array( $individual ) && ! empty( $individual['last_name'] ) ) &&
+				( $individual['last_name'] == $family['familyname'] ) ) {
+				$individual['last_name'] = ' ';
+			}
+			if ( $homephone ) {
+				$formatted_family_array[ $left_side_ctr ][1] = 'Home: ' . $family['homephone'];
+				$homephone = false;
+			} else {
+				// If no address or phone, use placeholder.
+				// $left_side = $placeholder;
+				$formatted_family_array[ $left_side_ctr ][1] = ' ';
+			}
+			// Format for printing
+			$formatted_family_array[ $left_side_ctr ][2] = ucwords($individual['first_name'] ?? ' ');
+			$formatted_family_array[ $left_side_ctr ][3] = ucwords($individual['last_name'] ?? ' ');
+			$formatted_family_array[ $left_side_ctr ][4] = $individual['email'] ?? ' ';
+			$formatted_family_array[ $left_side_ctr ][5] = $individual['cell_phone'] ?? ' ';
+			$formatted_family_array[ $left_side_ctr ][6] = ( ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : null;
+			$formatted_family_array[ $left_side_ctr ][7] = ( ! empty( $individual['baptism'] ) ) ? date( 'm/d', strtotime( $individual['baptism'] ) ) : null;
+			$formatted_family_array[ $left_side_ctr ][8] = ( ! empty( $individual['anniversary'] ) ) ? date( 'm/d', strtotime( $individual['anniversary'] ) ) : null;
 		}
 	}
-	// If $left_side_ctr = 5 then have 4 full address lines on left. The last is most likely the phone. Could have 1 or more members.
-	if ( 5 === $left_side_ctr ) {
-		$left_side_ctr = 4;
-	}
+
 	$formatted_family_array[0]['left_side_ctr'] = $left_side_ctr;
 
 	// Loop through rest of family members
@@ -206,11 +244,11 @@ function cota_format_family_listing_for_print( $family, $members ) {
 			break;
 		}
 		$member_ctr += 1;
-
-		if ( $individual['last_name'] == $family['familyname'] ) {
+		// Clear last name if same as family name
+		if ( ( is_array( $individual ) && ! empty( $individual['last_name'] ) ) &&
+			( $individual['last_name'] == $family['familyname'] ) ) {
 			$individual['last_name'] = ' ';
 		}
-
 		// Format for printing
 		$formatted_family_array[ $member_ctr ][1] = ' '; // These members have no address components.
 		$formatted_family_array[ $member_ctr ][2] = ucwords($individual['first_name'] ?? ' ');
@@ -237,9 +275,10 @@ function cota_format_family_listing_for_display( $family, $members ) {
 	// Set key logicals
 	$num_members = $members->num_rows;
 	$member_ctr  = 1;
-	$addr1       = ( isset( $family['address'] ) && $family['address'] !== '' ) ? $family['address'] : false;
+	$addr1       = ( isset( $family['address'] )  && $family['address']  !== '' ) ? $family['address']  : false;
 	$addr2       = ( isset( $family['address2'] ) && $family['address2'] !== '' ) ? $family['address2'] : false;
-	$city        = ( isset( $family['city'] ) && $family['city'] !== '' ) ? $family['city'] : false;
+	$addr3       = ( isset( $family['address3'] ) && $family['address3'] !== '' ) ? $family['address3'] : false;
+	$city        = ( isset( $family['city'] )     && $family['city']     !== '' ) ? $family['city'] : false;
 	$homephone   = ( isset( $family['homephone'] ) && $family['homephone'] !== '' ) ? $family['homephone'] : false;
 	// set placeholders.
     $placeholder      = '';
@@ -253,46 +292,51 @@ function cota_format_family_listing_for_display( $family, $members ) {
 	$format_string_anniversary = "<tr class='format_string_anniversary'><td>%s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
 
 	// Outer loop through left side of display - $left_side_ctr is line in left side
-	for ( $left_side_ctr = 1; $left_side_ctr <= 4; $left_side_ctr++ ) {
+	for ( $left_side_ctr = 1; $left_side_ctr <= 6; $left_side_ctr++ ) {
 		if ( 1 === $left_side_ctr ) {
 				// Get 1st member of family
 			$individual = $members->fetch_assoc();
             $is_there_anniversary = $individual['anniversary'] ?? '';
+			// Clear last name if same as family name
+			if ( ( is_array( $individual ) && ! empty( $individual['last_name'] ) ) &&
+				( $individual['last_name'] === $family['familyname'] ) ) {
+				$individual['last_name'] = ' ';
+			}
 			if ( $individual ) {
+
 				$formatted_family = sprintf(
 					$format_string_row_1,
 					$family['familyname'],
 					ucwords( $individual['first_name'] ?? ''),
-					ucwords($individual['last_name'] ?? ''),
+					ucwords( $individual['last_name'] ?? ''),
 					$individual['email'] ?? '',
 					$individual['cell_phone'] ?? '',
 					( is_array( $individual ) && ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : '',
 					( is_array( $individual ) && ! empty( $individual['baptism'] ) ) ? date( 'm/d', strtotime( $individual['baptism'] ) ) : '',
                     ( $is_there_anniversary ) ? date( 'm/d', strtotime( $individual['anniversary'] ) ) : ''
-
 				);
 
-			} else {
-				// No members found
-				// break;
 			}
 		} elseif ( 2 === $left_side_ctr ) {
 			// Get next member of family
 			$individual = get_next_member( $members );
+			if ( ! $individual && ! $addr1 ) {
+				// No more members found and no address line 1
+				break;
+			}
+			// Clear last name if same as family name
+			if ( ( is_array( $individual ) && ! empty( $individual['last_name'] ) ) &&
+				( $individual['last_name'] === $family['familyname'] ) ) {
+				$individual['last_name'] = ' ';
+			}
 			if ( $addr1 ) {
 				$left_side = sprintf( '%s', $family['address'] );
 				$addr1     = false;
-				if ( $addr2 ) {
-					$left_side .= sprintf( ', %s', $family['address2'] );
-					$addr2      = false;
-				}
 			} elseif ( $homephone ) {
 				$left_side = sprintf(
 					'Home: %s',
 					$family['homephone']
 				);
-				$addr2     = false;
-				$city      = false;
 				$homephone = false;
 			} else {
 				// If no address, use placeholder.
@@ -316,6 +360,15 @@ function cota_format_family_listing_for_display( $family, $members ) {
 		} elseif ( 3 === $left_side_ctr ) {
 			// Get next member of family
 			$individual = get_next_member( $members );
+			if ( ! $individual && ! $addr2 && ! $city ) {
+				// No more members found
+				break;
+			}
+			// Clear last name if same as family name
+			if ( ( is_array( $individual ) && ! empty( $individual['last_name'] ) ) &&
+				( $individual['last_name'] === $family['familyname'] ) ) {
+				$individual['last_name'] = ' ';
+			}
 			if ( $addr2 ) {
 				$left_side = sprintf( '%s', $family['address2'] );
 				$addr2     = false;
@@ -343,26 +396,37 @@ function cota_format_family_listing_for_display( $family, $members ) {
 				( is_array( $individual ) && ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : '',
 				( is_array( $individual ) && ! empty( $individual['baptism'] ) ) ? date( 'm/d', strtotime( $individual['baptism'] ) ) : ''
 			);
-
 		} elseif ( 4 === $left_side_ctr ) {
 			$individual = get_next_member( $members );
-			if ( ! $individual ) {
+			if ( ! $individual && ! $addr3 && ! $city && ! $homephone ) {
 				// No more members found
 				break;
 			}
-
-			if ( $homephone ) {
+			// Clear last name if same as family name
+			if ( ( is_array( $individual ) && ! empty( $individual['last_name'] ) ) &&
+				( $individual['last_name'] === $family['familyname'] ) ) {
+				$individual['last_name'] = ' ';
+			}
+			if ( $addr3 ) {
+				$left_side = sprintf( '%s', $family['address3'] );
+				$addr3     = false;
+			} elseif ( $city ) {
+				$left_side = sprintf(
+					'%s, %s %s',
+					$family['city'],
+					$family['state'],
+					$family['zip']
+				);
+				$city      = false;
+			} elseif ( $homephone ) {
 				$left_side = sprintf(
 					'Home: %s',
 					$family['homephone']
 				);
-				$addr2     = false;
-				$city      = false;
 				$homephone = false;
 			} else {
 				// If no address or phone, use placeholder.
 				$left_side = $placeholder;
-
 			}
 			$formatted_family .= sprintf(
 				$format_string,
@@ -374,7 +438,76 @@ function cota_format_family_listing_for_display( $family, $members ) {
 				( is_array( $individual ) && ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : '',
 				( is_array( $individual ) && ! empty( $individual['baptism'] ) ) ? date( 'm/d', strtotime( $individual['baptism'] ) ) : ''
 			);
-
+		} elseif ( 5 === $left_side_ctr ) {
+			$individual = get_next_member( $members );
+			if ( ! $individual && ! $city && ! $homephone ) {
+				// No more members found
+				break;
+			}
+			// Clear last name if same as family name
+			if ( ( is_array( $individual ) && ! empty( $individual['last_name'] ) ) &&
+				( $individual['last_name'] === $family['familyname'] ) ) {
+				$individual['last_name'] = ' ';
+			}
+			if ( $city ) {
+				$left_side = sprintf(
+					'%s, %s %s',
+					$family['city'],
+					$family['state'],
+					$family['zip']
+				);
+				$city      = false;
+			} elseif ( $homephone ) {
+				$left_side = sprintf(
+					'Home: %s',
+					$family['homephone']
+				);
+				$homephone = false;
+			} else {
+				// If no address or phone, use placeholder.
+				$left_side = $placeholder;
+			}
+			$formatted_family .= sprintf(
+				$format_string,
+				$left_side,
+				ucwords($individual['first_name'] ?? ''),
+				ucwords($individual['last_name'] ?? ''),
+				$individual['email'] ?? '',
+				$individual['cell_phone'] ?? '',
+				( is_array( $individual ) && ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : '',
+				( is_array( $individual ) && ! empty( $individual['baptism'] ) ) ? date( 'm/d', strtotime( $individual['baptism'] ) ) : ''
+			);
+		} elseif ( 6 === $left_side_ctr ) {
+			$individual = get_next_member( $members );
+			if ( ! $individual && ! $homephone ) {
+				// No more members found
+				break;
+			}
+			// Clear last name if same as family name
+			if ( ( is_array( $individual ) && ! empty( $individual['last_name'] ) ) &&
+				( $individual['last_name'] === $family['familyname'] ) ) {
+				$individual['last_name'] = ' ';
+			}
+			if ( $homephone ) {
+				$left_side = sprintf(
+					'Home: %s',
+					$family['homephone']
+				);
+				$homephone = false;
+			} else {
+				// If no address or phone, use placeholder.
+				$left_side = $placeholder;
+			}
+			$formatted_family .= sprintf(
+				$format_string,
+				$left_side,
+				ucwords($individual['first_name'] ?? ''),
+				ucwords($individual['last_name'] ?? ''),
+				$individual['email'] ?? '',
+				$individual['cell_phone'] ?? '',
+				( is_array( $individual ) && ! empty( $individual['birthday'] ) ) ? date( 'm/d', strtotime( $individual['birthday'] ) ) : '',
+				( is_array( $individual ) && ! empty( $individual['baptism'] ) ) ? date( 'm/d', strtotime( $individual['baptism'] ) ) : ''
+			);
 		} else {
 			// No data for left side of display
 		}
@@ -384,6 +517,11 @@ function cota_format_family_listing_for_display( $family, $members ) {
 	// Loop through rest of family members
 	while ( $member_ctr <= $num_members ) {
 		$individual        = get_next_member( $members );
+		// Clear last name if same as family name
+		if ( ( is_array( $individual ) && ! empty( $individual['last_name'] ) ) &&
+			( $individual['last_name'] == $family['familyname'] ) ) {
+			$individual['last_name'] = ' ';
+		}
 		$formatted_family .= sprintf(
 			$format_string,
 			$left_side,

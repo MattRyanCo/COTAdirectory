@@ -18,7 +18,7 @@ $families     = $cota_db->read_family_database();
 $num_families = $families->num_rows;
 $ictr         = 1;
 
-if ( 0 == $num_families ) {
+if ( 0 === $num_families ) {
 	empty_database_alert( 'Member Listing Display' );
 } else {
 	// Dump out remainder of page.

@@ -18,6 +18,7 @@ $header = [
     "familyname",
     "address",
     "address2",
+    "address3",
     "city",
     "state",
     "zip",
@@ -43,10 +44,11 @@ fputcsv($output, $header);
 $families = $connect->query("SELECT * FROM families");
 while ($family = $families->fetch_assoc()) {
     // Initialize family data
-    $one_family = sprintf("%s,%s,%s,%s,%s,%s,%s", 
+    $one_family = sprintf("%s,%s,%s,%s,%s,%s,%s,%s", 
         $family['familyname'],
         $family['address'],
         $family['address2'],
+        $family['address3'],
         $family['city'],
         $family['state'],
         $family['zip'],
