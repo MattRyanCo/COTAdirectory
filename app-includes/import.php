@@ -14,7 +14,12 @@ function cota_read_csv_to_assoc_array( $filename ) {
 		$first_line = fgets( $handle );
 		$first_line = preg_replace( '/^\xEF\xBB\xBF/', '', $first_line );
 		$headers   = str_getcsv( $first_line, ',', '"', $escape );
+		$header_count = count( $headers );
+		$line_number = 1; // Track line number for error reporting
+		
 		while ( ( $row = fgetcsv( $handle, 0, ',', '"', $escape ) ) !== false ) {
+			$line_number++;
+			
 			// Explicitly convert from Windows-1252 to UTF-8
 			foreach ( $row as &$value ) {
 				// Remove quoted-printable artifacts
@@ -23,6 +28,23 @@ function cota_read_csv_to_assoc_array( $filename ) {
 				$value = trim( mb_convert_encoding( quoted_printable_decode( $value ), 'UTF-8', 'UTF-8,ISO-8859-1,Windows-1252' ) );
 				$value = cota_fix_mime_artifacts( $value );
 			}
+			unset( $value ); // Break reference
+			
+			$row_count = count( $row );
+			
+			// Ensure row has same number of elements as headers
+			if ( $row_count !== $header_count ) {
+				// Log the mismatch for debugging
+				cota_log_error( "CSV line {$line_number}: Column count mismatch. Headers: {$header_count}, Row: {$row_count}. Row data: " . print_r( $row, true ) );
+				
+				// Pad row with empty strings if it's shorter, or truncate if longer
+				if ( $row_count < $header_count ) {
+					$row = array_pad( $row, $header_count, '' );
+				} else {
+					$row = array_slice( $row, 0, $header_count );
+				}
+			}
+			
 			$data[] = array_combine( $headers, $row );
 		}
 		fclose( $handle );
@@ -185,6 +207,46 @@ function get_family_id( $familyname ) {
 
 
 /**
+ * Get field length limits from database schema for a given table
+ * @param string $table_name Table name to query
+ * @return array Associative array of field_name => max_length
+ */
+function cota_get_table_field_lengths( $table_name ) {
+	global $cota_db;
+	
+	static $cache = array();
+	
+	// Return cached result if available
+	if ( isset( $cache[ $table_name ] ) ) {
+		return $cache[ $table_name ];
+	}
+	
+	$field_lengths = array();
+	$result = $cota_db->conn->query( "DESCRIBE `{$table_name}`" );
+	
+	if ( $result ) {
+		while ( $row = $result->fetch_assoc() ) {
+			$field_name = $row['Field'];
+			$type = $row['Type'];
+			
+			// Extract length from VARCHAR, CHAR, etc. (e.g., "VARCHAR(50)" -> 50)
+			if ( preg_match( '/^(?:VAR)?CHAR\((\d+)\)/', $type, $matches ) ) {
+				$field_lengths[ $field_name ] = (int) $matches[1];
+			} elseif ( preg_match( '/^TEXT|BLOB|DATE|DATETIME|TIMESTAMP/', $type ) ) {
+				// For TEXT, BLOB, DATE types, set a very large limit or skip truncation
+				$field_lengths[ $field_name ] = null; // null means no truncation
+			}
+		}
+		$result->free();
+	}
+	
+	// Cache the result
+	$cache[ $table_name ] = $field_lengths;
+	
+	return $field_lengths;
+}
+
+/**
  * Insert a family into the database and return the new family ID
  * @param array $data Associative array with 1 row of family data = 1 family
  * @return int New family ID in families table || bool false on error
@@ -198,28 +260,50 @@ function cota_insert_family( $data ) {
 
 	require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
-	// var_dump($data);
 	$stmt = $cota_db->conn->prepare(
 		'INSERT INTO families (
-            familyname, address, address2, city, state, zip, homephone
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)'
+            familyname, address, address2, address3, city, state, zip, homephone
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
 	);
 	if ( ! $stmt ) {
 		// Prepare failed
-                // echo 'Prepare Failed<br>';
 		return false;
 	}
 
-	$homephone = cota_format_phone( $data['homephone'] );
+	// Get field length limits from database schema
+	$field_lengths = cota_get_table_field_lengths( 'families' );
+	
+	// Helper function to truncate field value based on schema
+	$truncate_field = function( $field_name, $value ) use ( $field_lengths ) {
+		if ( ! isset( $value ) || $value === null ) {
+			return '';
+		}
+		if ( isset( $field_lengths[ $field_name ] ) && $field_lengths[ $field_name ] !== null ) {
+			return substr( $value, 0, $field_lengths[ $field_name ] );
+		}
+		return $value;
+	};
+	
+	// Truncate all fields to match database schema limits
+	$familyname = $truncate_field( 'familyname', $data['familyname'] ?? '' );
+	$address    = $truncate_field( 'address', $data['address'] ?? '' );
+	$address2   = $truncate_field( 'address2', $data['address2'] ?? '' );
+	$address3   = $truncate_field( 'address3', $data['address3'] ?? '' );
+	$city       = $truncate_field( 'city', $data['city'] ?? '' );
+	$state      = $truncate_field( 'state', $data['state'] ?? '' );
+	$zip        = $truncate_field( 'zip', $data['zip'] ?? '' );
+	$homephone  = cota_format_phone( $data['homephone'] ?? '' );
+	$homephone  = $truncate_field( 'homephone', $homephone );
 
 	if ( ! $stmt->bind_param(
-		'sssssss',
-		$data['familyname'],
-		$data['address'],
-		$data['address2'],
-		$data['city'],
-		$data['state'],
-		$data['zip'],
+		'ssssssss',
+		$familyname,
+		$address,
+		$address2,
+		$address3,
+		$city,
+		$state,
+		$zip,
 		$homephone
 	) ) {
 		// Bind failed

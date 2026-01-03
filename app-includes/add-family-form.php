@@ -18,32 +18,32 @@ echo cota_add_member_script();
 	<h2 >Add Family</h2>
 	<form class="cota-family-entry" action="add-family.php" method="post">
 		<label>Family Name</label>
-		<input type="text" name="familyname" style="text-transform:capitalize;" required>
+		<input type="text" name="familyname" style="text-transform:capitalize;" maxlength="50" required>
 		<label>Address</label>
-		<input type="text" name="address"style="text-transform:capitalize;">
+		<input type="text" name="address" style="text-transform:capitalize;" maxlength="50">
 		<label>Address 2</label>
-		<input type="text" name="address2" style="text-transform:capitalize;">
+		<input type="text" name="address2" style="text-transform:capitalize;" maxlength="20">
 		<label>City</label>
-		<input type="text" name="city" style="text-transform:capitalize;">
+		<input type="text" name="city" style="text-transform:capitalize;" maxlength="20">
 		<label>State</label>
-		<input type="text" name="state" value="PA" maxlength="2" style="text-transform:uppercase">
+		<input type="text" name="state" value="PA" maxlength="10" style="text-transform:uppercase">
 		<label>Zip Code</label>
-		<input type="text" name="zip" placeholder="xxxxx-xxxx"><br>
+		<input type="text" name="zip" placeholder="xxxxx-xxxx" maxlength="10"><br>
 		<label>Home Phone</label>
-		<input type="text" name="homephone" placeholder="xxx-xxx-xxxx"><br>
+		<input type="text" name="homephone" placeholder="xxx-xxx-xxxx" maxlength="20"><br>
 
 		<h3>Family Members</h3>
 		<p>Enter the primary adult family member(s) first, with their anniversary date, then add additional family members and information as desired.</p>
 		<div id="members">
 			<div>
 				<label >Name</label>
-				<input type="text" name="members[first_name][]" style="text-transform:capitalize;" placeholder="First" required>
+				<input type="text" name="members[first_name][]" style="text-transform:capitalize;" placeholder="First" maxlength="50" required>
 				<label for="members[last_name][]">Last (only needed if different from family name)</label>
-				<input type="text" id="members[last_name][]" name="members[last_name][]" style="text-transform:capitalize;" placeholder="Last"><br>
+				<input type="text" id="members[last_name][]" name="members[last_name][]" style="text-transform:capitalize;" placeholder="Last" maxlength="50"><br>
 				<label for="members[cell_phone][]">Cell Phone</label>
-				<input type="text" id="members[cell_phone][]" name="members[cell_phone][]" placeholder="xxx-xxx-xxxx"><br>
+				<input type="text" id="members[cell_phone][]" name="members[cell_phone][]" placeholder="xxx-xxx-xxxx" maxlength="20"><br>
 				<label for="members[email][]">Email</label>
-				<input type="email" id="members[email][]" name="members[email][]"><br>
+				<input type="email" id="members[email][]" name="members[email][]" maxlength="100"><br>
 				<label for="members[birthday][]">Birthday</label>
 				<input type="date" id="members[birthday][]" name="members[birthday][]" placeholder="mm/dd"><br>
 				<label for="members[baptism][]">Anniversary of Baptism</label>
