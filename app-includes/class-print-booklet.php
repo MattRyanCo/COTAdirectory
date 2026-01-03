@@ -413,7 +413,7 @@ class PDF extends FPDF {
 				$this->Cell( $field_widths[0], $line_height, $family_array[ $i ][1] );  // Left side of listing.
 
 				$this->SetX( $field_positions[1] );
-				if ( isset( $family_array[ $i ][3] ) && ! empty( $family_array[ $i ][3] ) ) {
+				if ( isset( $family_array[ $i ][3] ) ) {
 					// For long names, reduce font size for this line only.
 					if ( ! empty( $family_array[ $i ][2] ) && ( 15 <= ( strlen($family_array[ $i ][2]) + strlen($family_array[ $i ][3] ) ) ) ) {
 						// save font size, set font size to smaller for long names
