@@ -38,6 +38,11 @@ h2,
     padding: 50px 0 20px;
     text-align: center;
 }
+/* p.cota-update-intro {
+    text-align: center;
+    font-size: 1rem;
+    margin-bottom: 20px;
+} */
 
 /* containers */
 #cota-anniversary,
@@ -47,10 +52,14 @@ h2,
 .cota-add-container,
 .cota-update-container,
 .cota-upload-info-docs-container,
+.cota-update-intro-container,
 #empty-notice {
     text-align: center;
     width: 95vh;
     margin: auto;
+}
+.cota-update-intro-container {
+    width: 100vh
 }
 .cota-display-container,
 .cota-display-one-container {
@@ -232,11 +241,7 @@ form {
   width: 50vw;
 }
 
-/* <div class='cota-upload-info-docs-container'>"; */
-/* <form class="cota-upload-info" method="post" enctype="multipart/form-data"> */
-/* <button class="cota-upload-info" type="submit">Upload Info Documents</button> */
-
-
+form.cota-update-intro,
 form.cota-import,
 form.cota-family-entry,
 form.cota-search,
@@ -388,6 +393,7 @@ button {
     font-size: 1em;
     width: 20vw;
 }
+button.cota-update-intro,
 button.cota-upload-info {
     width: 30vw;
 }
@@ -398,6 +404,7 @@ button.cota-display-family > a {
     font-weight: bold;
 }
 
+button.cota-update-intro,
 button.cota-add-another,
 button.cota-edit-family,
 button.cota-search-family,

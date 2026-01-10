@@ -10,7 +10,10 @@ require_once $cota_app_settings->COTA_APP_INCLUDES . 'format-family-listing.php'
 
 $printBooklet = new Membership_Directory_Printer();
 
-$introFiles = ['../uploads/intro1.txt', '../uploads/intro2.txt', '../uploads/intro3.txt'];
+// Grab all the intro files from the uploads directory
+$intro_files = glob( '../uploads/intro*.txt' );
+$intro_files_count = count( $intro_files );
+// $intro_files = ['../uploads/intro1.txt', '../uploads/intro2.txt', '../uploads/intro3.txt'];
 $output_basename = '/downloads/directory_booklet_' . date('Y-m-d') . '.rtf';
 // Ensure the downloads directory exists
 if (!is_dir($_SERVER['DOCUMENT_ROOT'] . '/downloads')) {
@@ -18,19 +21,19 @@ if (!is_dir($_SERVER['DOCUMENT_ROOT'] . '/downloads')) {
 }
 $output_filename = $_SERVER['DOCUMENT_ROOT'] . $output_basename;
 
-$rtfContent = $printBooklet->generateRTFHeader();
+$rtf_content = $printBooklet->generateRTFHeader();
 
 // Add intro page(s) to output
-$rtfContent .= $printBooklet->print_intro_pages(3);
+$rtf_content .= $printBooklet->print_intro_pages( $intro_files_count );
 
 $all_families = $cota_db->read_family_database();
 
 // Add family listings
-	$rtfContent .= $printBooklet->formatFamilyListings($all_families) . "\\pard\\page\\par";
+	$rtf_content .= $printBooklet->formatFamilyListings($all_families) . "\\pard\\page\\par";
 
-$rtfContent .= "}";
+$rtf_content .= "}";
 
-file_put_contents($output_filename, $rtfContent);
+file_put_contents($output_filename, $rtf_content);
 
 // Closing the file 
 $cota_db->close_connection();

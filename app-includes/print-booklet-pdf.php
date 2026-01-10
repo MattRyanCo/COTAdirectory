@@ -42,23 +42,28 @@ $pdf->add_booklet_page(
 	)
 );
 
-// Load and insert static intro pages
-for ( $i = 1; $i <= 3; $i++ ) {
-	$intro_content = file_get_contents( '../uploads/intro' . $i . '.txt' );
-	$first_line = strtok( $intro_content, "\n" );
-	$intro_title = trim( $first_line );
-	$intro_content = substr( $intro_content, strlen( $first_line ) + 1 );
-	$pdf->add_booklet_page(
-		'intro',
-		array(
-			'title'   => $intro_title,
-			'content' => $intro_content,
-		)
-	);
+// Get number of intro files available
+$intro_files = glob( '../uploads/intro*.txt' );
+if ( ! empty( $intro_files ) ) {
+	$intro_files_count = count( $intro_files );
+	// Load and insert static intro pages
+	for ( $i = 1; $i <= $intro_files_count; $i++ ) {
+		$intro_content = file_get_contents( '../uploads/intro' . $i . '.txt' );
+		$first_line = strtok( $intro_content, "\n" );
+		$intro_title = trim( $first_line );
+		$intro_content = substr( $intro_content, strlen( $first_line ) + 1 );
+		$pdf->add_booklet_page(
+			'intro',
+			array(
+				'title'   => $intro_title,
+				'content' => $intro_content,
+			)
+		);
+	}
 }
 // Generate family summary content
 $family_summary_content  = 'This directory contains ' . $num_families . ' families.';
-$family_summary_content .= "\n\nOther misc info may be shared here about the membership numbers.";
+// $family_summary_content .= "\n\nOther misc info may be shared here about the membership numbers.";
 
 // Add family listing page
 $pdf->add_booklet_page(
