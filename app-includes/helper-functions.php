@@ -71,6 +71,7 @@ function cota_page_header( ) {
 					<li><a href="/app-includes/import.php">Import CSV Data</a></li>
 					<li><a href="/app-includes/export.php">Export CSV Directory</a></li>
 					<li><a href="/app-includes/export-sample.php" target="_blank">Export Sample CSV</a></li>
+					<li><a href="/app-includes/export-email-addresses.php">Export Email Address list (CSV) </a></li>
 					<li><a href="/app-includes/database-details.php">Database Details</a></li> 
 					<li><a href="/app-includes/intro-files-display.php">Intro Files Display</a></li> 
 					<li><a href="/app-includes/intro-files-update.php">Intro Files Update</a></li>
