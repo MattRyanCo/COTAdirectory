@@ -102,6 +102,21 @@ function cota_page_header( ) {
 ';
 }
 
+function_add_analytics() {
+	return '
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WY4Y6NH0KS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-WY4Y6NH0KS');
+</script>
+'
+}
+
+
 function cota_add_member_script() {
 	return '
 	    <script>
