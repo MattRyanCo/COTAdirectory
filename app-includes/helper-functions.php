@@ -38,6 +38,7 @@ function cota_page_header( ) {
 <link rel="icon" type="image/x-icon" href="/app-assets/images/favicon.ico">
 <link rel="stylesheet" href="/app-assets/css/styles.css">
 </head>
+' . cota_add_analytics() . '
 <body>
 	<script src="/app-assets/js/jquery.min.js"></script>
 	<script src="/app-assets/js/clicktoggle.js"></script>
@@ -102,18 +103,16 @@ function cota_page_header( ) {
 ';
 }
 
-function_add_analytics() {
-	return '
-<!-- Google tag (gtag.js) -->
+function cota_add_analytics() {
+	return '<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WY4Y6NH0KS"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  gtag(\'js\', new Date());
 
-  gtag('config', 'G-WY4Y6NH0KS');
-</script>
-'
+  gtag(\'config\', \'G-WY4Y6NH0KS\');
+</script>';
 }
 
 
