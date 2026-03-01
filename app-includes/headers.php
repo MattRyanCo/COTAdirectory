@@ -36,18 +36,44 @@ function cota_page_header( ) {
 <meta name="application-name" content="COTA Family Directory Management">
 <link rel="icon" type="image/x-icon" href="/app-assets/images/favicon.ico">
 <link rel="stylesheet" href="/app-assets/css/styles.css">
+<style>
+	.cota-pre-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+	.cota-pre-header__brand {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+	.cota-pre-header__logo {
+		max-height: 64px;
+		width: auto;
+	}
+	.cota-pre-header__meta {
+		text-align: right;
+		line-height: 1.3;
+	}
+</style>
 </head>
 ' . cota_add_analytics() . '
 <body>
 	<script src="/app-assets/js/jquery.min.js"></script>
 	<script src="/app-assets/js/clicktoggle.js"></script>
 	<div id="main-header" class="container">
-	<div id="pre-header">
-		App ' . $app_version . '<br>
-		<a href="' . $app_github_url . '" target="_blank">Source</a> | <a href="' . $app_github_url . '/wiki" target="_blank">Wiki</a>' . 
-		( ( isset( $GLOBALS['cota_member_auth'] ) && $GLOBALS['cota_member_auth']->is_authenticated() ) 
-			? ' | <a href="/app-includes/logout.php">Logout (' . htmlspecialchars( $GLOBALS['cota_member_auth']->get_authenticated_email() ) . ')</a>' 
-			: '' ) . '
+	<div id="pre-header" class="cota-pre-header">
+		<div class="cota-pre-header__brand">
+			<img src="/uploads/directory-app-logo.png" alt="Church of the Ascension logo" class="cota-pre-header__logo">
+		</div>
+		<div class="cota-pre-header__meta">
+			App ' . $app_version . '<br>
+			<a href="' . $app_github_url . '" target="_blank">Source</a> | <a href="' . $app_github_url . '/wiki" target="_blank">Wiki</a>' . 
+			( ( isset( $GLOBALS['cota_member_auth'] ) && $GLOBALS['cota_member_auth']->is_authenticated() ) 
+				? ' | <a href="/app-includes/logout.php">Logout (' . htmlspecialchars( $GLOBALS['cota_member_auth']->get_authenticated_email() ) . ')</a>' 
+				: '' ) . '
+		</div>
 	</div>
 	<h1>Church of the Ascension, Parkesburg</h1>
 	<h2><a href="/">Family Directory Management</a></h2>
