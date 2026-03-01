@@ -11,7 +11,7 @@ echo cota_page_header();
 // Display directory of intro files available
 echo '<div class="cota-intro-files-display-container">';
 echo '<h2>Available Intro Files</h2>';
-$intro_files = glob( '../uploads/intro*.txt' );
+$intro_files = glob( '../uploads/intro*.{txt,md}', GLOB_BRACE );
 if ( ! empty( $intro_files ) ) {
 	echo '<ul>';
 	foreach ( $intro_files as $file ) {

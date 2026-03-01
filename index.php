@@ -2,7 +2,7 @@
 /**
  * App Name:    Family Directory Management
  * Description: A simple family directory management system.
- * Version:     4.0.9
+ * Version:     4.0.12
  * 
  * @package     FamilyDirectory
  * @author      Matt Ryan
@@ -29,6 +29,7 @@ $cota_app_settings = new App_Settings();
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'bootstrap.php';
 
 /** Sets up the misc utility functions */
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 ($cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php');
 

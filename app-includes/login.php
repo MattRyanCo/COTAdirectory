@@ -23,6 +23,7 @@ $cota_db = new COTA_Database();
 $connect = $cota_db->get_connection();
 
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'class-member-auth.php';
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
 $auth = new COTA_Member_Auth( $connect );

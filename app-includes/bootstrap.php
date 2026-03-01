@@ -30,4 +30,5 @@ if ( ! in_array( $current_page, $auth_exempt_pages ) && COTA_Member_Auth::is_aut
 	$cota_member_auth->require_authentication();
 }
 
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';

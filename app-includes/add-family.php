@@ -4,6 +4,7 @@ require_once __DIR__ . '/bootstrap.php';
 
 global $cota_db, $connect, $cota_app_settings;
 
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
 if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {

@@ -4,118 +4,6 @@
  * Helper functions.
  *
  */
-function cota_page_header( ) {
-	global $cota_app_settings, $meta;
-
-	if (!isset($meta) || !is_object($meta)) {
-		// Attempt to initialize $meta if not set
-		if (file_exists($cota_app_settings->COTA_APP_INCLUDES . 'class-app-meta-data.php')) {
-			require_once $cota_app_settings->COTA_APP_INCLUDES . 'class-app-meta-data.php';
-			if (class_exists('App_Meta_Data')) {
-				$meta_file = $cota_app_settings->COTA_APP_FILE ?? '../index.php';
-				$meta = new App_Meta_Data($meta_file);
-			}
-		}
-	}
-	if (!isset($meta) || !is_object($meta)) {
-		$app_version = 'unknown';
-		$app_github_url = '#';
-	} else {
-		$app_version = $meta->getVersion();
-		$app_github_url = $meta->getGitHubUrl();
-	}
-
-	$scripts = $cota_app_settings->COTA_APP_ASSETS; 
-
-	return '
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>COTA Family Directory Management</title>
-<meta name="application-name" content="COTA Family Directory Management">
-<link rel="icon" type="image/x-icon" href="/app-assets/images/favicon.ico">
-<link rel="stylesheet" href="/app-assets/css/styles.css">
-</head>
-' . cota_add_analytics() . '
-<body>
-	<script src="/app-assets/js/jquery.min.js"></script>
-	<script src="/app-assets/js/clicktoggle.js"></script>
-	<div id="main-header" class="container">
-	<div id="pre-header">
-		App ' . $app_version . '<br>
-		<a href="' . $app_github_url . '" target="_blank">Source</a> | <a href="' . $app_github_url . '/wiki" target="_blank">Wiki</a>' . 
-		( ( isset( $GLOBALS['cota_member_auth'] ) && $GLOBALS['cota_member_auth']->is_authenticated() ) 
-			? ' | <a href="/app-includes/logout.php">Logout (' . htmlspecialchars( $GLOBALS['cota_member_auth']->get_authenticated_email() ) . ')</a>' 
-			: '' ) . '
-	</div>
-	<h1>Church of the Ascension, Parkesburg</h1>
-	<h2><a href="/">Family Directory Management</a></h2>
-
-	<nav class="main-menu">
-		<ul>
-			<li class="has-submenu">
-				<a href="#">Main Menu</a>
-				<ul class="submenu">
-					<li><a href="/app-includes/display.php" target="_blank">Display Directory</a></li>
-					<li><a href="/app-includes/display-family.php" >Display One Family</a></li>
-					<li><a href="/app-includes/add-family-form.php" >Add Family</a></li>
-					<li><a href="/app-includes/search-edit.php" >Edit Family / Family Member(s)</a></li>
-					<li><a href="/app-includes/search-delete.php" >Delete Family / Family Member(s)</a></li>
-					<li><a href="/app-includes/upcoming-anniversary-dates.php" target="_blank">Upcoming Anniversaries</a></li>
-				</ul>
-			</li>
-			<li class="has-submenu">
-				<a href="#">Utilities</a>
-				<ul class="submenu">
-					<li><a href="/app-includes/import.php">Import CSV Data</a></li>
-					<li><a href="/app-includes/export.php">Export CSV Directory</a></li>
-					<li><a href="/app-includes/export-sample.php" target="_blank">Export Sample CSV</a></li>
-					<li><a href="/app-includes/export-email-addresses.php">Export Email Address list (CSV) </a></li>
-					<li><a href="/app-includes/database-details.php">Database Details</a></li> 
-					<li><a href="/app-includes/intro-files-display.php">Intro Files Display</a></li> 
-					<li><a href="/app-includes/intro-files-update.php">Intro Files Update</a></li>
-					<li><a href="/app-includes/reset-db.php" style="color: red;">⚠️ Reset Database ⚠️</a></li>
-				</ul>
-			</li>
-			<li class="has-submenu">
-				<a href="#">Print Options</a>
-				<ul class="submenu">
-					<li><a href="../app-includes/print-booklet-rtf.php">RTF for External Use</a></li>
-					<li><a href="../app-includes/print-booklet-pdf.php">PDF for Booklet Printing</a></li>
-				</ul>
-			</li>
-			<li class="has-submenu">
-				<a href="#">Cloud Connect</a>
-				<ul class="submenu">
- 					<li><a href="https://airtable.com/appDcjdkTREcNBq0C/pagWCpvzJva4WXDkN?aLHIC=sfspiZsSOXNCl25vI">COTA Family Entry Dashboard</a></li>
-					<li><a href="https://airtable.com/appDcjdkTREcNBq0C/pagKuXDbnoe2YatAq/form">Family Form Entry</a></li>
-					<li><a href="../app-includes/form-display.php">FORM: Add Family</a></li>
-				</ul>
-			</li>
-		</ul>
-	</nav>
-
-	</div>
-	<div class="notice-container"></div>
-	<div class="form-container"></div>
-';
-}
-
-function cota_add_analytics() {
-	return '<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WY4Y6NH0KS"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag(\'js\', new Date());
-
-  gtag(\'config\', \'G-WY4Y6NH0KS\');
-</script>';
-}
-
-
 function cota_add_member_script() {
 	return '
 	    <script>
@@ -280,4 +168,195 @@ function empty_database_alert( $text ) {
 	echo '<div id="empty-notice">The directory database has been recently reset.<br>';
 	echo 'Use <a href="/app-includes/import.php">Import CSV Data</a> or <a href="/app-includes/add-family-form.php">Add New Family</a> to add data to database.</div>';
 	echo '</div>';
+}
+
+
+/**
+ * Convert Markdown to HTML.
+ *
+ * Uses Parsedown if it's available via Composer. Falls back to a
+ * lightweight, safe converter when Parsedown is not installed.
+ */
+function cota_markdown_to_html( $markdown ) {
+	if ( empty( $markdown ) ) {
+		return '';
+	}
+
+	// Prefer a full Markdown library if present
+	if ( class_exists( 'Parsedown' ) ) {
+		$pd = new Parsedown();
+		// Keep raw HTML disabled by default for safety
+		if ( method_exists( $pd, 'setSafeMode' ) ) {
+			$pd->setSafeMode( true );
+		}
+		return $pd->text( $markdown );
+	}
+
+	// Lightweight fallback: escape, then apply common markdown rules.
+	$text = htmlspecialchars( $markdown, ENT_QUOTES, 'UTF-8' );
+
+	// Code blocks ```code```
+	$text = preg_replace_callback('/```(.*?)```/s', function( $m ) {
+		return '<pre><code>' . htmlspecialchars( $m[1], ENT_QUOTES, 'UTF-8' ) . '</code></pre>';
+	}, $text );
+
+	// ATX headings
+	$text = preg_replace('/^###\s*(.+)$/m', '<h3>$1</h3>', $text);
+	$text = preg_replace('/^##\s*(.+)$/m', '<h2>$1</h2>', $text);
+	$text = preg_replace('/^#\s*(.+)$/m', '<h1>$1</h1>', $text);
+
+	// Bold **text** and Italic *text* (simple)
+	$text = preg_replace('/\*\*(.+?)\*\*/s', '<strong>$1</strong>', $text);
+	$text = preg_replace('/\*(.+?)\*/s', '<em>$1</em>', $text);
+
+	// Links [text](url)
+	$text = preg_replace_callback('/\[(.*?)\]\((.*?)\)/', function( $m ) {
+		$label = htmlspecialchars( $m[1], ENT_QUOTES, 'UTF-8' );
+		$url = htmlspecialchars( $m[2], ENT_QUOTES, 'UTF-8' );
+		return '<a href="' . $url . '">' . $label . '</a>';
+	}, $text );
+
+	// Unordered lists: consecutive lines starting with - or *
+	$text = preg_replace_callback('/(?:^\s*[-\*]\s+.+(?:\r?\n|$))+/', function( $m ) {
+		$lines = preg_split('/\r?\n/', trim( $m[0] ));
+		$out = "<ul>";
+		foreach ( $lines as $line ) {
+			$item = preg_replace('/^\s*[-\*]\s+/', '', $line );
+			$out .= '<li>' . $item . '</li>';
+		}
+		$out .= "</ul>";
+		return $out;
+	}, $text );
+
+	// Convert paragraphs (double newline separates paragraphs)
+	$parts = preg_split('/\r?\n\r?\n/', $text);
+	$out = '';
+	foreach ( $parts as $p ) {
+		$p = trim( $p );
+		if ( $p === '' ) {
+			continue;
+		}
+		// If already a block-level element, don't wrap in <p>
+		if ( preg_match('/^<(h[1-6]|ul|pre|blockquote|ol|li|table)/', $p) ) {
+			$out .= $p;
+		} else {
+			// Preserve single line breaks inside paragraphs
+			$p = nl2br( $p );
+			$out .= '<p>' . $p . '</p>';
+		}
+	}
+
+	return $out;
+}
+
+
+/**
+ * Convert Markdown to plain text, preserving paragraph and line breaks.
+ *
+ * This returns readable plain text suitable for printing (keeps newlines).
+ */
+function cota_markdown_to_plaintext( $markdown ) {
+	if ( empty( $markdown ) ) {
+		return '';
+	}
+
+	// Get HTML from Parsedown if available, otherwise reuse existing converter
+	if ( class_exists( 'Parsedown' ) ) {
+		$pd = new Parsedown();
+		if ( method_exists( $pd, 'setSafeMode' ) ) {
+			$pd->setSafeMode( true );
+		}
+		$html = $pd->text( $markdown );
+	} else {
+		$html = cota_markdown_to_html( $markdown );
+	}
+
+	// If the markdown produced tables, convert them to tab-separated plain text
+	if ( class_exists( 'DOMDocument' ) ) {
+		libxml_use_internal_errors( true );
+		$dom = new DOMDocument();
+		// Ensure proper UTF-8 handling
+		$dom->loadHTML('<?xml encoding="utf-8"?>' . $html);
+		$tables = $dom->getElementsByTagName('table');
+		// Iterate backwards so replacements don't affect upcoming nodes
+		for ( $ti = $tables->length - 1; $ti >= 0; $ti-- ) {
+			$table = $tables->item( $ti );
+			$rows = $table->getElementsByTagName('tr');
+			$table_rows = array();
+			foreach ( $rows as $row ) {
+				$cells = array();
+				foreach ( $row->childNodes as $cell ) {
+					if ( in_array( strtolower( $cell->nodeName ), array( 'th', 'td' ), true ) ) {
+						$cells[] = trim( preg_replace('/\s+/', ' ', $cell->textContent) );
+					}
+				}
+				if ( ! empty( $cells ) ) {
+					$table_rows[] = $cells;
+				}
+			}
+
+			// Compute column widths
+			$col_widths = array();
+			foreach ( $table_rows as $r ) {
+				foreach ( $r as $i => $cell ) {
+					$len = mb_strlen( $cell, 'UTF-8' );
+					if ( ! isset( $col_widths[ $i ] ) || $len > $col_widths[ $i ] ) {
+						$col_widths[ $i ] = $len;
+					}
+				}
+			}
+
+			// Build padded text table using spaces for alignment
+			$textTable = '';
+			foreach ( $table_rows as $r ) {
+				$padded = array();
+				$cols = count( $col_widths );
+				for ( $i = 0; $i < $cols; $i++ ) {
+					$cell = isset( $r[ $i ] ) ? $r[ $i ] : '';
+					// Add one space padding between columns
+					$padded[] = str_pad( $cell, $col_widths[ $i ] );
+				}
+				// Use two spaces between columns to improve readability
+				$textTable .= implode('  ', $padded ) . "\n";
+			}
+
+			// Replace the table HTML with a <pre> block containing the plain table text
+			$tableHtml = $dom->saveHTML( $table );
+			$replacement = '<pre class="cota-table-plaintext">' . htmlspecialchars( $textTable, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) . '</pre>';
+			$html = str_replace( $tableHtml, $replacement, $html );
+		}
+		libxml_clear_errors();
+	}
+
+	// Replace common block tags with newlines to preserve spacing when stripped
+	$break_tags = array(
+		'#<(br)\s*/?>#i',
+		'#</p>#i',
+		'#</h[1-6]>#i',
+		'#</div>#i',
+		'#</li>#i',
+		'#</tr>#i',
+		'#</td>#i',
+		'#</blockquote>#i'
+	);
+	// $html = preg_replace( $break_tags, "\n", $html );
+
+	// Convert remaining tags to nothing, decode entities
+	$text = strip_tags( $html );
+	$text = html_entity_decode( $text, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+
+	// Normalize newlines and trim excessive blank lines
+	$text = str_replace( "\r", "\n", $text );
+	$text = preg_replace('/\n{3,}/', "\n\n", $text);
+	$lines = explode("\n", $text);
+	// Trim each line but preserve single blank lines
+	foreach ( $lines as &$ln ) {
+		$ln = rtrim( $ln );
+	}
+	$text = implode("\n", $lines);
+
+	// Trim leading/trailing whitespace/newlines
+	$text = trim( $text, "\n\t \0\x0B" );
+
+	return $text;
 }

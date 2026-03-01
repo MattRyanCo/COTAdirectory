@@ -64,6 +64,7 @@ function cota_import_families_from_one_line( $filename ) {
 	global $cota_app_settings;
 	global $cota_db, $connect;
 
+	require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
 	require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
 	if ( ! file_exists( $filename ) ) {
@@ -174,6 +175,7 @@ function get_family_id( $familyname ) {
 	global $cota_app_settings;
 	global $cota_db, $connect;
 
+	require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
 	require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
 	$stmt = $cota_db->conn->prepare( 'SELECT id FROM families WHERE familyname = ?' );
@@ -258,6 +260,7 @@ function cota_insert_family( $data ) {
 	global $cota_app_settings;
 	global $cota_db, $connect;
 
+	require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
 	require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
 	$stmt = $cota_db->conn->prepare(
@@ -341,6 +344,7 @@ function cota_insert_member( $family_id, $data ) {
 	global $cota_app_settings;
 	global $cota_db, $connect;
 
+	require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
 	require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 	error_log(
 		print_r(

@@ -12,6 +12,7 @@ require_once $cota_app_settings->COTA_APP_INCLUDES . 'class-database-functions.p
 $cota_db = new COTA_Database();
 $connect = $cota_db->get_connection();
 
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
 // Echo header

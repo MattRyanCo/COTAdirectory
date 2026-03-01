@@ -15,6 +15,7 @@ require_once __DIR__ . '/bootstrap.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'format-family-listing.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'print.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'class-print-booklet.php';
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
 // Create a new PDF instance - half page format
