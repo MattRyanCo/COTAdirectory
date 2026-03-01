@@ -360,3 +360,143 @@ function cota_markdown_to_plaintext( $markdown ) {
 
 	return $text;
 }
+
+/**
+ * Look up families by last name with optional address filters.
+ * Falls back to returning nearby names when nothing matches exactly.
+ *
+ * @param mysqli      $connect    Active database connection.
+ * @param string      $familyname Family name to search for.
+ * @param string|null $address    Optional address filter.
+ * @param string|null $address2   Optional second address filter.
+ *
+ * @return array{matches: array<int, array>, fuzzy: array<int, array>}
+ */
+function cota_search_families( $connect, $familyname, $address = null, $address2 = null ) {
+	$familyname = trim( (string) $familyname );
+	$address    = trim( (string) ( $address ?? '' ) );
+	$address2   = trim( (string) ( $address2 ?? '' ) );
+
+	if ( $familyname === '' || ! $connect ) {
+		return array( 'matches' => array(), 'fuzzy' => array() );
+	}
+
+	$matches = array();
+
+	if ( '' === $address && '' === $address2 ) {
+		$stmt = $connect->prepare( 'SELECT * FROM families WHERE familyname = ? ORDER BY familyname' );
+		$stmt->bind_param( 's', $familyname );
+	} elseif ( '' !== $address && '' === $address2 ) {
+		$addresslike = '%' . $address . '%';
+		$stmt        = $connect->prepare( 'SELECT * FROM families WHERE familyname = ? AND address LIKE ? ORDER BY familyname' );
+		$stmt->bind_param( 'ss', $familyname, $addresslike );
+	} elseif ( '' === $address && '' !== $address2 ) {
+		$address2like = '%' . $address2 . '%';
+		$stmt         = $connect->prepare( 'SELECT * FROM families WHERE familyname = ? AND address2 LIKE ? ORDER BY familyname' );
+		$stmt->bind_param( 'ss', $familyname, $address2like );
+	} else {
+		$addresslike  = '%' . $address . '%';
+		$address2like = '%' . $address2 . '%';
+		$stmt         = $connect->prepare( 'SELECT * FROM families WHERE familyname = ? AND ( address LIKE ? OR address2 LIKE ? ) ORDER BY familyname' );
+		$stmt->bind_param( 'sss', $familyname, $addresslike, $address2like );
+	}
+
+	if ( $stmt && $stmt->execute() ) {
+		$result = $stmt->get_result();
+		while ( $result && ( $row = $result->fetch_assoc() ) ) {
+			$matches[] = $row;
+		}
+	}
+
+	if ( $stmt ) {
+		$stmt->close();
+	}
+
+	return array(
+		'matches' => $matches,
+		'fuzzy'   => empty( $matches ) ? cota_fetch_neighboring_families( $connect, $familyname, 2 ) : array()
+	);
+}
+
+/**
+ * Fetch up to $limit families before and after a given name alphabetically.
+ */
+function cota_fetch_neighboring_families( $connect, $familyname, $limit = 2 ) {
+	$neighbors = array();
+
+	if ( ! $connect || $limit <= 0 ) {
+		return $neighbors;
+	}
+
+	$familyname = trim( (string) $familyname );
+
+	$before = array();
+	$stmt   = $connect->prepare( 'SELECT * FROM families WHERE familyname < ? ORDER BY familyname DESC LIMIT ?' );
+	if ( $stmt ) {
+		$stmt->bind_param( 'si', $familyname, $limit );
+		if ( $stmt->execute() ) {
+			$result = $stmt->get_result();
+			while ( $result && ( $row = $result->fetch_assoc() ) ) {
+				$before[] = $row;
+			}
+		}
+		$stmt->close();
+	}
+
+	$after = array();
+	$stmt  = $connect->prepare( 'SELECT * FROM families WHERE familyname > ? ORDER BY familyname ASC LIMIT ?' );
+	if ( $stmt ) {
+		$stmt->bind_param( 'si', $familyname, $limit );
+		if ( $stmt->execute() ) {
+			$result = $stmt->get_result();
+			while ( $result && ( $row = $result->fetch_assoc() ) ) {
+				$after[] = $row;
+			}
+		}
+		$stmt->close();
+	}
+
+	if ( ! empty( $before ) ) {
+		$before = array_reverse( $before );
+	}
+
+	return array_merge( $before, $after );
+}
+
+/**
+ * Build an HTML list of suggestion links for families.
+ */
+function cota_render_family_suggestions( $families, $targetScript ) {
+	if ( empty( $families ) || empty( $targetScript ) ) {
+		return '';
+	}
+
+	$list = '<ul class="cota-family-suggestions">';
+	foreach ( $families as $family ) {
+		$query = array( 'familyname' => $family['familyname'] );
+		if ( ! empty( $family['address'] ) ) {
+			$query['address'] = $family['address'];
+		}
+		if ( ! empty( $family['address2'] ) ) {
+			$query['address2'] = $family['address2'];
+		}
+		$url = $targetScript . '?' . http_build_query( $query, '', '&', PHP_QUERY_RFC3986 );
+		$name = htmlspecialchars( $family['familyname'], ENT_QUOTES );
+		$detailsParts = array_filter(
+			array(
+				$family['address'] ?? '',
+				$family['city'] ?? '',
+				$family['state'] ?? '',
+				$family['zip'] ?? ''
+			)
+		);
+		$details = '';
+		if ( ! empty( $detailsParts ) ) {
+			$details = ' <span class="family-suggestion-meta">(' . htmlspecialchars( implode( ', ', $detailsParts ), ENT_QUOTES ) . ')</span>';
+		}
+		$list .= '<li><a href="' . htmlspecialchars( $url, ENT_QUOTES ) . '">' . $name . '</a>' . $details . '</li>';
+	}
+	$list .= '</ul>';
+
+	return $list;
+}

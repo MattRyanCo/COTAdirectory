@@ -10,82 +10,46 @@ require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 // Get ful URL with query string
 $full_url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
-// $addresslike = $address2like = '';
-if ( $_SERVER['REQUEST_METHOD'] === 'GET' && isset( $_GET['familyname'] ) ) {
-	$familyname = $_GET['familyname'];
+// Centralized search
+$familyname     = trim( $_GET['familyname'] ?? '' );
+$family_matches = array();
+$fuzzy_matches  = array();
+$family         = null;
 
-	// Check optional search fields
-	$addressEntered  = ! empty( trim( $_GET['address'] ?? '' ) );
-	$address2Entered = ! empty( trim( $_GET['address2'] ?? '' ) );
-
-	// Fetch family record
-	if ( ! $addressEntered && ! $address2Entered ) {
-		// No extra search fields
-		$stmt = $connect->prepare(
-			'SELECT * FROM families 
-            WHERE familyname = ?'
-		);
-		$stmt->bind_param( 's', $familyname );
-	} elseif ( $addressEntered && ! $address2Entered ) {
-		// Extra search field address only entered
-		$addresslike = '%' . $_GET['address'] . '%';
-		$stmt        = $connect->prepare(
-			'SELECT * FROM families 
-            WHERE familyname = ? AND address LIKE ?'
-		);
-		$stmt->bind_param( 'ss', $familyname, $addresslike );
-	} elseif ( ! $addressEntered && $address2Entered ) {
-		// Extra search field address2 only entered
-		$address2like = '%' . $_GET['address2'] . '%';
-		$stmt         = $connect->prepare(
-			'SELECT * FROM families 
-            WHERE familyname = ? AND address2 LIKE ?'
-		);
-		$stmt->bind_param( 'ss', $familyname, $address2like );
-	} elseif ( $addressEntered && $address2Entered ) {
-		// Extra search field address and address2 entered
-		$addresslike  = '%' . $_GET['address'] . '%';
-		$address2like = '%' . $_GET['address2'] . '%';
-		$stmt         = $connect->prepare(
-			'SELECT * FROM families 
-        WHERE familyname = ? 
-        AND ( address LIKE ? OR address2 LIKE ?) '
-		);
-		$stmt->bind_param(
-			'sss',
-			$familyname,
-			$addresslike,
-			$address2like
-		);
-	}
-
-	// Execute search
-	$stmt->execute();
-	$result = $stmt->get_result();
-
-	$family = $result->fetch_assoc();
-	$stmt->close();
+if ( $_SERVER['REQUEST_METHOD'] === 'GET' && '' !== $familyname ) {
+	$address  = $_GET['address'] ?? '';
+	$address2 = $_GET['address2'] ?? '';
+	$results  = cota_search_families( $connect, $familyname, $address, $address2 );
+	$family_matches = $results['matches'];
+	$fuzzy_matches  = $results['fuzzy'];
+	$family         = $family_matches[0] ?? null;
 }
+
 if ( ! $family ) {
-	// Echo header
 	echo cota_page_header();
 	?>
 		<div id="delete-family" class="cota-delete-container">
 			<h2>Delete Family</h2>
-			<div class="container error-message"><?php echo ucfirst( $familyname ); ?> family not found<br>
+			<div class="container error-message"><?php echo htmlspecialchars( ucfirst( $familyname ) ); ?> family not found<br>
+			<?php if ( ! empty( $fuzzy_matches ) ) : ?>
+			<p>Here are nearby names you can select:</p>
+			<?php echo cota_render_family_suggestions( $fuzzy_matches, 'delete-family.php' ); ?>
+			<?php endif; ?>
 			<a href="../app-includes/search-delete.php">Try again with a different spelling</a></div>
 		<?php
 			die();
 }
-if ( $result->num_rows > 1 ) {
-	// More than 1 result, need to refine.
+
+$match_count = count( $family_matches );
+if ( $match_count > 1 ) {
 	echo cota_page_header();
 	?>
 		<div id="delete-family" class="cota-delete-container">
 			<h2>Delete Family</h2>
 			<div class="container error-message">
-			<?php echo $familyname; ?> family search returned multiple results.<br><br> 
-				<a href="../app-includes/search-delete.php?familyname=<?php echo $familyname; ?>&address=&address2=">Please refine your search with the address fields.</a>
+			<?php echo htmlspecialchars( $familyname ); ?> family search returned multiple results.<br>
+			<p>Select the family to delete from the list below or refine your search.</p>
+			<?php echo cota_render_family_suggestions( $family_matches, 'delete-family.php' ); ?>
 			</div>
 		<?php
 			die();
