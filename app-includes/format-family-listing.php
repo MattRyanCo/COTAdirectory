@@ -285,8 +285,8 @@ function cota_format_family_listing_for_display( $family, $members ) {
     $formatted_family = '';
 
     // Format strings for various outputs.
-    $format_string_row_1       = "<tr class='cota-new-family' ><td><h3>%s</h3></td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
-	$format_string             = "<tr class='format_string'><td>%s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
+    $format_string_row_1       = "<tr class='cota-new-family' ><td><h3>%s</h3></td><td>%s %s</td><td>%s</td><td>%s</td><td>&nbsp;%s</td><td>&nbsp;%s</td><td>%s</td></tr>";
+	$format_string             = "<tr class='format_string'><td>%s</td><td>%s %s</td><td>%s</td><td>%s</td><td>&nbsp;%s</td><td>&nbsp;%s</td></tr>";
 	$format_string_city        = "<tr class='format_string_city'><td>%s, %s %s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
 	$format_string_homephone   = "<tr class='format_string_homephone'><td>Home: %s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
 	$format_string_anniversary = "<tr class='format_string_anniversary'><td>%s</td><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
