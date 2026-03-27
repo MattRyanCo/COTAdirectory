@@ -72,6 +72,10 @@ if ( $match_count > 1 ) {
 		<input type="text" name="familyname" value="<?php echo htmlspecialchars( $family['familyname'] ); ?>" required>
 		<label>Address</label>
 		<input type="text" name="address" value="<?php echo htmlspecialchars( $family['address'] ); ?>">
+		<label>Line 2</label>
+		<input type="text" name="address2" value="<?php echo htmlspecialchars( $family['address2'] ); ?>">
+		<label>Line 3</label>
+		<input type="text" name="address3" value="<?php echo htmlspecialchars( $family['address3'] ); ?>">
 		<label>City</label>
 		<input type="text" name="city" value="<?php echo htmlspecialchars( $family['city'] ); ?>">
 		<label>State</label>

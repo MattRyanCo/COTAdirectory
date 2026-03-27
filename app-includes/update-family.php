@@ -11,6 +11,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
     $family_id = intval($_POST["family_id"]);
     $familyname = trim($_POST["familyname"]);
     $address = trim($_POST["address"]);
+    $address2 = trim($_POST["address2"]);
+    $address3 = trim($_POST["address3"]);
     $city = trim($_POST["city"]);
     $state = trim($_POST["state"]);
     $zip = trim($_POST["zip"]);
@@ -18,8 +20,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
     // Anniversary date is NULL if blank. All dates are optional and are set to Null if blank. 
 
     // Update family record
-    $stmt = $connect->prepare("UPDATE families SET familyname=?, address=?, city=?, state=?, zip=?, homephone=? WHERE id=?");
-    $stmt->bind_param("ssssssi", $familyname, $address, $city, $state, $zip, $homephone, $family_id);
+    $stmt = $connect->prepare("UPDATE families SET familyname=?, address=?, address2=?, address3=?, city=?, state=?, zip=?, homephone=? WHERE id=?");
+    $stmt->bind_param("ssssssssi", $familyname, $address, $address2, $address3, $city, $state, $zip, $homephone, $family_id);
     $stmt->execute();
     $stmt->close();
 
