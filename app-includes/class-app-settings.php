@@ -22,6 +22,9 @@ class App_Settings {
 	public $COTA_APP_INCLUDES;
 	public $COTA_APP_LIBRARIES;
 
+	// General
+	public $DISPLAY_SUMMARY_INFORMATION;
+
 
 	public function __construct() {
 		$this->COTA_APP           = dirname( __DIR__ );
@@ -44,5 +47,8 @@ class App_Settings {
 		$this->FAMILY_HEADING_FONT = 10;
 		$this->DIRECTORY_HEADING_FONT = 12;
 		$this->DIRECTORY_HEADING_FONT_SMALL = 10;
+
+		// General settings
+		$this->DISPLAY_SUMMARY_INFORMATION = false;
 	}
 }

@@ -62,18 +62,21 @@ if ( ! empty( $intro_files ) ) {
 		);
 	}
 }
-// Generate family summary content
-$family_summary_content  = 'This directory contains ' . $num_families . ' families.';
-// $family_summary_content .= "\n\nOther misc info may be shared here about the membership numbers.";
 
-// Add family listing page
-$pdf->add_booklet_page(
-	'family_summary',
-	array(
-		'title'   => 'Family & Members Listing Summary',
-		'content' => $family_summary_content,
-	)
-);
+if ( $cota_app_settings->DISPLAY_SUMMARY_INFORMATION ) {
+	// Generate family summary content
+	$family_summary_content  = 'This directory contains ' . $num_families . ' families.';
+	// $family_summary_content .= "\n\nOther misc info may be shared here about the membership numbers.";
+
+	// Add family listing page
+	$pdf->add_booklet_page(
+		'family_summary',
+		array(
+			'title'   => 'Family & Members Listing Summary',
+			'content' => $family_summary_content,
+		)
+	);
+}
 
 // Process families and add them to booklet pages
 $current_page_families = array();
