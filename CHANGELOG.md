@@ -5,11 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.19] - 2026-06-02
+
+### Add
+- Added logic to process booklet generation based on summary/info page flags.
+
+### Changed
+- Modified skills file to replace capwebsolutions with mattryanco. 
+
+## [4.0.18] - 2026-05-22
+
+### Add
+- Added flag to turn off/on display of directory summary page. 
+
 ## [4.0.17] - 2026-03-27
 
 ### Fixed
 
 - Added ability to edit secondary address fields. 
+
 
 ## [4.0.16] - 2026-03-25
 

@@ -24,6 +24,7 @@ class App_Settings {
 
 	// General
 	public $DISPLAY_SUMMARY_INFORMATION;
+	public $DISPLAY_INTRO_PAGES;
 
 
 	public function __construct() {
@@ -50,5 +51,6 @@ class App_Settings {
 
 		// General settings
 		$this->DISPLAY_SUMMARY_INFORMATION = false;
+		$this->DISPLAY_INTRO_PAGES = false;
 	}
 }

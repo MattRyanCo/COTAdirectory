@@ -18,6 +18,40 @@ require_once $cota_app_settings->COTA_APP_INCLUDES . 'class-print-booklet.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
+// Echo header
+echo cota_page_header();
+
+// Dump out top of print options page.
+echo '<h2>Print Options</h2>';
+
+// Handle form submission for print options (use GET)
+$generate_booklet = isset( $_GET['generate_booklet'] ) && $_GET['generate_booklet'] ? true : false;
+$include_summary  = isset( $_GET['include_summary'] ) && $_GET['include_summary'] ? true : false;
+$include_intro    = isset( $_GET['include_intro'] ) && $_GET['include_intro'] ? true : false;
+
+// Apply to settings only if generating the booklet
+if ( $generate_booklet ) {
+	$cota_app_settings->DISPLAY_SUMMARY_INFORMATION = $include_summary;
+	$cota_app_settings->DISPLAY_INTRO_PAGES         = $include_intro;
+} else {
+	$cota_app_settings->DISPLAY_SUMMARY_INFORMATION = false;
+	$cota_app_settings->DISPLAY_INTRO_PAGES         = false;
+}
+?>
+		<form class="cota-print-options" action="" method="get">
+			<label>Include Summary Pages</label>
+			<input type="checkbox" name="include_summary" value="1" <?php echo $include_summary ? 'checked' : ''; ?>>
+			<label>Include Intro Pages</label>
+			<input type="checkbox" name="include_intro" value="1" <?php echo $include_intro ? 'checked' : ''; ?>>
+			<input type="hidden" name="generate_booklet" value="1">
+			<button class="cota-print-options" type="submit">Generate Booklet PDF</button>
+		</form>
+<?php
+if ( ! $generate_booklet ) {
+	echo '</body></html>';
+	return;
+}
+
 // Create a new PDF instance - half page format
 $pdf = new PDF( 'P', 'in', 'HalfLetter' ); // Portrait, Inches, Half-Letter Size
 
@@ -43,26 +77,27 @@ $pdf->add_booklet_page(
 	)
 );
 
-// Get number of intro files available
-$intro_files = glob( '../uploads/intro*.txt' );
-if ( ! empty( $intro_files ) ) {
-	$intro_files_count = count( $intro_files );
-	// Load and insert static intro pages
-	for ( $i = 1; $i <= $intro_files_count; $i++ ) {
-		$intro_content = file_get_contents( '../uploads/intro' . $i . '.txt' );
-		$first_line = strtok( $intro_content, "\n" );
-		$intro_title = trim( $first_line );
-		$intro_content = substr( $intro_content, strlen( $first_line ) + 1 );
-		$pdf->add_booklet_page(
-			'intro',
-			array(
-				'title'   => $intro_title,
-				'content' => $intro_content,
-			)
-		);
+if ( $cota_app_settings->DISPLAY_INTRO_PAGES ) {
+	// Get number of intro files available
+	$intro_files = glob( '../uploads/intro*.txt' );
+	if ( ! empty( $intro_files ) ) {
+		$intro_files_count = count( $intro_files );
+		// Load and insert static intro pages
+		for ( $i = 1; $i <= $intro_files_count; $i++ ) {
+			$intro_content = file_get_contents( '../uploads/intro' . $i . '.txt' );
+			$first_line = strtok( $intro_content, "\n" );
+			$intro_title = trim( $first_line );
+			$intro_content = substr( $intro_content, strlen( $first_line ) + 1 );
+			$pdf->add_booklet_page(
+				'intro',
+				array(
+					'title'   => $intro_title,
+					'content' => $intro_content,
+				)
+			);
+		}
 	}
 }
-
 if ( $cota_app_settings->DISPLAY_SUMMARY_INFORMATION ) {
 	// Generate family summary content
 	$family_summary_content  = 'This directory contains ' . $num_families . ' families.';
@@ -144,10 +179,10 @@ $final_pdf->Output( 'F', $output_filename ); // Save to server
 
 $cota_db->close_connection();
 
-// Echo header
-echo cota_page_header();
+// // Echo header
+// echo cota_page_header();
 
-// Dump out remainder of import page.
+// Dump out remainder of print booklet page.
 echo "<div id='cota-print' class='container'>";
 echo '<h2>Booklet-formatted PDF file generated successfully!</h2>';
 echo '<h4>File: ' . basename( $output_filename ) . '</h4>';

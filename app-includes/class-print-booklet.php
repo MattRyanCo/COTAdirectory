@@ -92,7 +92,7 @@ class PDF extends FPDF {
 				// Padded blank page for imposition; suppress footer numbering
 				$final_pdf->booklet_page_numbers[] = 0;
 				$final_pdf->SetFont( 'Arial', '', 8 );
-				$final_pdf->center_this_text( '(Blank)', 4 );
+				// $final_pdf->center_this_text( '(Blank)', 4 );
 			}
 
 			// Right page
@@ -105,7 +105,7 @@ class PDF extends FPDF {
 				// Padded blank page for imposition; suppress footer numbering
 				$final_pdf->booklet_page_numbers[] = 0;
 				$final_pdf->SetFont( 'Arial', '', 8 );
-				$final_pdf->center_this_text( '(Blank)', 4 );
+			// 	$final_pdf->center_this_text( '(Blank)', 4 );
 			}
 		}
 

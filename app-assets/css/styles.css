@@ -245,6 +245,7 @@ form.cota-update-intro,
 form.cota-import,
 form.cota-family-entry,
 form.cota-search,
+form.cota-print-options,
 form.cota-family-edit,
 form.cota-family-delete,
 form.cota-display-family,
@@ -261,6 +262,7 @@ form.cota-upload-info {
     width: 75vw;
 }
 
+form.cota-print-options,
 form.cota-reset-db {
     width: 40vw;
 }
@@ -273,6 +275,7 @@ form label {
 form.cota-import > label,
 form.cota-reset-db > label,
 form.cota-search > label,
+form.cota-print-options > label,
 form.cota-display-family > label,
 form.cota-family-edit > div > label,
 form.cota-family-entry > div > label,
@@ -399,6 +402,7 @@ button.cota-upload-info {
 }
 button.cota-edit-family > a,
 button.cota-search-family > a,
+button.cota-print-options > a,
 button.cota-display-family > a {
     color: white;
     font-weight: bold;
@@ -410,6 +414,7 @@ button.cota-edit-family,
 button.cota-search-family,
 button.cota-import,
 button.cota-print,
+button.cota-print-options,
 button.cota-upload-info {
     background-color: #2ecc71;
 }
@@ -428,6 +433,7 @@ button.cota-edit-family,
 button.cota-search-family,
 button.cota-submit-family,
 button.cota-print,
+button.cota-print-options,
 .two-button-grid button.cota-search-family,
 .two-button-grid button.cota-edit-family {
     width: 20vw;
