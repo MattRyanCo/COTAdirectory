@@ -33,6 +33,9 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 		// Check if both tables exist before attempting any DELETE or DROP operations
 		$membersTableExists  = false;
 		$familiesTableExists = false;
+		$vestryTableExists = false;
+		$staffTableExists = false;
+		$leadershipTableExists = false;
 
 		$result = $cota_db->query( "SHOW TABLES LIKE 'members'" );
 		if ( $result && $result->num_rows > 0 ) {
@@ -44,12 +47,86 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 			$familiesTableExists = true;
 		}
 
+		$result = $cota_db->query( "SHOW TABLES LIKE 'vestry'" );
+		if ( $result && $result->num_rows > 0 ) {
+			$vestryTableExists = true;
+		}
+
+		$result = $cota_db->query( "SHOW TABLES LIKE 'staff'" );
+		if ( $result && $result->num_rows > 0 ) {	
+			$staffTableExists = true;
+		}
+		$result = $cota_db->query( "SHOW TABLES LIKE 'leadership'" );
+		if ( $result && $result->num_rows > 0 ) {	
+			$leadershipTableExists = true;
+		}
+
 		// Only attempt DELETE if the table exists
 		if ( $membersTableExists ) {
 			$cota_db->query( 'DELETE FROM members' );
 		}
 		if ( $familiesTableExists ) {
 			$cota_db->query( 'DELETE FROM families' );
+		}
+		if ( $vestryTableExists ) {
+			$cota_db->query( 'DELETE FROM vestry' );
+		}
+		if ( $staffTableExists ) {
+			$cota_db->query( 'DELETE FROM staff' );
+		}
+		if ( $leadershipTableExists ) {
+			$cota_db->query( 'DELETE FROM leadership' );
+		}
+
+		// Drop and recreate the vestry table
+		$cota_db->query( 'SET FOREIGN_KEY_CHECKS=0' );
+		$cota_db->query( 'DROP TABLE IF EXISTS vestry' );
+		$cota_db->query( 'SET FOREIGN_KEY_CHECKS=1' ); // Re-enable constraints
+		$createVestryTableSQL = 'CREATE TABLE vestry (
+				id INT AUTO_INCREMENT PRIMARY KEY,
+				member_id INT NOT NULL,
+				class  VARCHAR(4),
+				role VARCHAR(25),
+				liasion varchar(50)
+			)';
+		if ( $cota_db->query( $createVestryTableSQL ) === true ) {
+			write_success_notice( "Database table 'Vestry' has been reset successfully!" );
+
+		} else {
+			write_error_notice( "Error recreating vestry table: " . $cota_db->conn->error . "</p>" );
+		}
+		// Drop and recreate the staff table
+		$cota_db->query( 'SET FOREIGN_KEY_CHECKS=0' );
+		$cota_db->query( 'DROP TABLE IF EXISTS staff' );
+		$cota_db->query( 'SET FOREIGN_KEY_CHECKS=1' ); // Re-enable constraints
+		$createStaffTableSQL = 'CREATE TABLE staff (
+				id INT AUTO_INCREMENT PRIMARY KEY,
+				member_id INT NOT NULL,
+				position VARCHAR(50),
+				staff_title VARCHAR(5),
+				staff_first_name VARCHAR(50),
+				staff_last_name VARCHAR(50),
+				staff_phone VARCHAR(20),
+				staff_email VARCHAR(100)
+			)';
+		if ( $cota_db->query( $createStaffTableSQL ) === true ) {
+			write_success_notice( "Database table 'Staff' has been reset successfully!" );
+		} else {
+			write_error_notice( "Error recreating staff table: " . $cota_db->conn->error . "</p>" );
+		}
+		// Drop and recreate the leadership table
+		$cota_db->query( 'SET FOREIGN_KEY_CHECKS=0' );
+		$cota_db->query( 'DROP TABLE IF EXISTS leadership' );
+		$cota_db->query( 'SET FOREIGN_KEY_CHECKS=1' ); // Re-enable constraints
+		$createLeadershipTableSQL = 'CREATE TABLE leadership (
+				id INT AUTO_INCREMENT PRIMARY KEY,
+				member_id INT NOT NULL,
+				leadership_position VARCHAR(25)
+			)';
+		if ( $cota_db->query( $createLeadershipTableSQL ) === true ) {
+			write_success_notice( "Database table 'Leadership' has been reset successfully!" );
+		} else {
+			write_error_notice( "Error recreating leadership table: " . $cota_db->conn->error . "</p>" );
 		}
 
 		// Drop and recreate the families table
@@ -73,7 +150,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 		if ( $cota_db->query( $createFamiliesTableSQL ) === true ) {
 			write_success_notice( "Database table 'Families' has been reset successfully!" );
 		} else {
-			write_error_notice( 'Error recreating families table: " . $cota_db->conn->error . "</p>"' );
+			write_error_notice( "Error recreating families table: " . $cota_db->conn->error . "</p>" );
 		}
 
 

@@ -3,7 +3,7 @@
  * This script displays the Search form for editing or deleting families. 
  * It offers optional fields to narrow the search for duplicate last names. 
  * 
- * Upson 'SUBMIT' edit-family is run to process the input. 
+ * Upon 'SUBMIT' edit-family is run to process the input. 
  */
 
 require_once __DIR__ . '/bootstrap.php';

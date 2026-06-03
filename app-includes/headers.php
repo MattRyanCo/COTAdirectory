@@ -92,6 +92,17 @@ function cota_page_header( ) {
 				</ul>
 			</li>
 			<li class="has-submenu">
+				<a href="#">Ministry Maintenance</a>
+				<ul class="submenu">
+					<li><a href="/app-includes/display-vestry.php">Display Vestry</a></li>
+					<li><a href="/app-includes/update-vestry.php">Update Vestry</a></li>
+					<li><a href="/app-includes/display-leadership.php">Display Leadership</a></li>
+					<li><a href="/app-includes/update-leadership.php">Update Leadership</a></li>
+					<li><a href="/app-includes/display-staff.php">Display Staff</a></li>
+					<li><a href="/app-includes/update-staff.php">Update Staff</a></li>
+				</ul>
+			</li>
+			<li class="has-submenu">
 				<a href="#">Utilities</a>
 				<ul class="submenu">
 					<li><a href="/app-includes/import.php">Import CSV Data</a></li>

@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.22] - 2026-06-03
+### Added
+- New flag based logic to prevent/allow intro and summary pages in printed output. 
+
 ## [4.0.21] - 2026-06-03
 ### Fixed
 - Removed deprecated function usage in RTF print script. Passing null to parameter #1 ($string) of type string in /var/www/cotadirectory/app-includes/class-membership-directory-printer.php on line 33
@@ -20,9 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Add
 - Added logic to process booklet generation based on summary/info page flags.
+- Initialized the new flags to false in class definition. 
+- Styling for new form and UI. 
 
 ### Changed
 - Modified skills file to replace capwebsolutions with mattryanco. 
+- Removed '(blank)' identified on blank pages in output. 
 
 ## [4.0.18] - 2026-05-22
 

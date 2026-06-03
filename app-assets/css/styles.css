@@ -472,7 +472,8 @@ button.main-menu-return > a {
     width: 50vw;
 }
 
-table.cota-directory-table {
+table.cota-directory-table,
+table.vestry-directory-table {
     width: 65%;
     border-collapse: collapse;
     margin-top: 20px;
