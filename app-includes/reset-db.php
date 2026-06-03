@@ -86,8 +86,8 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 				id INT AUTO_INCREMENT PRIMARY KEY,
 				member_id INT NOT NULL,
 				class  VARCHAR(4),
-				role VARCHAR(25),
-				liasion varchar(50)
+				vrole VARCHAR(25),
+				liaison varchar(50)
 			)';
 		if ( $cota_db->query( $createVestryTableSQL ) === true ) {
 			write_success_notice( "Database table 'Vestry' has been reset successfully!" );
@@ -106,7 +106,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 				staff_title VARCHAR(5),
 				staff_first_name VARCHAR(50),
 				staff_last_name VARCHAR(50),
-				staff_phone VARCHAR(20),
+				staff_phone VARCHAR(30),
 				staff_email VARCHAR(100)
 			)';
 		if ( $cota_db->query( $createStaffTableSQL ) === true ) {

@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.23] - 2026-06-03
+### Added
+- Added Ministry Maintenance navigation to provide ways to maintain the supporting roles for the parish. 
+- Logic to display the staff, vestry, and leadership roles from the new Ministry Maintenance navigation item.  
+
 ## [4.0.22] - 2026-06-03
 ### Added
 - New flag based logic to prevent/allow intro and summary pages in printed output. 
