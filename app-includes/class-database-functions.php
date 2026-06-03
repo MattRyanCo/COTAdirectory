@@ -58,6 +58,29 @@ class COTA_Database {
 		}
 		return $families;
 	}
+	public function read_vestry_database() {
+		$vestry = $this->conn->query( 'SELECT * FROM vestry' );
+		if ( $vestry === false ) {
+			die( 'Error: ' . $this->conn->error );
+		}
+		return $vestry;
+	}
+
+	public function read_staff_database() {
+		$staff = $this->conn->query( 'SELECT * FROM staff' );
+		if ( $staff === false ) {
+			die( 'Error: ' . $this->conn->error );
+		}
+		return $staff;
+	}
+
+	public function read_leadership_database() {
+		$leadership = $this->conn->query( 'SELECT * FROM leadership' );
+		if ( $leadership === false ) {
+			die( 'Error: ' . $this->conn->error );
+		}
+		return $leadership;
+	}
 
 	public function read_a_family( $family_id ) {
 		$statement = $this->conn->prepare( 'SELECT * FROM families WHERE family_id = ?' );
@@ -77,6 +100,23 @@ class COTA_Database {
 
 		$statement = $this->conn->prepare( 'SELECT * FROM members WHERE family_id = ? ' );
 		$statement->bind_param( 'i', $family_id );
+		$statement->execute();
+		$members = $statement->get_result();
+		if ( false === $members ) {
+			die( 'Error: ' . $this->conn->error );
+		}
+		$statement->close();
+		// var_dump( $members );
+
+		return $members;
+	}
+
+		public function read_members_of_vestry( ) {
+		// echo nl2br( PHP_EOL . ' Method ' . __METHOD__ . ' loaded' . PHP_EOL );
+		// echo nl2br( PHP_EOL . ' $members of family =========>>> ' . $family_id . PHP_EOL );
+
+		$statement = $this->conn->prepare( 'SELECT * FROM vestry ' );
+		// $statement->bind_param( 'i', $family_id );
 		$statement->execute();
 		$members = $statement->get_result();
 		if ( false === $members ) {

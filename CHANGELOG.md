@@ -9,9 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Add
 - Added logic to process booklet generation based on summary/info page flags.
+- Initialized the new flags to false in class definition. 
+- Styling for new form and UI. 
 
 ### Changed
 - Modified skills file to replace capwebsolutions with mattryanco. 
+- Removed '(blank)' identified on blank pages in output. 
 
 ## [4.0.18] - 2026-05-22
 

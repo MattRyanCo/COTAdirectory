@@ -88,6 +88,8 @@ if ( $cota_app_settings->DISPLAY_INTRO_PAGES ) {
 			$first_line = strtok( $intro_content, "\n" );
 			$intro_title = trim( $first_line );
 			$intro_content = substr( $intro_content, strlen( $first_line ) + 1 );
+			// $intro_content = sprintf("%s", htmlspecialchars( $intro_content ) );
+
 			$pdf->add_booklet_page(
 				'intro',
 				array(

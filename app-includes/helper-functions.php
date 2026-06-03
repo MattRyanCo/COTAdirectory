@@ -38,6 +38,22 @@ function cota_add_member_script() {
     </script>';
 }
 
+function add_vestry_member_script(){
+	// Display form allowing up to 15 vestry members to be added.
+	// Each form entry should start with the name, selected from the members table.
+	// Additional form columns include the vestry class, the vestry role, and the liasion.
+	// There may be multiple liasion entries.
+	// The name selection acts as a search box, allowing the user to type in a name and select from matching entries in the members table.
+	// Once the name is selected, the user enters the remaining details and clicks "Add Vestry Member" to add the member to the vestry listing.
+	// The form loops until the max number of vestry members is added.
+
+	return '
+	    <script>
+		function cota_add_vestry_member() {
+
+		}
+	</script>';
+}
 
 // Sanitize Input
 function cota_sanitize($data) {
@@ -82,7 +98,7 @@ function cota_format_date_to_db($date) {
 	// }
 	// This works if the year is included or the column allows partial dates.
 	$datereturned = !empty($date) ? "STR_TO_DATE('{$date}', '%m/%d')" : null;
-	return $datereturned; 
+	return $datereturned;
 }
 
 
