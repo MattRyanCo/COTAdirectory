@@ -30,18 +30,22 @@ class Membership_Directory_Printer {
 			$family_name = $one_family['familyname'];
 
 			$listing .= "\\par\\pard\\keepn\\b " . htmlspecialchars( $family_name ) . '\\plain';
-			$listing .= '\\par\\pard\\keepn ' . htmlspecialchars( $one_family['address'] ) . ' ' . htmlspecialchars( $one_family['address2'] );
-			if ( $one_family['city'] != '' ) {
+			if ( $one_family['address2'] !== '' ) {
+				$listing .= '\\par\\pard\\keepn ' . htmlspecialchars( $one_family['address'] ) . ' ' . htmlspecialchars( $one_family['address2'] );
+			} else {
+				$listing .= '\\par\\pard\\keepn ' . htmlspecialchars( $one_family['address'] );
+			}
+			if ( $one_family['city'] !== '' ) {
 				$listing .= '\\par\\pard\\keepn ' . htmlspecialchars( $one_family['city'] ) . ', ' . htmlspecialchars( $one_family['state'] ) . ' ' . htmlspecialchars( $one_family['zip'] );
 			} else {
 				$listing .= '\\par\\pard\\keepn ';
 			}
-			if ( $one_family['homephone'] != '' ) {
+			if ( $one_family['homephone'] !== '' ) {
 				$listing .= '\\par\\pard\\keepn H: ' . htmlspecialchars( $one_family['homephone'] );
 			}
 
 			// Get family members
-			if ( $individuals->num_rows != 0 ) {
+			if ( $individuals->num_rows !== 0 ) {
 				// set a tab stop so DoB lines up regardless of name length
 				$tabStop = '\\tx3600';
 				$listing .= '   \\par\\pard\\keepn\\i ' . $tabStop . '    Family Members \\plain';
