@@ -90,7 +90,8 @@ ul > li {
 ul.cota-anniversary-list {
     list-style-type: none;
     padding: 0;
-    margin: 0 50px 20px;
+    margin: 0 10px 20px;
+    width: 50vw;
 }
 
 ul.cota-anniversary-sublist {

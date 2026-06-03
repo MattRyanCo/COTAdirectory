@@ -14,13 +14,17 @@ function cota_get_last_name($family_id) {
     return $family['familyname'] ?? 'Unknown';
 }
 
-function get_anniversary_members($family_id) {
+function get_anniversary_members($family_id, $limit = null) {
     global $cota_db, $connect;
     $members = [];
-    $result = $connect->query("SELECT first_name, last_name FROM members WHERE family_id = " . intval($family_id));
+    $sql = "SELECT first_name, last_name FROM members WHERE family_id = " . intval($family_id) . " ORDER BY id ASC";
+    if ($limit !== null) {
+        $sql .= " LIMIT " . intval($limit);
+    }
+    $result = $connect->query($sql);
     while ($row = $result->fetch_assoc()) {
         $members[] = trim($row['first_name'] . ' ' . $row['last_name']);
-  }
+    }
     return implode(' & ', $members);
 }
 
@@ -101,12 +105,19 @@ function cota_get_upcoming_anniversaries( $look_forward ) {
 
 
     // 1. Marriage Anniversaries (families table)
-    $members = $connect->query("SELECT family_id, first_name, last_name, anniversary FROM members WHERE anniversary IS NOT NULL");
+    $members = $connect->query("SELECT DISTINCT family_id, anniversary FROM members WHERE anniversary IS NOT NULL");
     while ( $mem = $members->fetch_assoc() ) {
         if ($is_upcoming($mem['anniversary'], $today, $end)) {
-            $names = get_anniversary_members($mem['family_id']);
-            $familyname = cota_get_last_name($mem['family_id']);
-            $results['Marriage Anniversaries'][] = "{$mem['anniversary']} - {$names} ({$familyname})";
+            $names = get_anniversary_members($mem['family_id'], 2);
+            $anniversary_date = DateTime::createFromFormat('Y-m-d', $mem['anniversary']);
+            if (!$anniversary_date) {
+                $anniversary_date = DateTime::createFromFormat('m/d/Y', $mem['anniversary']);
+            }
+            if (!$anniversary_date) {
+                $anniversary_date = DateTime::createFromFormat('m/d', $mem['anniversary']);
+            }
+            $formatted_date = $anniversary_date ? $anniversary_date->format('m/d') : $mem['anniversary'];
+            $results['Marriage Anniversaries'][] = "{$formatted_date} - {$names}";
         }
     }
     // 2. Birthdays (members table)
@@ -116,7 +127,16 @@ function cota_get_upcoming_anniversaries( $look_forward ) {
             if ($mem['last_name'] === '') {
                 $mem['last_name'] = cota_get_last_name($mem['family_id']);
             }
-            $results['Birthdays'][] = "{$mem['birthday']} - {$mem['first_name']} {$mem['last_name']}";
+            $birthday_date = DateTime::createFromFormat('Y-m-d', $mem['birthday']);
+            if (!$birthday_date) {
+                $birthday_date = DateTime::createFromFormat('m/d/Y', $mem['birthday']);
+            }
+            if (!$birthday_date) {
+                $birthday_date = DateTime::createFromFormat('m/d', $mem['birthday']);
+            }
+            $formatted_date = $birthday_date ? $birthday_date->format('m/d') : $mem['birthday'];
+    
+            $results['Birthdays'][] = "{$formatted_date} - {$mem['first_name']} {$mem['last_name']}";
         }
     }
 
@@ -127,7 +147,16 @@ function cota_get_upcoming_anniversaries( $look_forward ) {
             if ($mem['last_name'] === '') {
                 $mem['last_name'] = cota_get_last_name($mem['family_id']);
             }
-            $results['Baptisms'][] = "{$mem['baptism']} - {$mem['first_name']} {$mem['last_name']}";
+            $baptism_date = DateTime::createFromFormat('Y-m-d', $mem['baptism']);
+            if (!$baptism_date) {
+                $baptism_date = DateTime::createFromFormat('m/d/Y', $mem['baptism']);
+            }
+            if (!$baptism_date) {
+                $baptism_date = DateTime::createFromFormat('m/d', $mem['baptism']);
+            }
+            $formatted_date = $baptism_date ? $baptism_date->format('m/d') : $mem['baptism'];
+
+            $results['Baptisms'][] = "{$formatted_date} - {$mem['first_name']} {$mem['last_name']}";
         }
     }
 
