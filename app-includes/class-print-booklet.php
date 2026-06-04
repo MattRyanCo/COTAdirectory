@@ -164,9 +164,18 @@ class PDF extends FPDF {
 	public function render_intro_page( $pdf, $data, $position ) {
 		$pdf->SetFont( 'Arial', '', 10 );
 		$pdf->center_this_text( $data['title'], 0.5 );
-		$pdf->SetFont( 'Arial', '', 8 );
-		$pdf->SetXY( 0.5, 1 );
-		$pdf->MultiCell( 4.5, 0.15, $data['content'] );
+		// Need to use a monospace font to preserve spacing for formatted content like the vestry listing
+		$save_left = $pdf->lMargin;
+		// Set a narrow left margin for wide intro content, then position using that margin
+		$pdf->SetLeftMargin( 0.25 );
+		$pdf->SetFont( 'Courier', '', 8 );
+		// Move to left margin + small offset and set starting Y
+		$pdf->SetXY( $pdf->lMargin, 1 );
+		$pdf->MultiCell( 5.25, 0.15, $data['content'], 0, 'L', false );
+		// Restore previous left margin and keep X aligned to restored margin
+		$current_y = $pdf->GetY();
+		$pdf->SetLeftMargin( $save_left );
+		$pdf->SetXY( $save_left, $current_y );
 	}
 
 	/**
@@ -212,7 +221,7 @@ class PDF extends FPDF {
 	 * Render back cover
 	 */
 	public function render_back_cover( $pdf, $data, $position ) {
-		$pdf->SetFont( 'Arial', '', 6 );
+		$pdf->SetFont( 'Arial', '', 12 );
 		$text = 'Printed ' . date( 'F j, Y' );
 		$pdf->center_this_text( $text, 3.5 );
 	}

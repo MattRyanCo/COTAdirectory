@@ -59,7 +59,7 @@ class COTA_Database {
 		return $families;
 	}
 	public function read_vestry_database() {
-		$vestry = $this->conn->query( 'SELECT * FROM vestry' );
+		$vestry = $this->conn->query( 'SELECT * FROM vestry ORDER BY `class`' );
 		if ( $vestry === false ) {
 			die( 'Error: ' . $this->conn->error );
 		}
@@ -111,21 +111,53 @@ class COTA_Database {
 		return $members;
 	}
 
-		public function read_members_of_vestry( ) {
-		// echo nl2br( PHP_EOL . ' Method ' . __METHOD__ . ' loaded' . PHP_EOL );
-		// echo nl2br( PHP_EOL . ' $members of family =========>>> ' . $family_id . PHP_EOL );
-
-		$statement = $this->conn->prepare( 'SELECT * FROM vestry ' );
-		// $statement->bind_param( 'i', $family_id );
+	/**
+	 * Read a single member by ID and return associative array (or empty array).
+	 *
+	 * @param int $member_id
+	 * @return array
+	 */
+	public function read_member_by_id( $member_id ) {
+		$statement = $this->conn->prepare( 'SELECT * FROM members WHERE id = ? LIMIT 1' );
+		if ( false === $statement ) {
+			die( 'Prepare failed: ' . $this->conn->error );
+		}
+		$statement->bind_param( 'i', $member_id );
 		$statement->execute();
-		$members = $statement->get_result();
-		if ( false === $members ) {
+		$result = $statement->get_result();
+		if ( false === $result ) {
+			$statement->close();
 			die( 'Error: ' . $this->conn->error );
 		}
+		$member = $result->fetch_assoc();
+		$result->free();
 		$statement->close();
-		// var_dump( $members );
 
-		return $members;
+		return $member ?: array();
+	}
+
+	public function read_members_of_vestry( ) {
+		$vestry_members = $this->conn->query( 'SELECT * FROM vestry ORDER BY `class`' );
+		if ( false === $vestry_members ) {
+			die( 'Error: ' . $this->conn->error );
+		}
+		return $vestry_members;
+	}
+
+	public function read_members_of_leadership( ) {
+		$leadership_members = $this->conn->query( 'SELECT * FROM leadership' );
+		if ( false === $leadership_members ) {
+			die( 'Error: ' . $this->conn->error );
+		}
+		return $leadership_members;
+	}
+
+		public function read_members_of_staff( ) {
+		$staff_members = $this->conn->query( 'SELECT * FROM staff' );
+		if ( false === $staff_members ) {
+			die( 'Error: ' . $this->conn->error );
+		}
+		return $staff_members;
 	}
 
 	public function activate_reporting() {
