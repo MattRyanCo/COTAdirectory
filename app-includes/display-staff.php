@@ -29,5 +29,3 @@ if ( 0 === $num_staff ) {
 	}
 	echo '</table></body></html>';
 }
-// Close the file
-$cota_db->close_connection();

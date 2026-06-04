@@ -17,6 +17,9 @@ require_once $cota_app_settings->COTA_APP_INCLUDES . 'print.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'class-print-booklet.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'format-vestry-listing.php';
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'format-leadership-listing.php';
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'format-staff-listing.php';
 
 // Echo header
 echo cota_page_header();
@@ -42,7 +45,7 @@ if ( $generate_booklet ) {
 			<label>Include Summary Pages</label>
 			<input type="checkbox" name="include_summary" value="1" <?php echo $include_summary ? 'checked' : ''; ?>>
 			<label>Include Intro Pages</label>
-			<input type="checkbox" name="include_intro" value="1" <?php echo $include_intro ? 'checked' : ''; ?>>
+			<input type="checkbox" name="include_intro" value="1" checked ?>
 			<input type="hidden" name="generate_booklet" value="1">
 			<button class="cota-print-options" type="submit">Generate Booklet PDF</button>
 		</form>
@@ -76,10 +79,10 @@ $pdf->add_booklet_page(
 		'logo'   => $logoFile,
 	)
 );
-
+// Add the intro pages if enabled in settings
 if ( $cota_app_settings->DISPLAY_INTRO_PAGES ) {
 	// Get number of intro files available
-	$intro_files = glob( '../uploads/intro*.txt' );
+	$intro_files = glob( '../uploads/*.txt' );
 	if ( ! empty( $intro_files ) ) {
 		$intro_files_count = count( $intro_files );
 		// Load and insert static intro pages
@@ -89,6 +92,15 @@ if ( $cota_app_settings->DISPLAY_INTRO_PAGES ) {
 			$intro_title = trim( $first_line );
 			$intro_content = substr( $intro_content, strlen( $first_line ) + 1 );
 			// $intro_content = sprintf("%s", htmlspecialchars( $intro_content ) );
+			// Parse the intro content for any special formatting or placeholders 
+			// if needed here before adding to the booklet page.
+			// eg. [staff] could be replaced with a generated staff listing, etc.
+			//     [vestry] could be replaced with a generated vestry listing, etc.
+
+			if ( 3 === $i ) {
+				// intro3.txt is the intro file with placeholder substitutions
+				$intro_content = cota_parse_intro_content( $intro_content );
+			}
 
 			$pdf->add_booklet_page(
 				'intro',
@@ -201,3 +213,31 @@ You may need to adjust these settings based on your specific printer and PDF app
 echo '<p><strong>Total Pages:</strong> ' . count( $pdf->booklet_pages ) . ' content pages</p>';
 echo "<button class='cota-print' type='button' ><a href='.." . $output_basename . "' download >Download Booklet PDF</a></button>";
 echo '</div></body></html>';
+
+function cota_parse_intro_content( $content ) {
+	global $cota_db, $pdf;
+
+	// Example: Replace [staff] with generated staff listing
+	if ( strpos( $content, '[staff]' ) !== false ) {
+		$staff_listing = cota_generate_staff_listing_for_print();
+		$content = str_replace( '[staff]', $staff_listing, $content );
+	}
+
+	// Example: Replace [vestry] with generated vestry listing
+	if ( strpos( $content, '[vestry]' ) !== false ) {
+		$vestry_listing = cota_generate_vestry_listing_for_print();
+		// echo '<pre>'; var_dump($vestry_listing);  echo '</pre>';
+		$content = str_replace( '[vestry]', $vestry_listing, $content );
+		// echo '<pre>'; var_dump($content);  echo '</pre>';
+		// Confirmed that $content and $vestry_listing is correct with desired spaces and alignemnt.
+		// Something is happening in the output to the PDF.
+	}
+
+	// Example: Replace [leadership] with generated leadership listing
+	if ( strpos( $content, '[leadership]' ) !== false ) {
+		$leadership_listing = cota_generate_leadership_listing_for_print();
+		$content = str_replace( '[leadership]', $leadership_listing, $content );
+	}
+
+	return $content;
+}

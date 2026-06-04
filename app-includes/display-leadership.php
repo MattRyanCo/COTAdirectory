@@ -13,7 +13,6 @@ echo cota_page_header();
 
 $leadership     = $cota_db->read_leadership_database();
 $num_leadership = $leadership->num_rows;
-$ictr         = 1;
 
 if ( 0 === $num_leadership ) {
 	empty_database_alert( 'Leadership Listing Display' );
@@ -31,4 +30,4 @@ if ( 0 === $num_leadership ) {
 	echo "\n</table></body></html>";
 }
 // Close the file
-$cota_db->close_connection();
+// $cota_db->close_connection();
