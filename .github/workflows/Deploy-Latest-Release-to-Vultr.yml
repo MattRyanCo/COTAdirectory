@@ -2,6 +2,10 @@ name: Deploy Latest Release to Vultr
 
 on:
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag to deploy'
+        required: true
   release:
     types: [published]
 
@@ -9,9 +13,18 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Set tag name
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ github.event.inputs.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Download latest release archive
         run: |
-          curl -L "https://github.com/MattRyanCo/COTAdirectory/archive/refs/tags/${{ github.event.release.tag_name }}.zip" -o cotadirectory.zip
+          curl -L "https://github.com/MattRyanCo/COTAdirectory/archive/refs/tags/${{ steps.tag.outputs.tag }}.zip" -o cotadirectory.zip
 
       - name: Upload files to Vultr via SFTP
         uses: appleboy/scp-action@master
@@ -34,8 +47,8 @@ jobs:
             cd /root/www/cotadirectory
             unzip -o cotadirectory.zip
             # Set permissions for all unzipped files and directories
-            chown -R www-data:www-data COTAdirectory-${{ github.event.release.tag_name }}/
-            # Copy contents from cotadirectory-${{ github.event.release.tag_name }} to current directory
-            cp -rf COTAdirectory-${{ github.event.release.tag_name }}/* .
-            # rm -rf COTAdirectory-${{ github.event.release.tag_name }}
+            chown -R www-data:www-data COTAdirectory-${{ steps.tag.outputs.tag }}/
+            # Copy contents from cotadirectory-${{ steps.tag.outputs.tag }} to current directory
+            cp -rf COTAdirectory-${{ steps.tag.outputs.tag }}/* .
+            # rm -rf COTAdirectory-${{ steps.tag.outputs.tag }}
             rm cotadirectory.zip
