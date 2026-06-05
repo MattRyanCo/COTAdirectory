@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.1] - 2026-06-05
+### Added
+- Placeholders for new db update functionality. 
+
+## [4.1.0] - 2026-06-03
+### Added
+
+- Added staff, vestry and leadership as separate tables 
+- Staff members do not need to be directory members. 
+- Leadership and vestry members pull info from member db. They must be directory members. 
+- Added shortcode format [xxx] tempalte tags that can be replaced by respective db contents. Used for [staff], [leadership], [vestry] in intro3.txt file. 
+
+### Changed
+- Reworked handling of intro files to permit formatted output of staff, leadership and vestry pages.
+- Changed intro files to use monospaced Courier font to permit formatted layouts. 
+- Modified intro files for narrower margins to enable more content
+- Changed print options to default to including files in output
+- Removed intermediate file closing in new ancilary member listing functions
+
+
 ## [4.0.23] - 2026-06-03
 ### Added
 - Added Ministry Maintenance navigation to provide ways to maintain the supporting roles for the parish. 

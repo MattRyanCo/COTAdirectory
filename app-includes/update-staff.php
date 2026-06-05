@@ -10,7 +10,7 @@ echo cota_page_header();
 // Dump out remainder of page.
 ?>
 <div class="cota-container">
-	<h2>Update Vestry db coming soon.</h2>
+	<h2>Update Staff db coming soon.</h2>
 </div>
 </body>
 </html>
