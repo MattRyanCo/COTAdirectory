@@ -24,7 +24,7 @@ jobs:
 
       - name: Download latest release archive
         run: |
-          curl -L "https://github.com/MattRyanCo/COTAdirectory/archive/refs/tags/${{ steps.tag.outputs.tag }}.zip" -o cotadirectory.zip
+          curl -L "https://github.com/MattRyanCo/COTAdirectory/archive/refs/tags/cotadirectory-${{ steps.tag.outputs.tag }}.zip" -o cotadirectory-${{ steps.tag.outputs.tag }}.zip
 
       - name: Upload files to Vultr via SFTP
         uses: appleboy/scp-action@master
@@ -52,4 +52,4 @@ jobs:
             cp -rf COTAdirectory-${{ steps.tag.outputs.tag }}/* .
             # Clean up unnecessary files
             rm -rf COTAdirectory-${{ steps.tag.outputs.tag }}
-            rm cotadirectory.zip
+            rm cotadirectory-${{ steps.tag.outputs.tag }}.zip
