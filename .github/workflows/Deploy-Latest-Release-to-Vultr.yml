@@ -47,12 +47,11 @@ jobs:
           port: 22
           script: |
             cd /root/www/cotadirectory
-            mkdir COTAdirectory-${{ steps.tag.outputs.tag }}
-            unzip -o cotadirectory.zip -d COTAdirectory-${{ steps.tag.outputs.tag }}
+            unzip -o cotadirectory.zip
             # Set permissions for all unzipped files and directories
             chown -R www-data:www-data COTAdirectory-${{ steps.tag.outputs.tag }}
             # Copy contents from cotadirectory-${{ steps.tag.outputs.tag }} to current directory
             cp -rf COTAdirectory-${{ steps.tag.outputs.tag }}/* .
             # Clean up unnecessary files
             # rm -rf COTAdirectory-${{ steps.tag.outputs.tag }}
-            # rm cotadirectory.zip
+            rm cotadirectory.zip
