@@ -24,7 +24,7 @@ jobs:
 
       - name: Download latest release archive
         run: |
-          curl -L "https://github.com/MattRyanCo/COTAdirectory/archive/refs/tags/cotadirectory-${{ steps.tag.outputs.tag }}.zip" -o cotadirectory-${{ steps.tag.outputs.tag }}.zip
+          curl -L "https://github.com/MattRyanCo/COTAdirectory/archive/refs/tags/cotadirectory-${{ steps.tag.outputs.tag }}.zip" -o cotadirectory.zip
 
       - name: Upload files to Vultr via SFTP
         uses: appleboy/scp-action@master
@@ -33,7 +33,7 @@ jobs:
           username: ${{ secrets.VULTR_USERNAME }}
           key: ${{ secrets.VULTR_SSH_KEY }}
           port: 22
-          source: cotadirectory-${{ steps.tag.outputs.tag }}.zip
+          source: cotadirectory.zip
           target: /root/www/cotadirectory
 
       - name: Unpack and set permissions on server
@@ -45,11 +45,12 @@ jobs:
           port: 22
           script: |
             cd /root/www/cotadirectory
-            unzip -o cotadirectory-${{ steps.tag.outputs.tag }}.zip
+            mkdir COTAdirectory-${{ steps.tag.outputs.tag }}
+            unzip -o cotadirectory.zip -d COTAdirectory-${{ steps.tag.outputs.tag }}
             # Set permissions for all unzipped files and directories
             chown -R www-data:www-data COTAdirectory-${{ steps.tag.outputs.tag }}
             # Copy contents from cotadirectory-${{ steps.tag.outputs.tag }} to current directory
             cp -rf COTAdirectory-${{ steps.tag.outputs.tag }}/* .
             # Clean up unnecessary files
-            rm -rf COTAdirectory-${{ steps.tag.outputs.tag }}
-            rm cotadirectory-${{ steps.tag.outputs.tag }}.zip
+            # rm -rf COTAdirectory-${{ steps.tag.outputs.tag }}
+            # rm cotadirectory.zip
