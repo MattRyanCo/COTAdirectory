@@ -17,7 +17,7 @@ function cota_format_leadership_listing( $leadership_member, $mode = 'display' )
 
 	// Get first & last name of leadership member from the members table using member_id
 	global $cota_db;
-	$member_info = $cota_db->read_member_by_id( $leadership_member['member_id'] );
+	$member_info = $cota_db->read_member_by_id_extended( $leadership_member['member_id'] );
 
 	$formatted_leadership_member = sprintf(
 		$format_string,

@@ -95,8 +95,6 @@ class COTA_Database {
 	}
 
 	public function read_members_of_family( $family_id ) {
-		// echo nl2br( PHP_EOL . ' Method ' . __METHOD__ . ' loaded' . PHP_EOL );
-		// echo nl2br( PHP_EOL . ' $members of family =========>>> ' . $family_id . PHP_EOL );
 
 		$statement = $this->conn->prepare( 'SELECT * FROM members WHERE family_id = ? ' );
 		$statement->bind_param( 'i', $family_id );
@@ -135,6 +133,45 @@ class COTA_Database {
 
 		return $member ?: array();
 	}
+	/**
+	 * Read a single member by ID and return associative array (or empty array). 
+	 * The last name is pulled from the associated family record if the last name is blank. 
+	 *
+	 * @param int $member_id
+	 * @return array
+	 */
+	public function read_member_by_id_extended( $member_id ) {
+		$statement = $this->conn->prepare( 'SELECT * FROM members WHERE id = ? LIMIT 1' );
+		if ( false === $statement ) {
+			die( 'Prepare failed: ' . $this->conn->error );
+		}
+		$statement->bind_param( 'i', $member_id );
+		$statement->execute();
+		$result = $statement->get_result();
+		if ( false === $result ) {
+			$statement->close();
+			die( 'Error: ' . $this->conn->error );
+		}
+		$member = $result->fetch_assoc();
+		$result->free();
+		$statement->close();
+
+		// If last name of member is blank, pull the fmaily name from the families table and use 
+		// that as the last name for this member. 
+		// This is to handle cases where family members have blank last names in the members table but the 
+		// family name is stored in the families table.
+		if ( $member['last_name'] === ' ' || $member['last_name'] === '' ) {
+			$families = $this->read_family_database();
+			while ( $family = $families->fetch_assoc() ) {
+				if ( $family['id'] == $member['family_id'] ) {
+					$member['last_name'] = $family['familyname'];
+					break;
+				}
+			}
+		}
+
+		return $member ?: array();
+	}
 
 	public function read_members_of_vestry( ) {
 		$vestry_members = $this->conn->query( 'SELECT * FROM vestry ORDER BY `class`' );
@@ -152,7 +189,7 @@ class COTA_Database {
 		return $leadership_members;
 	}
 
-		public function read_members_of_staff( ) {
+	public function read_members_of_staff( ) {
 		$staff_members = $this->conn->query( 'SELECT * FROM staff' );
 		if ( false === $staff_members ) {
 			die( 'Error: ' . $this->conn->error );
