@@ -24,7 +24,9 @@ jobs:
 
       - name: Download latest release archive
         run: |
-          curl -L "https://github.com/MattRyanCo/COTAdirectory/archive/refs/tags/cotadirectory-${{ steps.tag.outputs.tag }}.zip" -o cotadirectory.zip
+          curl -L "https://github.com/MattRyanCo/COTAdirectory/archive/refs/tags/${{ steps.tag.outputs.tag }}.zip" -o cotadirectory.zip
+          # Verify the file is a valid zip
+          unzip -t cotadirectory.zip || (echo "Invalid zip file downloaded" && exit 1)
 
       - name: Upload files to Vultr via SFTP
         uses: appleboy/scp-action@master
