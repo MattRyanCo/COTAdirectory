@@ -33,7 +33,7 @@ jobs:
           username: ${{ secrets.VULTR_USERNAME }}
           key: ${{ secrets.VULTR_SSH_KEY }}
           port: 22
-          source: cotadirectory.zip
+          source: cotadirectory-${{ steps.tag.outputs.tag }}.zip
           target: /root/www/cotadirectory
 
       - name: Unpack and set permissions on server
@@ -45,7 +45,7 @@ jobs:
           port: 22
           script: |
             cd /root/www/cotadirectory
-            unzip -o cotadirectory.zip
+            unzip -o cotadirectory-${{ steps.tag.outputs.tag }}.zip
             # Set permissions for all unzipped files and directories
             chown -R www-data:www-data COTAdirectory-${{ steps.tag.outputs.tag }}
             # Copy contents from cotadirectory-${{ steps.tag.outputs.tag }} to current directory
