@@ -193,9 +193,6 @@ $final_pdf->Output( 'F', $output_filename ); // Save to server
 
 $cota_db->close_connection();
 
-// // Echo header
-// echo cota_page_header();
-
 // Dump out remainder of print booklet page.
 echo "<div id='cota-print' class='container'>";
 echo '<h2>Booklet-formatted PDF file generated successfully!</h2>';
@@ -214,6 +211,16 @@ echo '<p><strong>Total Pages:</strong> ' . count( $pdf->booklet_pages ) . ' cont
 echo "<button class='cota-print' type='button' ><a href='.." . $output_basename . "' download >Download Booklet PDF</a></button>";
 echo '</div></body></html>';
 
+
+/**
+ * Replace intro content placeholders with generated HTML.
+ *
+ * Supports [staff], [vestry], and [leadership] tokens in the provided
+ * content string and replaces them with the corresponding generated listings.
+ *
+ * @param string $content Intro content containing optional placeholders.
+ * @return string Processed intro content with placeholders replaced.
+ */
 function cota_parse_intro_content( $content ) {
 	global $cota_db, $pdf;
 
@@ -226,11 +233,7 @@ function cota_parse_intro_content( $content ) {
 	// Example: Replace [vestry] with generated vestry listing
 	if ( strpos( $content, '[vestry]' ) !== false ) {
 		$vestry_listing = cota_generate_vestry_listing_for_print();
-		// echo '<pre>'; var_dump($vestry_listing);  echo '</pre>';
 		$content = str_replace( '[vestry]', $vestry_listing, $content );
-		// echo '<pre>'; var_dump($content);  echo '</pre>';
-		// Confirmed that $content and $vestry_listing is correct with desired spaces and alignemnt.
-		// Something is happening in the output to the PDF.
 	}
 
 	// Example: Replace [leadership] with generated leadership listing

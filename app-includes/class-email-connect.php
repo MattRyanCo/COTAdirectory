@@ -1,5 +1,10 @@
-<?php 
-
+<?php
+/**
+ * Email Connect Client
+ *
+ * Provides a lightweight wrapper for sending email notifications via an
+ * external Email Connect API using credentials from environment variables.
+ */
 class COTA_Email_Connect {
 
 $api_key = $_ENV['EMAIL_CONNECT_API_KEY'] ?? '';

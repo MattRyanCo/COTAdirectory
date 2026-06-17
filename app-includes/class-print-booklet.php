@@ -1,4 +1,10 @@
 <?php
+/**
+ * Booklet PDF Generator
+ *
+ * Extends the FPDF library to support half-letter booklet formatting,
+ * page ordering for 2-up printing, and custom family directory layout.
+ */
 require_once '../app-libraries/fpdf/fpdf.php';
 
 class PDF extends FPDF {

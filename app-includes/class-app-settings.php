@@ -1,4 +1,10 @@
 <?php
+/**
+ * Application Settings
+ *
+ * Centralizes COTA application configuration values such as upload paths,
+ * FPDF formatting settings, and general display flags.
+ */
 class App_Settings {
 
 	public $MAX_FAMILY_MEMBERS; // Maximum number of family members

@@ -1,4 +1,10 @@
 <?php
+/**
+ * Database Access Layer
+ *
+ * Provides a simple mysqli-based database connection wrapper and
+ * environment-specific connection settings for the COTA application.
+ */
 class COTA_Database {
 	// Local
 	private const LOCAL_DB_NAME     = 'cotadirectory';

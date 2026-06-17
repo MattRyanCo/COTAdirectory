@@ -1,4 +1,11 @@
 <?php
+/**
+ * Database Details Page
+ *
+ * Initializes application settings, establishes a database connection,
+ * and outputs current database connection and schema information.
+ */
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);

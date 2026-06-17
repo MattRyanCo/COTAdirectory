@@ -1,4 +1,10 @@
 <?php
+/**
+ * Membership Directory Printer
+ *
+ * Responsible for generating RTF output for the directory including
+ * family listings and introductory content pages.
+ */
 class Membership_Directory_Printer {
 
 	public string $rtfContent;

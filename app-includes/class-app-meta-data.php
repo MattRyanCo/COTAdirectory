@@ -1,5 +1,10 @@
-<?php 
-
+<?php
+/**
+ * Application Metadata Helper
+ *
+ * Reads metadata from a file header and exposes version and GitHub URL
+ * information for the application.
+ */
 class App_Meta_Data {
     private string $filePath;
     private array $metadata = [];
