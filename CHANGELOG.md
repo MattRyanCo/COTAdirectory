@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.4] - 2026-06-17
+### Fixed
+- Corrected issue causing deprecation notice in class-membership-directory-printer.php
+### Added
+- File header documentation for app-includes\print-booklet-rtf.php
+
+## [4.1.3] - 2026-06-06
+### Fixed
+- Corrected issue with 'add family' display link. 
+
 ## [4.1.2] - 2026-06-05
 ### Changed
 - Display last name of leadership & vestry members where they are the primary family member. 

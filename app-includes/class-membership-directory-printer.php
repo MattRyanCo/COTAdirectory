@@ -8,7 +8,11 @@ class Membership_Directory_Printer {
 	}
 
 	public function formatText( $text ) {
-		return str_replace( "\n", '\\par ', htmlspecialchars( $text ) );
+		return str_replace( "\n", '\\par ', $this->escape( $text ) );
+	}
+
+	private function escape( $text ) {
+		return htmlspecialchars( (string) $text );
 	}
 
 	/**
@@ -27,21 +31,27 @@ class Membership_Directory_Printer {
 
 			// Get family members
 			$individuals = $connect->query( 'SELECT * FROM members WHERE family_id = ' . $one_family['id'] . ' ORDER BY `first_name`' );
-			$family_name = $one_family['familyname'];
+			$family_name = (string) $one_family['familyname'];
+			$address     = (string) $one_family['address'];
+			$address2    = (string) $one_family['address2'];
+			$city        = (string) $one_family['city'];
+			$state       = (string) $one_family['state'];
+			$zip         = (string) $one_family['zip'];
+			$homephone   = (string) $one_family['homephone'];
 
-			$listing .= "\\par\\pard\\keepn\\b " . htmlspecialchars( $family_name ) . '\\plain';
-			if ( $one_family['address2'] !== '' ) {
-				$listing .= '\\par\\pard\\keepn ' . htmlspecialchars( $one_family['address'] ) . ' ' . htmlspecialchars( $one_family['address2'] );
+			$listing .= "\\par\\pard\\keepn\\b " . $this->escape( $family_name ) . '\\plain';
+			if ( '' !== $address2 ) {
+				$listing .= '\\par\\pard\\keepn ' . $this->escape( $address ) . ' ' . $this->escape( $address2 );
 			} else {
-				$listing .= '\\par\\pard\\keepn ' . htmlspecialchars( $one_family['address'] );
+				$listing .= '\\par\\pard\\keepn ' . $this->escape( $address );
 			}
-			if ( $one_family['city'] !== '' ) {
-				$listing .= '\\par\\pard\\keepn ' . htmlspecialchars( $one_family['city'] ) . ', ' . htmlspecialchars( $one_family['state'] ) . ' ' . htmlspecialchars( $one_family['zip'] );
+			if ( $city !== '' ) {
+				$listing .= '\\par\\pard\\keepn ' . $this->escape( $city ) . ', ' . $this->escape( $state ) . ' ' . $this->escape( $zip );
 			} else {
 				$listing .= '\\par\\pard\\keepn ';
 			}
-			if ( $one_family['homephone'] !== '' ) {
-				$listing .= '\\par\\pard\\keepn H: ' . htmlspecialchars( $one_family['homephone'] );
+			if ( $homephone !== '' ) {
+				$listing .= '\\par\\pard\\keepn H: ' . $this->escape( $homephone );
 			}
 
 			// Get family members

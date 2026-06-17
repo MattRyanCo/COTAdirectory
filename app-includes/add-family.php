@@ -62,8 +62,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 		echo cota_page_header();
 		// Dump out remainder of import page.
 		echo "<div class='cota-add-container'>";
-		// echo "<h2>" . $familyname . " family added successfully!</h2>";
-		echo '<h2><a href="' . $cota_app_settings->COTA_APP_INCLUDES . 'display-one-family.php?familyname=' . $familyname . '&address=&address2=">' . $familyname . ' family added successfully. Click to view.</a></h2>';
+		echo '<h2><a href="display-one-family.php?familyname="' . $familyname . '">' . $familyname . ' family added successfully.</a></h2>';
 		echo '</div>';
 	} else {
 		cota_log_error( 'SQL Error (execute): ' . $stmt->error );

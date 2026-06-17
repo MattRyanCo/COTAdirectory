@@ -1,20 +1,24 @@
 <?php
+/**
+ * COTA Membership Directory RTF Generation Script
+ * This script prints the COTA directory as a text formatted set of standard
+ * pages in rich text format (RTF). This format is suitable for parsing by
+ * external applications.
+ */
+
 require_once __DIR__ . '/bootstrap.php';
 require_once __DIR__ . '/class-membership-directory-printer.php';
 global $cota_db, $connect, $cota_app_settings;
 
-// require_once $cota_app_settings->COTA_APP_INCLUDES . 'database-functions.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'format-family-listing.php';
-// require_once $cota_app_settings->COTA_APP_INCLUDES . 'print.php';
 
 $printBooklet = new Membership_Directory_Printer();
 
 // Grab all the intro files from the uploads directory
 $intro_files = glob( '../uploads/intro*.txt' );
 $intro_files_count = count( $intro_files );
-// $intro_files = ['../uploads/intro1.txt', '../uploads/intro2.txt', '../uploads/intro3.txt'];
 $output_basename = '/downloads/directory_booklet_' . date('Y-m-d') . '.rtf';
 // Ensure the downloads directory exists
 if (!is_dir($_SERVER['DOCUMENT_ROOT'] . '/downloads')) {
