@@ -122,6 +122,7 @@ function cota_page_header( ) {
 					<li><a href="../app-includes/print-booklet-pdf.php">PDF for Booklet Printing</a></li>
 				</ul>
 			</li>
+<!--		
 			<li class="has-submenu">
 				<a href="#">Cloud Connect</a>
 				<ul class="submenu">
@@ -131,6 +132,7 @@ function cota_page_header( ) {
 				</ul>
 			</li>
 		</ul>
+-->
 	</nav>
 
 	</div>
