@@ -10,7 +10,8 @@ require_once '../app-libraries/fpdf/fpdf.php';
 class PDF extends FPDF {
 
 	public $booklet_pages        = array();
-	public $page_width            = 0;
+	public $sheets_needed        = 0;
+	public $page_width           = 0;
 	private $current_page_number = 0;
 	private $header_height       = 0.0;  // Height of family listing page header.
 	private $footer_position     = null; // 'left' or 'right' for current page
@@ -45,18 +46,34 @@ class PDF extends FPDF {
 		$pages_to_print = ( $total_pages % 4 === 0 ) ? $total_pages : $total_pages + ( 4 - ( $total_pages % 4 ) );
 
 		$booklet_order = array();
-		$sheets_needed = $pages_to_print / 4;
+		$this->sheets_needed = $pages_to_print / 4;
+		$last_page  = $this->sheets_needed * 4;
 
-		for ( $sheet = 0; $sheet < $sheets_needed; $sheet++ ) {
+		for ( $sheet = 1; $sheet <= $this->sheets_needed; $sheet++ ) {
 			// Calculate page numbers for this sheet
-			$first_page = $sheet * 4 + 1;
-			$last_page  = $pages_to_print - ( $sheet * 4 );
+			// $first_page = $sheet * 4 + 1;
+			// $last_page  = $pages_to_print - ( $sheet * 4 );
 
+			if ( $sheet % 2 === 0 ) {
+				// even sheets
+				$front_left = $last_page - ( ( $sheet - 1) * 2);
+				$front_right = ($sheet- 1)*2 + 1;
+				$rear_left = $front_right + 1;
+				$rear_right = $front_left - 1;
+			} else {
+				// odd sheets				
+				$front_left = $last_page - ( ( $sheet - 1) * 2);
+				$front_right = ($sheet- 1)*2 + 1;
+				$rear_left = $front_right + 1;
+				$rear_right = $front_left - 1;
+			}
 			// Front of sheet: last_page (left) | first_page (right)
-			$booklet_order[] = array( $last_page, $first_page );
-
+			// $booklet_order[] = array( $last_page, $first_page );
+			$booklet_order[] = array( $front_left, $front_right );
+			 // Back of sheet: first_page + 1 (left) | last_page - 1 (right)
 			// Back of sheet: first_page + 1 (left) | last_page - 1 (right)
-			$booklet_order[] = array( $first_page + 1, $last_page - 1 );
+			// $booklet_order[] = array( $first_page + 1, $last_page - 1 );
+			$booklet_order[] = array( $rear_left, $rear_right );
 		}
 		return $booklet_order;
 	}
@@ -80,13 +97,13 @@ class PDF extends FPDF {
 	 *
 	 * */
 	public function generate_booklet_pdf() {
+		// This is the number of pages with content printed. Not number of sheets*4.  
 		$total_pages   = count( $this->booklet_pages );
 		$booklet_order = $this->generate_booklet_order( $total_pages );
 		// Create a new PDF for the final booklet
 		$final_pdf                       = new PDF( 'P', 'in', 'HalfLetter' );
 		$final_pdf->booklet_page_numbers = array(); // Track booklet page numbers for each output page
 
-		$page_number_in_booklet = 1;
 		foreach ( $booklet_order as $page_pair ) {
 			// Left page
 			$final_pdf->footer_position = 'left';
@@ -95,10 +112,18 @@ class PDF extends FPDF {
 				$final_pdf->booklet_page_numbers[] = $page_pair[0];
 				$this->render_page_content( $final_pdf, $this->booklet_pages[ $page_pair[0] - 1 ], 'left' );
 			} else {
+				// Handle last page. Always on left. 
+				if ( $page_pair[0] === $this->sheets_needed * 4 ) {
+				// Need to move page number $total_pages to output page number $sheets_needed*4.
+					// Output last page content ' PRINTED xxx'. 
+					$this->render_page_content( $final_pdf, $this->booklet_pages[ $page_pair[0] ], 'left' );
+
+				} else {
 				// Padded blank page for imposition; suppress footer numbering
 				$final_pdf->booklet_page_numbers[] = 0;
 				$final_pdf->SetFont( 'Arial', '', 8 );
-				// $final_pdf->center_this_text( '(Blank)', 4 );
+				$final_pdf->center_this_text( '(Blank)', 4 );
+				}
 			}
 
 			// Right page
