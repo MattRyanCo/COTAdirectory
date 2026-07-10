@@ -97,8 +97,8 @@ if ( $cota_app_settings->DISPLAY_INTRO_PAGES ) {
 			// eg. [staff] could be replaced with a generated staff listing, etc.
 			//     [vestry] could be replaced with a generated vestry listing, etc.
 
-			if ( 3 === $i ) {
-				// intro3.txt is the intro file with placeholder substitutions
+			if ( 3 === $i || 4 === $i ) {
+				// intro3 & 4.txt are the intro files with placeholder substitutions
 				$intro_content = cota_parse_intro_content( $intro_content );
 			}
 
@@ -204,7 +204,7 @@ You may need to adjust these settings based on your specific printer and PDF app
 	<li>2 pages per sheet on 8 1/2 x 11" paper</li>
 	<li>2-sided printing -> flip on the short edge</li>
 	<li>Orientation: portrait<li>
-	<li>Scale: to fit</li>
+	<li>Scale: Custom: 125</li>
 	</ul>
 	Confirm the order of the pages prior to copying.</p>';
 echo '<p><strong>Total Pages:</strong> ' . count( $pdf->booklet_pages ) . ' content pages</p>';

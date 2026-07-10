@@ -116,12 +116,9 @@ class PDF extends FPDF {
 				if ( $page_pair[0] === $this->sheets_needed * 4 ) {
 				// Need to move page number $total_pages to output page number $sheets_needed*4.
 					// Output last page content ' PRINTED xxx'. 
-					$this->render_page_content( $final_pdf, $this->booklet_pages[ $page_pair[0] ], 'left' );
-
-				} else {
-				// Padded blank page for imposition; suppress footer numbering
-				$final_pdf->booklet_page_numbers[] = 0;
-				$final_pdf->SetFont( 'Arial', '', 8 );
+				if ( isset( $this->booklet_pages[ $page_pair[0] - 1 ] ) ) {
+					$this->render_page_content( $final_pdf, $this->booklet_pages[ $page_pair[0] - 1 ], 'left' );
+				}
 				$final_pdf->center_this_text( '(Blank)', 4 );
 				}
 			}
@@ -198,8 +195,8 @@ class PDF extends FPDF {
 		// Need to use a monospace font to preserve spacing for formatted content like the vestry listing
 		$save_left = $pdf->lMargin;
 		// Set a narrow left margin for wide intro content, then position using that margin
-		$pdf->SetLeftMargin( 0.25 );
-		$pdf->SetFont( 'Courier', '', 8 );
+		$pdf->SetLeftMargin( 0.1 );
+		$pdf->SetFont( 'Courier', '', 12 );
 		// Move to left margin + small offset and set starting Y
 		$pdf->SetXY( $pdf->lMargin, 1 );
 		$pdf->MultiCell( 5.25, 0.15, $data['content'], 0, 'L', false );
@@ -312,30 +309,30 @@ class PDF extends FPDF {
 		$booklet_page_no   = isset( $this->booklet_page_numbers[ $output_page_index ] ) ? $this->booklet_page_numbers[ $output_page_index ] : $this->PageNo();
 
 		// Suppress footer on padded blank pages
-		if ( $booklet_page_no === 0 ) {
-			return;
-		}
+		// if ( $booklet_page_no === 0 ) {
+		// 	return;
+		// }
 
-		$footer_text = 'Page ' . $booklet_page_no;
-		$this->SetY( -0.25 );  // Set position 1/4" from bottom of page.
+		// $footer_text = 'Page ' . $booklet_page_no;
+		// $this->SetY( -0.25 );  // Set position 1/4" from bottom of page.
 
-		if ( $output_page_index == 1 ) {
-			return; // no footer on 1st output page (starts on right)
-		}
+		// if ( $output_page_index == 1 ) {
+		// 	return; // no footer on 1st output page (starts on right)
+		// }
 
-		// Use the footer_position property to determine justification
-		if ( $this->footer_position === 'left' ) {
-			$this->just_this_text( $footer_text, $align = 'L' );
-		} elseif ( $this->footer_position === 'right' ) {
-			$this->just_this_text( $footer_text, $align = 'R' );
-		} else {
-			// fallback to even/odd logic if position is not set
-			if ( $booklet_page_no % 2 == 0 ) {
-				$this->just_this_text( $footer_text, $align = 'L' );
-			} else {
-				$this->just_this_text( $footer_text, $align = 'R' );
-			}
-		}
+		// // Use the footer_position property to determine justification
+		// if ( $this->footer_position === 'left' ) {
+		// 	$this->just_this_text( $footer_text, $align = 'L' );
+		// } elseif ( $this->footer_position === 'right' ) {
+		// 	$this->just_this_text( $footer_text, $align = 'R' );
+		// } else {
+		// 	// fallback to even/odd logic if position is not set
+		// 	if ( $booklet_page_no % 2 == 0 ) {
+		// 		$this->just_this_text( $footer_text, $align = 'L' );
+		// 	} else {
+		// 		$this->just_this_text( $footer_text, $align = 'R' );
+		// 	}
+		// }
 	}
 
 	/**
@@ -447,13 +444,13 @@ class PDF extends FPDF {
 		// Process family listing for 1 family
 		for ( $i = 1; $i <= $family_listing_height_in_lines; $i++ ) {
 
-			if ( ( is_array( $family_array ) && ! empty( $family_array[ $i ][1] ) ) ) {
+			if ( ( is_array( $family_array ) && isset( $family_array[ $i ] ) && is_array( $family_array[ $i ] ) && ! empty( $family_array[ $i ][1] ) ) ) {
 
 				$this->SetXY( $field_positions[0], $next_row );
 				$this->Cell( $field_widths[0], $line_height, $family_array[ $i ][1] );  // Left side of listing.
 
 				$this->SetX( $field_positions[1] );
-				if ( isset( $family_array[ $i ][3] ) ) {
+				if ( isset( $family_array[ $i ][3] ) && isset( $family_array[ $i ][2] ) ) {
 					// For long names, reduce font size for this line only.
 					if ( ! empty( $family_array[ $i ][2] ) && ( 15 <= ( strlen($family_array[ $i ][2]) + strlen($family_array[ $i ][3] ) ) ) ) {
 						// save font size, set font size to smaller for long names

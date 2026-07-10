@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.7] - 2026-07-10
+### Changed
+- Adjusted font for intro files output
+- Made margins smaller for intro informaiton display
+- Realigned VESTRY placeholder output to better fit to fixed width page
+- Broke intro3 into 2 files to give vestry its own page. 
+- Changed print instructions to set scale to custom 125%
+
 ## [4.1.6] - 2026-06-17
 ### Changed
 - Documentation cleanup

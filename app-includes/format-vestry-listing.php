@@ -6,14 +6,19 @@
  * @return array $formatted_vestry_array - Array formatted for printing - 1 row per vestry member
  */
 
-function cota_format_vestry_listing( $vestry_member, $mode = 'display' ) {
+function cota_format_vestry_listing( $vestry_member, $mode = 'display', $position = 'upper' ) {
 
 	$placeholder = ' ';
 	if ( 'display' === $mode ) {
 		$format_string = "<tr class='format_string'><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
+		if ( 'lower' === $position ) {
+			$format_string = "<tr class='format_string'><td>%s</td><td>%s</td><td>%s</td></tr>";
+		}
 	} elseif ( 'print' === $mode ) {
-		// $format_string = "%s%s%10' '%s%10' '%s\n";
-		$format_string = "%-7s%-20s%-18s%s\n";
+		$format_string = "%-7s%-20s%-18s\n";
+		if ( 'lower' === $position ) {
+			$format_string = "%-25s%s\n";
+		}
 	} else {
 		die( 'Error: Invalid mode passed to cota_format_vestry_listing. Must be "display" or "print".' );
 	}
@@ -24,11 +29,18 @@ function cota_format_vestry_listing( $vestry_member, $mode = 'display' ) {
 
 	$formatted_vestry_member = sprintf(
 		$format_string,
-		$vestry_member['class'] . ' - ',
+		$vestry_member['class'] . ' ',
 		$member_info['first_name'] . ' ' . $member_info['last_name'],
 		ucwords( '' === trim( $vestry_member['vrole'] ) ? $placeholder : $vestry_member['vrole'] ),
 		ucwords($vestry_member['liaison'])
 	);
+	if ( 'lower' === $position ) {
+		$formatted_vestry_member = sprintf(
+			$format_string,
+			$member_info['first_name'] . ' ' . $member_info['last_name'],
+			ucwords($vestry_member['liaison'])
+		);
+	}
 
 	if ( 'display' === $mode ) {
 		// Add blank line after each vestry member for readability
@@ -51,18 +63,16 @@ function cota_generate_vestry_listing_for_print() {
 	$content_replace = '';
 	$mode = 'print';
 
-	// Print Out Table Headings for the Vestry Listing
+	// Print Out Table Headings for the upper Vestry Listing
 	if ( 'print' === $mode ) {
-		// %-7s means left align Class within 7 character width, 
-		// %-25s means left align Name within 25 character width,
-		// %-15s means left align Role within 15 character width,
-		// %s means Area Liaison with no specific width (will take remaining space).
+		// %-7s means left align Class within 7 character width 
+		// %-20s means left align Name within 20 character width
+		// %-18s means left align Role within 18 character width
 		$content_replace .= sprintf(
-			"%-7s%-20s%-18s%s\n",
+			"%-7s%-20s%-18s\n",
 			'Class',
 			'Name',
-			'Role',
-			'Area Liaison'
+			'Role'
 			);
 	}
 
@@ -71,7 +81,22 @@ function cota_generate_vestry_listing_for_print() {
 	} else {
 		$vestry_individuals = $cota_db->read_members_of_vestry();
 		while ( $vestry_individual = $vestry_individuals->fetch_assoc() ) {
-			$content_replace .= sprintf( '%s', cota_format_vestry_listing( $vestry_individual, $mode ) );
+			$content_replace .= sprintf( '%s', cota_format_vestry_listing( $vestry_individual, $mode, 'upper' ) );
+		}
+	}
+
+		// Print Out Table Headings for the lower Vestry Liaison Listing
+	if ( 'print' === $mode ) {
+		// %-25s means left align Name within 25 character width,
+		// %s means Area Liaison with no specific width (will take remaining space).
+		$content_replace .= sprintf(
+			"\n%-25s%s\n",
+			'Name',
+			'Area Liaison'
+			);
+		$vestry_individuals = $cota_db->read_members_of_vestry();
+		while ( $vestry_individual = $vestry_individuals->fetch_assoc() ) {
+			$content_replace .= sprintf( '%s', cota_format_vestry_listing( $vestry_individual, $mode, 'lower' ) );
 		}
 	}
 	return $content_replace;

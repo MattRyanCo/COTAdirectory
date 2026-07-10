@@ -26,7 +26,7 @@ if ( 0 === $num_vestry ) {
 
 	$vestry_individuals = $cota_db->read_members_of_vestry();
 	while ( $vestry_individual = $vestry_individuals->fetch_assoc() ) {
-		echo cota_format_vestry_listing( $vestry_individual );
+		echo cota_format_vestry_listing_for_display( $vestry_individual );
 	}
 	echo "\n</table></body></html>";
 }
@@ -34,13 +34,13 @@ if ( 0 === $num_vestry ) {
 $cota_db->close_connection();
 
 /**
- * cota_format_vestry_listing
+ * cota_format_vestry_listing_for_display
  *
  * @param mysqli_result $vestry_members - Result of database query of all vestry members
  * @return array $formatted_vestry_array - Array formatted for printing - 1 row per vestry member
 	 */
 
-function cota_format_vestry_listing( $vestry_member ) {
+function cota_format_vestry_listing_for_display( $vestry_member ) {
 	$format_string = "<tr class='format_string'><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>";
 
 	// Get first & last name of vestry member from the members table using member_id
