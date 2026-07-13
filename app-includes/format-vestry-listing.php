@@ -17,7 +17,7 @@ function cota_format_vestry_listing( $vestry_member, $mode = 'display', $positio
 	} elseif ( 'print' === $mode ) {
 		$format_string = "%-7s%-20s%-18s\n";
 		if ( 'lower' === $position ) {
-			$format_string = "%-25s%s\n";
+			$format_string = "%-22s%s\n";
 		}
 	} else {
 		die( 'Error: Invalid mode passed to cota_format_vestry_listing. Must be "display" or "print".' );
@@ -90,7 +90,7 @@ function cota_generate_vestry_listing_for_print() {
 		// %-25s means left align Name within 25 character width,
 		// %s means Area Liaison with no specific width (will take remaining space).
 		$content_replace .= sprintf(
-			"\n%-25s%s\n",
+			"\n%-22s%s\n",
 			'Name',
 			'Area Liaison'
 			);
