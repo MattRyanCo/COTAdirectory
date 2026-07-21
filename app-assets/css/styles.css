@@ -641,15 +641,15 @@ table.staff-directory-table {
 
 .cota-display-container th,
 .cota-display-container td {
-    padding: 0.35rem 0.9rem 0.35rem 0;
+    padding: 0rem 0.9rem 0.35rem 0;
     text-align: left;
     vertical-align: top;
     white-space: normal;
 }
 
 .cota-display-container tr.format_string td {
-    padding-top: 0.4rem;
-    padding-bottom: 0.4rem;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .cota-display-one-container th {
@@ -711,7 +711,7 @@ table.directory-one-table tr:nth-child(2) {
  }
  tr.cota-new-family h3 {
     margin-bottom: 0 !important;
-    margin-top: 1em !important;
+    margin-top: 0 !important;
     padding-bottom: 0 !important;
 }
 
