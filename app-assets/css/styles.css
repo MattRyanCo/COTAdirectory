@@ -323,7 +323,7 @@ form {
   min-width: 10vw;
   margin-left: auto;
   margin-right: auto;
-  width: min(100%, 720px);
+  width: min(100%, 950px);
 }
 
 form.cota-family-edit,
@@ -339,37 +339,18 @@ form.cota-search {
     overflow-x: auto;
 }
 
-.member-header,
-.member-row {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(140px, 1fr));
-    gap: 0.75rem;
-    align-items: start;
-}
-
-.member-row {
-    margin-bottom: 0.75rem;
-}
-
-.member-header {
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 0.35rem;
-}
-
 .member-row input,
 .member-row .form-control {
     width: 100%;
 }
 
+.member-row input[type="hidden"] {
+    display: none;
+}
+
 form.cota-update-intro,
 form.cota-import,
-form.cota-family-entry,
-form.cota-search,
 form.cota-print-options,
-form.cota-family-edit,
-form.cota-family-delete,
-form.cota-display-family,
 form.cota-reset-db,
 form.cota-upload-info {
     background: lightgray;
@@ -391,7 +372,7 @@ form.cota-reset-db {
 form label {
     grid-column: 1;
     margin-top: 0;
-    text-align: right;
+    text-align: left;
 }
 form.cota-import > label,
 form.cota-reset-db > label,
@@ -423,21 +404,21 @@ form br {
   clear: both;
 }
 
-/* Form for edit-family.  */
-.member-header, 
+/* Form for add or edit-family.  */
+.member-header,
 .member-row,
 #add-members > .member-row {
     display: grid;
-    grid-template-columns: 120px 120px 120px 180px 100px 100px 100px;
+    grid-template-columns: 120px 120px 120px minmax(180px, 1.4fr) 110px 110px 110px;
+    gap: 0.75rem;
     align-items: center;
-    gap: 8px;
 }
 .member-header {
     font-weight: bold;
-    margin-bottom: 4px;
+    margin-bottom: 0.5rem;
 }
 .member-row {
-    margin-bottom: 4px;
+    margin-bottom: 0.75rem;
 }
 /* END: Form for edit-family.  */
 
