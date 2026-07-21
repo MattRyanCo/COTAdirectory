@@ -42,12 +42,24 @@ if ( $generate_booklet ) {
 }
 ?>
 		<form class="cota-print-options" action="" method="get">
-			<label>Include Summary Pages</label>
-			<input type="checkbox" name="include_summary" value="1" <?php echo $include_summary ? 'checked' : ''; ?>>
-			<label>Include Intro Pages</label>
-			<input type="checkbox" name="include_intro" value="1" checked ?>
-			<input type="hidden" name="generate_booklet" value="1">
-			<button class="cota-print-options" type="submit">Generate Booklet PDF</button>
+			<div class="row g-3">
+				<div class="col-12 col-md-6">
+					<div class="form-check">
+						<input class="form-check-input" type="checkbox" name="include_summary" value="1" <?php echo $include_summary ? 'checked' : ''; ?>>
+						<label class="form-check-label fw-bold">Include Summary Pages</label>
+					</div>
+				</div>
+				<div class="col-12 col-md-6">
+					<div class="form-check">
+						<input class="form-check-input" type="checkbox" name="include_intro" value="1" checked>
+						<label class="form-check-label fw-bold">Include Intro Pages</label>
+					</div>
+				</div>
+				<div class="col-12">
+					<input type="hidden" name="generate_booklet" value="1">
+					<button class="cota-print-options w-100" type="submit">Generate Booklet PDF</button>
+				</div>
+			</div>
 		</form>
 <?php
 if ( ! $generate_booklet ) {
@@ -194,21 +206,21 @@ $final_pdf->Output( 'F', $output_filename ); // Save to server
 $cota_db->close_connection();
 
 // Dump out remainder of print booklet page.
-echo "<div id='cota-print' class='container'>";
+echo "<div id='cota-print' class='container py-3'>";
 echo '<h2>Booklet-formatted PDF file generated successfully!</h2>';
 echo '<h4>File: ' . basename( $output_filename ) . '</h4>';
-echo '<p><strong>Printing Instructions:</strong><br>Download the booklet PDF and open in your PDF applicaiton.<br>
+echo '<div class="mt-3"><a class="btn btn-primary cota-print" href="..' . $output_basename . '" download>Download Booklet PDF</a></div>';
+echo '<div class="mt-4"><p><strong>Printing Instructions:</strong><br>Download the booklet PDF and open in your PDF applicaiton.<br>
 Select the following options in the PDF app for the printer<br>to print the booklet ready for binding and folding.<br>
 You may need to adjust these settings based on your specific printer and PDF application, but generally look for the following:<br>
 	<ul>
 	<li>2 pages per sheet on 8 1/2 x 11" paper</li>
 	<li>2-sided printing -> flip on the short edge</li>
-	<li>Orientation: portrait<li>
+	<li>Orientation: portrait</li>
 	<li>Scale: Custom: 125</li>
 	</ul>
 	Confirm the order of the pages prior to copying.</p>';
-echo '<p><strong>Total Pages:</strong> ' . count( $pdf->booklet_pages ) . ' content pages</p>';
-echo "<button class='cota-print' type='button' ><a href='.." . $output_basename . "' download >Download Booklet PDF</a></button>";
+echo '<p><strong>Total Pages:</strong> ' . count( $pdf->booklet_pages ) . ' content pages</p></div>';
 echo '</div></body></html>';
 
 

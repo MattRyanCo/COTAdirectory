@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.9] - 2026-07-21
+### Changed
+- Added Bootstrap 5 responsive navigation with hamburger menu behavior for tablet and mobile views.
+- Applied responsive layouts to family management forms, print pages, and directory listing displays.
+- Improved spacing and readability for staff, leadership, vestry, and family listing screens.
+
 ## [4.1.8] - 2026-07-13
 ### Changed
 - Adjusted margins for output of lower section of vestry display. More room for liaison.

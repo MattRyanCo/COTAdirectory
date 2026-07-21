@@ -27,14 +27,26 @@ $familyname = isset($_GET['familyname']) ? $_GET['familyname'] : '';
 ?>
     <h2>Display Family</h2>
 	<form class="cota-display-family" action="../app-includes/display-one-family.php" method="get">
-		<label>Enter Family Name:</label>
-		<input type="text" name="familyname" value="<?php echo htmlspecialchars($familyname); ?>">
-		<p>OPTIONAL: The fields below may be used to differentiate families with same last names. </p>
-		<label>Address</label>
-		<input type="text" name="address">
-		<label>Address 2</label>
-		<input type="text" name="address2">
-		<button class="cota-display-family" type="submit">Search</button>
+		<div class="row g-3">
+			<div class="col-12">
+				<label class="form-label fw-bold">Enter Family Name:</label>
+				<input class="form-control" type="text" name="familyname" value="<?php echo htmlspecialchars($familyname); ?>">
+			</div>
+			<div class="col-12">
+				<p class="mb-0">OPTIONAL: The fields below may be used to differentiate families with same last names.</p>
+			</div>
+			<div class="col-12 col-md-6">
+				<label class="form-label fw-bold">Address</label>
+				<input class="form-control" type="text" name="address">
+			</div>
+			<div class="col-12 col-md-6">
+				<label class="form-label fw-bold">Address 2</label>
+				<input class="form-control" type="text" name="address2">
+			</div>
+			<div class="col-12">
+				<button class="cota-display-family w-100" type="submit">Search</button>
+			</div>
+		</div>
 	</form>
 </body>
 </html>

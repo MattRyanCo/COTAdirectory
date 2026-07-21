@@ -1,20 +1,21 @@
 document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.has-submenu > a').forEach(function (anchor) {
+    if (anchor.getAttribute('data-bs-toggle') === 'dropdown') {
+      return;
+    }
+
     anchor.addEventListener('click', function (e) {
-      e.preventDefault(); // Prevent link navigation
+      e.preventDefault();
       const parent = anchor.parentElement;
 
-      // Close other open menus
       document.querySelectorAll('.has-submenu.open').forEach(function (item) {
         if (item !== parent) item.classList.remove('open');
       });
 
-      // Toggle current menu
       parent.classList.toggle('open');
     });
   });
 
-  // Optional: close menu when clicking outside
   document.addEventListener('click', function (e) {
     if (!e.target.closest('.main-menu')) {
       document.querySelectorAll('.has-submenu.open').forEach(function (item) {
@@ -22,4 +23,4 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
   });
-});S
+});

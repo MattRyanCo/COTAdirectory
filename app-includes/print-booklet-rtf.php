@@ -47,8 +47,8 @@ $cota_db->close_connection();
 echo cota_page_header();
 
 // Dump out remainder of import page. 
-echo "<div id='cota-print' class='container'>";
+echo "<div id='cota-print' class='container py-3'>";
 echo "<h2>RTF file generated successfully!</h2>";
-echo "<h4>File: " . basename($output_filename) . "</h2>";
-echo "<button class='cota-print' type='button' ><a href='.." . $output_basename . "' download>Download File</a></button>";
-echo '</div><body></html>';
+echo "<h4>File: " . basename($output_filename) . "</h4>";
+echo "<div class='mt-3'><a class='btn btn-primary cota-print' href='.." . $output_basename . "' download>Download File</a></div>";
+echo '</div></body></html>';
