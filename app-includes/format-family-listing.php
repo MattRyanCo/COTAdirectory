@@ -272,6 +272,97 @@ function cota_format_family_listing_for_print( $family, $members ) {
  * @return string | null
  */
 function cota_format_family_listing_for_display( $family, $members ) {
+	$family_members = array();
+	while ( $individual = get_next_member( $members ) ) {
+		$family_members[] = $individual;
+	}
+
+	$escape = static function ( $value ) {
+		return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' );
+	};
+	$format_date = static function ( $value ) {
+		return ! empty( $value ) ? date( 'm/d', strtotime( $value ) ) : '';
+	};
+	$format_name = static function ( $individual, $family ) {
+		$last_name = ( $individual['last_name'] ?? '' ) === ( $family['familyname'] ?? '' ) ? '' : ( $individual['last_name'] ?? '' );
+		return trim( ucwords( $individual['first_name'] ?? '' ) . ' ' . ucwords( $last_name ) );
+	};
+
+	$address_lines = array_values( array_filter(
+		array(
+			$family['address'] ?? '',
+			$family['address2'] ?? '',
+			$family['address3'] ?? '',
+		),
+		static function ( $value ) {
+			return '' !== trim( (string) $value );
+		}
+	) );
+	$city_line = trim( ( $family['city'] ?? '' ) . ', ' . ( $family['state'] ?? '' ) . ' ' . ( $family['zip'] ?? '' ), " ," );
+	if ( '' !== trim( $city_line, ' ,' ) ) {
+		$address_lines[] = $city_line;
+	}
+	if ( ! empty( $family['homephone'] ) ) {
+		$address_lines[] = 'Home: ' . $family['homephone'];
+	}
+
+	$render_member_cells = static function ( $index, $individual, $family, $escape, $format_date, $format_name ) {
+			if ( 0 === $index ) {	
+				// First time through the loop, include anniversary field if it exists for the first member.
+				return '<td>' . $escape( $format_name( $individual, $family ) ) . '</td>' .
+						'<td>' . $escape( $individual['email'] ?? '' ) . '</td>' .
+						'<td>' . $escape( $individual['cell_phone'] ?? '' ) . '</td>' .
+						'<td>' . $escape( $format_date( $individual['birthday'] ?? '' ) ) . '</td>' .
+						'<td>' . $escape( $format_date( $individual['baptism'] ?? '' ) ) . '</td>' .
+						'<td>' . $escape( $format_date( $individual['anniversary'] ?? '' ) ) . '</td>';
+			} else {
+				return '<td>' . $escape( $format_name( $individual, $family ) ) . '</td>' .
+						'<td>' . $escape( $individual['email'] ?? '' ) . '</td>' .
+						'<td>' . $escape( $individual['cell_phone'] ?? '' ) . '</td>' .
+						'<td>' . $escape( $format_date( $individual['birthday'] ?? '' ) ) . '</td>' .
+						'<td>' . $escape( $format_date( $individual['baptism'] ?? '' ) ) . '</td>';
+			}
+	};
+
+	$desktop_rows = '';
+	foreach ( $family_members as $index => $individual ) {
+		$left_side = 0 === $index ? '' : ( $address_lines[ $index - 1 ] ?? '' );
+		$family_cell = 0 === $index ? '<h3>' . $escape( $family['familyname'] ?? '' ) . '</h3>' : '';
+		// First name gets different styling to include divier line and margin
+		if ( 0 === $index ) {
+			$desktop_rows .= '<tr class="cota-new-family-divider"></tr><tr class="cota-new-family cota-desktop-family-row cota-member-row"><td>' . $family_cell . $escape( $left_side ) . '</td>' .
+				$render_member_cells( $index, $individual, $family, $escape, $format_date, $format_name ) . '</tr>';
+		} else {
+			$desktop_rows .= '<tr class="cota-desktop-family-row cota-member-row"><td>' . $family_cell . $escape( $left_side ) . '</td>' .
+				$render_member_cells( $index, $individual, $family, $escape, $format_date, $format_name ) . '</tr>';
+		}
+	}
+
+	$mobile_rows = '<tr class="cota-mobile-family-row cota-family-meta"><td colspan="7"><h3>' . $escape( $family['familyname'] ?? '' ) . '</h3>';
+	foreach ( $address_lines as $address_line ) {
+		$mobile_rows .= '<div>' . $escape( $address_line ) . '</div>';
+	}
+	$mobile_rows .= '</td></tr>';
+	$mobile_rows .= '<tr class="cota-mobile-family-row cota-family-header"><td colspan="7"><span class="cota-member-name">Name</span>' .
+		'<span class="cota-member-data">Email</span>' .
+		'<span class="cota-member-data">Cell</span>' .
+		'<span class="cota-member-data">DoB</span>' .
+		'<span class="cota-member-data">Baptism</span>' .
+		'<span class="cota-member-data">Anniversary</span></td></tr>';
+	foreach ( $family_members as $individual ) {
+		$mobile_rows .= '<tr class="cota-mobile-family-row cota-member-row"><td colspan="7"><strong class="cota-member-name">' .
+			$escape( $format_name( $individual, $family ) ) . '</strong>' .
+			'<span class="cota-member-data">' . $escape( $individual['email'] ?? '' ) . '</span>' .
+			'<span class="cota-member-data">' . $escape( $individual['cell_phone'] ?? '' ) . '</span>' .
+			'<span class="cota-member-data">' . $escape( $format_date( $individual['birthday'] ?? '' ) ) . '</span>' .
+			'<span class="cota-member-data">' . $escape( $format_date( $individual['baptism'] ?? '' ) ) . '</span>' .
+			'<span class="cota-member-data">' . $escape( $format_date( $individual['anniversary'] ?? '' ) ) . '</span></td></tr>';
+	}
+
+	return $desktop_rows . $mobile_rows;
+}
+
+function cota_format_family_listing_for_display_legacy( $family, $members ) {
 	// Set key logicals
 	$num_members = $members->num_rows;
 	$member_ctr  = 1;
