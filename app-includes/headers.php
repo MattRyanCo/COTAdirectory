@@ -99,6 +99,7 @@ function cota_page_header( ) {
 							<li><a class="dropdown-item" href="/app-includes/export-sample.php" target="_blank">Export Sample CSV</a></li>
 							<li><a class="dropdown-item" href="/app-includes/export-email-addresses.php">Export Email Address list (CSV)</a></li>
 							<li><a class="dropdown-item" href="/app-includes/database-details.php">Database Details</a></li>
+							<li><a class="dropdown-item" href="/app-includes/database-dump.php">Dump Database</a></li>
 							<li><a class="dropdown-item" href="/app-includes/intro-files-display.php">Intro Files Display</a></li>
 							<li><a class="dropdown-item" href="/app-includes/intro-files-update.php">Intro Files Update</a></li>
 							<li><a class="dropdown-item text-danger" href="/app-includes/reset-db.php">⚠️ Reset Database ⚠️</a></li>

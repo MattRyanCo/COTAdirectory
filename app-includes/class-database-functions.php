@@ -217,8 +217,6 @@ class COTA_Database {
 	// }
 
 	public function show_connection_info() {
-		echo nl2br(' Method ' . __METHOD__ . ' loaded' . PHP_EOL);
-
 		// Get connection info
 		$host_info = $this->conn->host_info;
 		$db_name   = $this->conn->query( 'SELECT DATABASE()' )->fetch_row()[0];
@@ -285,5 +283,96 @@ class COTA_Database {
 		echo '</ul>';
 		$result->free();
 		return;
+	}
+
+
+	/**
+	 * Dump the database to a .sql file using the existing mysqli connection,
+	 * avoiding exec()/mysqldump so the DB password is never passed via shell.
+	 */
+	public function dump_database() {
+		$dump_dir = '/backups';
+
+		// Ensure the backups directory exists
+		if (!is_dir($_SERVER['DOCUMENT_ROOT'] . '/backups')) {
+			mkdir($_SERVER['DOCUMENT_ROOT'] . '/backups', 0755, true);
+		}
+
+
+		if ( ! is_dir( $dump_dir ) && ! mkdir( $dump_dir, 0755, true ) && ! is_dir( $dump_dir ) ) {
+			echo 'Error: unable to create dump directory ' . htmlspecialchars( $dump_dir );
+			return;
+		}
+
+		// $output_filename = $_SERVER['DOCUMENT_ROOT'] . $output_basename;
+
+		$dump_file = $_SERVER['DOCUMENT_ROOT'] . $dump_dir . '/db_dump_' . date('Y-m-d') . '.sql';
+
+		$tables_result = $this->conn->query( 'SHOW TABLES' );
+		if ( $tables_result === false ) {
+			echo 'Error: ' . $this->conn->error;
+			return;
+		}
+
+		$sql = "-- Database dump generated " . date( 'Y-m-d H:i:s' ) . "\n";
+		$sql .= "SET NAMES utf8mb4;\nSET FOREIGN_KEY_CHECKS=0;\n\n";
+
+		while ( $row = $tables_result->fetch_row() ) {
+			$table = $row[0];
+
+			// Table structure
+			$create_result = $this->conn->query( 'SHOW CREATE TABLE `' . $this->conn->real_escape_string( $table ) . '`' );
+			if ( $create_result === false ) {
+				continue;
+			}
+			$create_row = $create_result->fetch_row();
+			$create_result->free();
+
+			$sql .= "DROP TABLE IF EXISTS `{$table}`;\n";
+			$sql .= $create_row[1] . ";\n\n";
+
+			// Table data
+			$data_result = $this->conn->query( 'SELECT * FROM `' . $this->conn->real_escape_string( $table ) . '`' );
+			if ( $data_result === false ) {
+				continue;
+			}
+
+			while ( $data_row = $data_result->fetch_assoc() ) {
+				$columns = array_map(
+					function ( $col ) {
+						return '`' . $col . '`';
+					},
+					array_keys( $data_row )
+				);
+				$values = array_map(
+					function ( $value ) {
+						if ( $value === null ) {
+							return 'NULL';
+						}
+						return "'" . $this->conn->real_escape_string( $value ) . "'";
+					},
+					array_values( $data_row )
+				);
+
+				$sql .= sprintf(
+					"INSERT INTO `%s` (%s) VALUES (%s);\n",
+					$table,
+					implode( ', ', $columns ),
+					implode( ', ', $values )
+				);
+			}
+			$data_result->free();
+			$sql .= "\n";
+		}
+		$tables_result->free();
+
+		$sql .= "SET FOREIGN_KEY_CHECKS=1;\n";
+
+		if ( file_put_contents( $dump_file, $sql ) === false ) {
+			echo 'Error: unable to write dump file ' . htmlspecialchars( $dump_file );
+		} else {
+			echo '<h3>Database dump created successfully!</h3>';
+			echo '<p>Dump file: <a href="' . htmlspecialchars( $dump_file ) . '" download>' . htmlspecialchars( $dump_file ) . '</a></p>';
+		}
 	}
 }
