@@ -298,11 +298,6 @@ class COTA_Database {
 			mkdir( $_SERVER['DOCUMENT_ROOT'] . $dump_dir, 0755, true );
 		}
 
-		if ( ! is_dir( $dump_dir ) && ! mkdir( $dump_dir, 0755, true ) && ! is_dir( $dump_dir ) ) {
-			echo 'Error: unable to create dump directory ' . htmlspecialchars( $dump_dir );
-			return;
-		}
-
 		$dump_file = $_SERVER['DOCUMENT_ROOT'] . $dump_dir . '/db_dump_' . $action . '_' . date('Y-m-d_H-i-s') . '.sql';
 
 		$tables_result = $this->conn->query( 'SHOW TABLES' );
