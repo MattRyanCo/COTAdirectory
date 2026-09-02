@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.14] - 2026-09-02
+#### Added
+- Call dump before any db modification action.
+- Add time to db dump file to handle multiple edits on single day.
+- Include action type in db dump file name for identification. 
+
 ## [4.1.13] - 2026-09-02
 #### Added
 - Database dump function to app. 

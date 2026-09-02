@@ -66,25 +66,18 @@ composer.lock
 # Uploads
 uploads/
 
-#Misc
+# Misc files. 
 .~*
 *.rtf
-
 downloads/
+backups/
 app-libraries/
 libraries/fpdf/font/
-
 *.log
+working-files/
+*.phpOFF
 
 # Environment variables (contains sensitive data)
 .env
 .env.*
 !.env.example
-
-*.phpOFF
-
-app-includes/print-booklet-pdf - Copy.php
-app-includes/NOT-IN-USE/
-working-files/
-
-.vscode/

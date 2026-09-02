@@ -290,23 +290,20 @@ class COTA_Database {
 	 * Dump the database to a .sql file using the existing mysqli connection,
 	 * avoiding exec()/mysqldump so the DB password is never passed via shell.
 	 */
-	public function dump_database() {
+	public function dump_database( $notify = false, $action = 'DUMP' ) {
 		$dump_dir = '/backups';
 
 		// Ensure the backups directory exists
-		if (!is_dir($_SERVER['DOCUMENT_ROOT'] . '/backups')) {
-			mkdir($_SERVER['DOCUMENT_ROOT'] . '/backups', 0755, true);
+		if ( ! is_dir( $_SERVER['DOCUMENT_ROOT'] . $dump_dir ) ) {
+			mkdir( $_SERVER['DOCUMENT_ROOT'] . $dump_dir, 0755, true );
 		}
-
 
 		if ( ! is_dir( $dump_dir ) && ! mkdir( $dump_dir, 0755, true ) && ! is_dir( $dump_dir ) ) {
 			echo 'Error: unable to create dump directory ' . htmlspecialchars( $dump_dir );
 			return;
 		}
 
-		// $output_filename = $_SERVER['DOCUMENT_ROOT'] . $output_basename;
-
-		$dump_file = $_SERVER['DOCUMENT_ROOT'] . $dump_dir . '/db_dump_' . date('Y-m-d') . '.sql';
+		$dump_file = $_SERVER['DOCUMENT_ROOT'] . $dump_dir . '/db_dump_' . $action . '_' . date('Y-m-d_H-i-s') . '.sql';
 
 		$tables_result = $this->conn->query( 'SHOW TABLES' );
 		if ( $tables_result === false ) {
@@ -368,11 +365,14 @@ class COTA_Database {
 
 		$sql .= "SET FOREIGN_KEY_CHECKS=1;\n";
 
-		if ( file_put_contents( $dump_file, $sql ) === false ) {
-			echo 'Error: unable to write dump file ' . htmlspecialchars( $dump_file );
-		} else {
-			echo '<h3>Database dump created successfully!</h3>';
-			echo '<p>Dump file: <a href="' . htmlspecialchars( $dump_file ) . '" download>' . htmlspecialchars( $dump_file ) . '</a></p>';
+		$write_it = file_put_contents( $dump_file, $sql );
+		if ( !$notify ) {
+			if ( $write_it === false ) {
+				echo 'Error: unable to write dump file ' . htmlspecialchars( $dump_file );
+			} else {
+				echo '<h3>Database dump created successfully!</h3>';
+				echo '<p>Dump file: <a href="' . htmlspecialchars( $dump_file ) . '" download>' . htmlspecialchars( $dump_file ) . '</a></p>';
+			}
 		}
 	}
 }

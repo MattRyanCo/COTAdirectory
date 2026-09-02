@@ -11,6 +11,9 @@ require_once $cota_app_settings->COTA_APP_INCLUDES . 'format-family-listing.php'
 // Echo page header
 echo cota_page_header();
 
+// Backup the db before any edits are made. This is a precautionary measure to ensure that we have a backup of the database before any changes are made.
+$cota_db->dump_database( TRUE, 'ADD' );
+
 echo cota_add_member_script();
 
 // Dump out remainder of import page.

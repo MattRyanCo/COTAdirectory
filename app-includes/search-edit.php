@@ -13,6 +13,10 @@ require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 
 echo cota_page_header();
+
+// Backup the db before any edits are made. This is a precautionary measure to ensure that we have a backup of the database before any changes are made.
+$cota_db->dump_database( TRUE, 'EDIT' );
+
 $families = $cota_db->read_family_database();
 $num_families = $families->num_rows;
 if ( 0 == $num_families ) {
