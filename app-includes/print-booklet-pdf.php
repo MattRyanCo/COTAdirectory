@@ -209,19 +209,9 @@ $cota_db->close_connection();
 echo "<div id='cota-print' class='container py-3'>";
 echo '<h2>Booklet-formatted PDF file generated successfully!</h2>';
 echo '<h4>File: ' . basename( $output_filename ) . '</h4>';
-echo '<div class="mt-3"><a class="btn btn-primary cota-print" href="..' . $output_basename . '" download>Download Booklet PDF</a></div>';
-echo '<div class="mt-4"><p><strong>Printing Instructions:</strong><br>Download the booklet PDF and open in your PDF applicaiton.<br>
-Select the following options in the PDF app for the printer<br>to print the booklet ready for binding and folding.<br>
-You may need to adjust these settings based on your specific printer and PDF application, but generally look for the following:<br>
-	<ul>
-	<li>2 pages per sheet on 8 1/2 x 11" paper</li>
-	<li>2-sided printing -> flip on the short edge</li>
-	<li>Orientation: portrait</li>
-	<li>Scale: Custom: 125</li>
-	</ul>
-	Confirm the order of the pages prior to copying.</p>';
-echo '<p><strong>Total Pages:</strong> ' . count( $pdf->booklet_pages ) . ' content pages</p></div>';
-echo '</div></body></html>';
+
+// Output the instructions
+print_instructions( count( $pdf->booklet_pages ) );
 
 
 /**

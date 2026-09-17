@@ -517,3 +517,33 @@ function cota_render_family_suggestions( $families, $targetScript ) {
 	return $list;
 }
 
+/**
+ * Print the instructions for printing the booklet PDF.
+ *
+ * @param int $num_booklet_pages The total number of content pages in the booklet.
+ *
+ * @param int $num_booklet_pages The total number of content pages in the booklet.
+ * @return void
+ */
+function print_instructions( $num_booklet_pages ) {
+
+	echo "<div id='cota-print' class='container py-3'>";
+	echo '<div class="mt-4"><p><strong>Printing Instructions:</strong><br>Download the booklet PDF and open in your PDF application.<br>
+	Select the following options in the PDF app for the printer<br>to print the booklet ready for binding and folding.<br>
+	You may need to adjust these settings based on your specific printer and PDF application, but generally look for the following:<br>
+	<ul>
+	<li>2 pages per sheet on 8 1/2 x 11" paper</li>
+	<li>2-sided printing -> flip on the short edge</li>
+	<li>Orientation: portrait</li>
+	<li>Scale: Custom: 125</li>
+	</ul>
+	Confirm the order of the pages prior to copying.</p>';
+
+	// If we are calling this directly we don't have the number of booklet pages, skip displaying the total pages.
+	if ( $num_booklet_pages !== false ) {
+		echo '<p><strong>Total Pages:</strong> ' . $num_booklet_pages . ' content pages</p></div>';
+	}
+
+	echo '</div></body></html>';
+	return;
+}

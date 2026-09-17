@@ -110,6 +110,7 @@ function cota_page_header( ) {
 						<ul class="dropdown-menu">
 							<li><a class="dropdown-item" href="../app-includes/print-booklet-rtf.php">RTF for External Use</a></li>
 							<li><a class="dropdown-item" href="../app-includes/print-booklet-pdf.php">PDF for Booklet Printing</a></li>
+							<li><a class="dropdown-item" href="../app-includes/print-instructions.php">Print Instructions</a></li>
 						</ul>
 					</li>
 				</ul>
