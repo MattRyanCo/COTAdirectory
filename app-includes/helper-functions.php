@@ -602,9 +602,9 @@ function print_instructions( $num_booklet_pages ) {
 
 	// If we are calling this directly we don't have the number of booklet pages, skip displaying the total pages.
 	if ( $num_booklet_pages !== false ) {
-		echo '<p><strong>Total Pages:</strong> ' . $num_booklet_pages . ' content pages</p></div>';
+		echo '<p><strong>Total Pages:</strong> ' . $num_booklet_pages . ' content pages</p>';
 	}
 
-	echo '</div></body></html>';
+	echo '</div></div></body></html>';
 	return;
 }

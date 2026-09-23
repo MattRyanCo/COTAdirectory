@@ -210,9 +210,14 @@ echo "<div id='cota-print' class='container py-3'>";
 echo '<h2>Booklet-formatted PDF file generated successfully!</h2>';
 echo '<h4>File: ' . basename( $output_filename ) . '</h4>';
 
+// Display download link for the generated booklet PDF
+echo '<div class="mt-3"><a class="btn btn-primary cota-print" href="..' . $output_basename . '" download>Download Booklet PDF</a></div>';
+
 // Output the instructions
 print_instructions( count( $pdf->booklet_pages ) );
 
+// Close the divs and end the print booklet section.
+echo '</div></body></html>';
 
 /**
  * Replace intro content placeholders with generated HTML.
