@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.17] - 2026-09-23
+#### Added
+- On-screen editing of the Vestry db: Update Vestry now shows every entry on a single screen, with each Name/Class/Role/Area Liaison field editable and new members addable inline.
+- Name field on the Vestry edit form is validated against the primary member db (with autocomplete) so vestry entries always link to a real member.
+
+#### Changed
+- Reworked Vestry edit form layout into labeled, row-based entries with spacing between them for readability.
+
+## [4.1.16] - 2026-09-17
+#### Changed
+- Moved Printing instructions to its own function. 
+
+#### Added
+- Added Print Options nav item to just print out the booklet instructions.  
+
 ## [4.1.15] - 2026-09-02
 #### Removed
 - Deleted additional directory check in dump function. 

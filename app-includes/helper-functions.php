@@ -38,21 +38,82 @@ function cota_add_member_script() {
     </script>';
 }
 
-function add_vestry_member_script(){
-	// Display form allowing up to 15 vestry members to be added.
-	// Each form entry should start with the name, selected from the members table.
-	// Additional form columns include the vestry class, the vestry role, and the liaison.
-	// There may be multiple liaison entries.
-	// The name selection acts as a search box, allowing the user to type in a name and select from matching entries in the members table.
-	// Once the name is selected, the user enters the remaining details and clicks "Add Vestry Member" to add the member to the vestry listing.
-	// The form loops until the max number of vestry members is added.
-
+/**
+ * Client-side script that appends a blank, editable vestry row to the
+ * "Add New Vestry Member" section. The Name field uses the shared
+ * #vestry-member-names datalist so entries can be matched against the
+ * primary member db when the form is submitted.
+ */
+function cota_add_vestry_member_script() {
 	return '
 	    <script>
-		function cota_add_vestry_member() {
+        function cota_add_vestry_member() {
+            const vestryDiv = document.getElementById("vestry-add-members");
+            const rowCount = vestryDiv.children.length;
 
+            if (rowCount < 10) {
+                const newRow = document.createElement("div");
+                newRow.className = "vestry-row";
+                newRow.innerHTML = `
+                <div class="vestry-field vestry-field-name">
+                    <label>Name</label>
+                    <input class="form-control" type="text" name="vestry[name][]" list="vestry-member-names" placeholder="Member name" required>
+                </div>
+                <div class="vestry-field vestry-field-class">
+                    <label>Class</label>
+                    <input class="form-control" type="text" name="vestry[class][]" placeholder="Class" maxlength="4">
+                </div>
+                <div class="vestry-field vestry-field-role">
+                    <label>Role</label>
+                    <input class="form-control" type="text" name="vestry[vrole][]" placeholder="Role" maxlength="25">
+                </div>
+                <div class="vestry-field vestry-field-liaison">
+                    <label>Area Liaison</label>
+                    <input class="form-control" type="text" name="vestry[liaison][]" placeholder="Area Liaison" maxlength="50">
+                </div>
+                <input type="hidden" name="vestry[id][]" value="-1">
+                `;
+                vestryDiv.appendChild(newRow);
+            } else {
+                alert("Maximum of 10 new vestry members may be added at once. Please submit and add more afterward.");
+            }
+        }
+    </script>';
+}
+
+/**
+ * Build a lookup of lowercased full name => array of matching member ids.
+ * More than one id for a name means the name is ambiguous.
+ *
+ * @param array<int, array{id:int, full_name:string}> $member_directory
+ * @return array<string, array<int>>
+ */
+function cota_build_member_name_lookup( $member_directory ) {
+	$lookup = array();
+	foreach ( $member_directory as $member ) {
+		$key = strtolower( trim( $member['full_name'] ) );
+		if ( '' === $key ) {
+			continue;
 		}
-	</script>';
+		$lookup[ $key ][] = $member['id'];
+	}
+	return $lookup;
+}
+
+/**
+ * Resolve a typed name against the member name lookup.
+ *
+ * @return int|null|false Member id on exact match, null when not found, false when ambiguous.
+ */
+function cota_resolve_member_id_by_name( $lookup, $name ) {
+	$key = strtolower( trim( (string) $name ) );
+	if ( '' === $key || ! isset( $lookup[ $key ] ) ) {
+		return null;
+	}
+	if ( count( $lookup[ $key ] ) > 1 ) {
+		return false;
+	}
+	return $lookup[ $key ][0];
 }
 
 // Sanitize Input

@@ -187,6 +187,32 @@ class COTA_Database {
 		return $vestry_members;
 	}
 
+	/**
+	 * Read every member's id and display name (falling back to the family name
+	 * when a member's own last name is blank, matching read_member_by_id_extended).
+	 * Used to populate and validate the vestry Name field against the primary member db.
+	 *
+	 * @return array<int, array{id:int, full_name:string}>
+	 */
+	public function read_member_directory() {
+		$sql = "SELECT m.id, m.first_name,
+				CASE WHEN TRIM(COALESCE(m.last_name, '')) = '' THEN f.familyname ELSE m.last_name END AS last_name
+				FROM members m LEFT JOIN families f ON m.family_id = f.id
+				ORDER BY last_name, first_name";
+		$result = $this->conn->query( $sql );
+		if ( false === $result ) {
+			die( 'Error: ' . $this->conn->error );
+		}
+		$directory = array();
+		while ( $row = $result->fetch_assoc() ) {
+			$directory[] = array(
+				'id'        => (int) $row['id'],
+				'full_name' => trim( $row['first_name'] . ' ' . $row['last_name'] ),
+			);
+		}
+		return $directory;
+	}
+
 	public function read_members_of_leadership( ) {
 		$leadership_members = $this->conn->query( 'SELECT * FROM leadership' );
 		if ( false === $leadership_members ) {

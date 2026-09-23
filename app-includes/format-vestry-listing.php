@@ -101,3 +101,85 @@ function cota_generate_vestry_listing_for_print() {
 	}
 	return $content_replace;
 }
+
+/**
+ * Render the single-screen editable vestry form (mirrors the edit-family.php layout).
+ * Every vestry entry is shown at once since the vestry db is always small.
+ *
+ * @param array $vestry_rows      Each row: id, full_name, class, vrole, liaison. id === -1 marks a not-yet-saved row.
+ * @param array $member_directory Full member directory (id, full_name) used to populate the Name datalist.
+ * @param array $errors           Optional map of row index => error message, for redisplay after a failed submit.
+ * @return string
+ */
+function cota_render_vestry_edit_form( $vestry_rows, $member_directory, $errors = array() ) {
+	ob_start();
+
+	$member_names = array();
+	foreach ( $member_directory as $member ) {
+		$member_names[ $member['full_name'] ] = true;
+	}
+	?>
+	<datalist id="vestry-member-names">
+		<?php foreach ( array_keys( $member_names ) as $name ) : ?>
+			<option value="<?php echo htmlspecialchars( $name, ENT_QUOTES ); ?>">
+		<?php endforeach; ?>
+	</datalist>
+
+	<form class="cota-vestry-edit" action="update-vestry.php" method="post">
+		<?php foreach ( $vestry_rows as $index => $row ) : ?>
+			<div class="vestry-row">
+				<div class="vestry-field vestry-field-name">
+					<label>Name</label>
+					<input class="form-control" type="text" name="vestry[name][]" list="vestry-member-names" value="<?php echo htmlspecialchars( $row['full_name'] ); ?>" required>
+					<?php if ( ! empty( $errors[ $index ] ) ) : ?>
+						<div class="error-message"><?php echo htmlspecialchars( $errors[ $index ] ); ?></div>
+					<?php endif; ?>
+				</div>
+				<div class="vestry-field vestry-field-class">
+					<label>Class</label>
+					<input class="form-control" type="text" name="vestry[class][]" value="<?php echo htmlspecialchars( $row['class'] ); ?>" maxlength="4">
+				</div>
+				<div class="vestry-field vestry-field-role">
+					<label>Role</label>
+					<input class="form-control" type="text" name="vestry[vrole][]" value="<?php echo htmlspecialchars( $row['vrole'] ); ?>" maxlength="25">
+				</div>
+				<div class="vestry-field vestry-field-liaison">
+					<label>Area Liaison</label>
+					<input class="form-control" type="text" name="vestry[liaison][]" value="<?php echo htmlspecialchars( $row['liaison'] ); ?>" maxlength="50">
+				</div>
+				<input type="hidden" name="vestry[id][]" value="<?php echo (int) $row['id']; ?>">
+			</div>
+		<?php endforeach; ?>
+
+		<h3 class="mt-4">Add New Vestry Member</h3>
+		<div id="vestry-add-members">
+			<div class="vestry-row">
+				<div class="vestry-field vestry-field-name">
+					<label>Name</label>
+					<input class="form-control" type="text" name="vestry[name][]" list="vestry-member-names" placeholder="Member name">
+				</div>
+				<div class="vestry-field vestry-field-class">
+					<label>Class</label>
+					<input class="form-control" type="text" name="vestry[class][]" placeholder="Class" maxlength="4">
+				</div>
+				<div class="vestry-field vestry-field-role">
+					<label>Role</label>
+					<input class="form-control" type="text" name="vestry[vrole][]" placeholder="Role" maxlength="25">
+				</div>
+				<div class="vestry-field vestry-field-liaison">
+					<label>Area Liaison</label>
+					<input class="form-control" type="text" name="vestry[liaison][]" placeholder="Area Liaison" maxlength="50">
+				</div>
+				<input type="hidden" name="vestry[id][]" value="-1">
+			</div>
+		</div>
+
+		<div class="three-button-grid mt-3">
+			<div><button class="cota-add-another" type="button" onclick="cota_add_vestry_member()">Add Another Vestry Member</button></div>
+			<div><button class="cota-submit-family" type="submit">Submit Update</button></div>
+			<div><button class="cota-cancel-family" type="reset">Cancel</button></div>
+		</div>
+	</form>
+	<?php
+	return ob_get_clean();
+}
