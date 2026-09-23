@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.18] - 2026-09-23
+#### Fixed
+- Corrected issue with new printing instructions that caused the download PDF button to not be displayed. 
+
 ## [4.1.17] - 2026-09-23
 #### Added
 - On-screen editing of the Vestry db: Update Vestry now shows every entry on a single screen, with each Name/Class/Role/Area Liaison field editable and new members addable inline.
