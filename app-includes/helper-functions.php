@@ -590,8 +590,9 @@ function print_instructions( $num_booklet_pages ) {
 
 	echo "<div id='cota-print' class='container py-3'>";
 	echo '<div class="mt-4"><p><strong>Printing Instructions:</strong><br>Download the booklet PDF and open in your PDF application.<br>
-	Select the following options in the PDF app for the printer<br>to print the booklet ready for binding and folding.<br>
-	You may need to adjust these settings based on your specific printer and PDF application, but generally look for the following:<br>
+	If your printing app supports "Booklet", select it<br>and ensure it is 2-sided printing, flipped on the short side.<br>Adobe Acrobat Reader is an example.<br><br> 
+	If your printing app does not support "Booklet", try these settings: <br>
+	You may need to adjust these settings based on your specific printer<br>and PDF application, but generally look for the following:<br>
 	<ul>
 	<li>2 pages per sheet on 8 1/2 x 11" paper</li>
 	<li>2-sided printing -> flip on the short edge</li>

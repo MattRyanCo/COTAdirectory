@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.19] - 2026-09-28
+#### Fixed
+- Correct issue with incorrect number of blank pages being generated.
+
+#### Added
+- Moved font changes to use class constants for ease of maintence.
+- Added total number of pages for PDF as class constant. 
+- Class constant for number of families per printed page. 
+
+#### Changed
+- Adjusted font sizes for portrait sized output in all cases.
+- Reset pdf output to always use portrait. Allow 3rd party to handle booklet arrangement. 
+- Changed footer to center rather than left/right.  
+- Total number of pages in PDF maintained as document being built.
+- Printing instructions clarified for using 3rd party 'booklet' mode. 
+
+#### Removed
+- Unused functions - dummy_up_pages, enough_room_for_family
+
 ## [4.1.18] - 2026-09-23
 #### Fixed
 - Corrected issue with new printing instructions that caused the download PDF button to not be displayed. 

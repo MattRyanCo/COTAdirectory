@@ -19,6 +19,8 @@ class App_Settings {
 	public $FAMILY_HEADING_FONT;
 	public $DIRECTORY_HEADING_FONT;
 	public $DIRECTORY_HEADING_FONT_SMALL;
+	public $INTRO_HEADING_FONT;
+	public $INTRO_CONTENT_FONT;
 
 	// Resource locations
 	public $COTA_UPLOAD_DIR;
@@ -31,6 +33,7 @@ class App_Settings {
 	// General
 	public $DISPLAY_SUMMARY_INFORMATION;
 	public $DISPLAY_INTRO_PAGES;
+	public $ORDERED_PDF; // Flag to indicate if the PDF should be ordered
 
 
 	public function __construct() {
@@ -43,17 +46,20 @@ class App_Settings {
 		$this->COTA_UPLOAD_DIR    = '../uploads/'; // Directory for uploaded files
 
 		// Initialize values for FPDF 
-		$this->FAMILIES_PER_PAGE = 5;
+		$this->FAMILIES_PER_PAGE = 8;
 		$this->MAX_FAMILY_MEMBERS     = 10; // Maximum number of family members
 		$this->MAX_INFORMATIONAL_DOCS = 5;
 
-		$this->FAMILY_LISTING_FONT = 8;
-		$this->FAMILY_LISTING_FONT_SMALL = 7;
-		$this->FAMILY_LISTING_LINE_HEIGHT = .15;
+		$this->FAMILY_LISTING_FONT = 10;
+		$this->FAMILY_LISTING_FONT_SMALL = 9;
+		$this->FAMILY_LISTING_LINE_HEIGHT = .20;
 		$this->FAMILY_LISTING_LINE_HEIGHT_TALL = .25;
-		$this->FAMILY_HEADING_FONT = 10;
+		$this->FAMILY_HEADING_FONT = 12;
 		$this->DIRECTORY_HEADING_FONT = 12;
 		$this->DIRECTORY_HEADING_FONT_SMALL = 10;
+
+		$this->INTRO_HEADING_FONT = 14;
+		$this->INTRO_CONTENT_FONT = 12;
 
 		// General settings
 		$this->DISPLAY_SUMMARY_INFORMATION = false;

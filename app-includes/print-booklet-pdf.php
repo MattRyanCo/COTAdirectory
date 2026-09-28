@@ -40,6 +40,7 @@ if ( $generate_booklet ) {
 	$cota_app_settings->DISPLAY_SUMMARY_INFORMATION = false;
 	$cota_app_settings->DISPLAY_INTRO_PAGES         = false;
 }
+
 ?>
 		<form class="cota-print-options" action="" method="get">
 			<div class="row g-3">
@@ -67,12 +68,12 @@ if ( ! $generate_booklet ) {
 	return;
 }
 
-// Create a new PDF instance - half page format
-$pdf = new PDF( 'P', 'in', 'HalfLetter' ); // Portrait, Inches, Half-Letter Size
+// Create a new PDF instance 
+$pdf = new PDF( 'P', 'in', 'Letter' ); 
 
 $pdf->AddPage();
 
-$pdf->SetFont( 'Arial', '', 12 );
+$pdf->SetFont( 'Arial', '', $cota_app_settings->DIRECTORY_HEADING_FONT );
 $logoFile = '../app-assets/images/cota-logo.png';
 
 $title  = 'Church of the Ascension Directory ' . (string) date( 'Y' );
@@ -126,7 +127,7 @@ if ( $cota_app_settings->DISPLAY_INTRO_PAGES ) {
 }
 if ( $cota_app_settings->DISPLAY_SUMMARY_INFORMATION ) {
 	// Generate family summary content
-	$family_summary_content  = 'This directory contains ' . $num_families . ' families.';
+	$family_summary_content = 'This directory contains ' . $num_families . ' families.';
 	// $family_summary_content .= "\n\nOther misc info may be shared here about the membership numbers.";
 
 	// Add family listing page
@@ -141,7 +142,7 @@ if ( $cota_app_settings->DISPLAY_SUMMARY_INFORMATION ) {
 
 // Process families and add them to booklet pages
 $current_page_families = array();
-$families_per_page     = 8; // Adjust based on content size
+$families_per_page     = $cota_app_settings->FAMILIES_PER_PAGE;
 $family_count          = 0;
 
 while ( $family = $families->fetch_assoc() ) {
@@ -181,16 +182,28 @@ if ( ! empty( $current_page_families ) ) {
 	);
 }
 
+// Pad output with blank pages if necessary to maintain proper booklet imposition.
+// The number of pages must be a multiple of 4.
+
+$total_pages = count( $pdf->booklet_pages );
+$remainder   = $total_pages % 4;
+if ( 0 !== $remainder ) {
+	$pages_to_add = 4 - $remainder;
+	for ( $i = 1; $i < $pages_to_add; $i++ ) {
+		$pdf->add_booklet_page(
+			'blank',
+			array()
+		);
+	}
+}
 // Add the back cover
 $pdf->add_booklet_page(
 	'back_cover',
-	array(
-		'date' => date( 'F j, Y' ),
-	)
+	array()
 );
 
-// Generate the final booklet PDF with correct page ordering
-$final_pdf = $pdf->generate_booklet_pdf();
+// Generate the final booklet PDF with correct page ordering for selected output
+$final_pdf = $pdf->generate_booklet_pdf( 'Letter' );
 
 
 $output_basename = '/downloads/directory_booklet_' . date( 'Y-m-d' ) . '.pdf';
