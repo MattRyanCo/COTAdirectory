@@ -326,8 +326,9 @@ function cota_format_family_listing_for_display( $family, $members ) {
 
 	$desktop_rows = '';
 	foreach ( $family_members as $index => $individual ) {
-		$left_side = 0 === $index ? '' : ( $address_lines[ $index - 1 ] ?? '' );
-		$family_cell = 0 === $index ? '<h3>' . $escape( $family['familyname'] ?? '' ) . '</h3>' : '';
+		$family_name = $escape( $family['familyname'] ?? '' );
+		$left_side = $index > 0 ? ( $address_lines[ $index - 1 ] ?? '' ) : '';
+		$family_cell = 0 === $index ? '<h3>' . $family_name . '</h3>' : '';
 		// First name gets different styling to include divier line and margin
 		if ( 0 === $index ) {
 			$desktop_rows .= '<tr class="cota-new-family-divider"></tr><tr class="cota-new-family cota-desktop-family-row cota-member-row"><td>' . $family_cell . $escape( $left_side ) . '</td>' .
@@ -336,6 +337,11 @@ function cota_format_family_listing_for_display( $family, $members ) {
 			$desktop_rows .= '<tr class="cota-desktop-family-row cota-member-row"><td>' . $family_cell . $escape( $left_side ) . '</td>' .
 				$render_member_cells( $index, $individual, $family, $escape, $format_date, $format_name ) . '</tr>';
 		}
+	}
+
+	$remaining_address_lines = array_slice( $address_lines, max( 0, count( $family_members ) - 1 ) );
+	foreach ( $remaining_address_lines as $remaining_address_line ) {
+		$desktop_rows .= '<tr class="cota-desktop-family-row cota-member-row"><td>' . $escape( $remaining_address_line ) . '</td><td colspan="6">&nbsp;</td></tr>';
 	}
 
 	$mobile_rows = '<tr class="cota-mobile-family-row cota-family-meta"><td colspan="7"><h3>' . $escape( $family['familyname'] ?? '' ) . '</h3>';
