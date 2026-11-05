@@ -171,13 +171,13 @@ if ( 0 === $num_families ) {
 	empty_database_alert( 'Display Anniversaries' );
     exit();
 } 
-$look_forward = 7;
+$look_forward = 6;
 // Dump out remainder of import page. 
 ?>
     <div id="cota-anniversary" class="container">
     <h2>Upcoming Anniversaries</h2>
 
-    <p><?php echo 'Effective: ' . $look_forward . ' days from ' . cota_get_next_sunday_date()->format('m/d'); ?></p>
+    <p><?php echo 'Week Beginning: ' . cota_get_next_sunday_date()->format('D M j'); ?></p>
     <ul class='cota-anniversary-list'>
         <?php
         $upcoming_anniversaries = cota_get_upcoming_anniversaries( $look_forward );
