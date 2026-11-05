@@ -2,7 +2,7 @@
 /**
  * App Name:    Family Directory Management
  * Description: A simple family directory management system.
- * Version:     4.1.21
+ * Version:     4.1.22
  * 
  * @package     FamilyDirectory
  * @author      Matt Ryan
@@ -17,9 +17,14 @@ require_once __DIR__ . '/vendor/autoload.php';
 // $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 // $dotenv->load();
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// Show PHP errors on screen only for local development (Windows/Laragon).
+// On the live server, log them instead: displayed warnings can end up inside
+// form fields and be saved to the database.
+$cota_show_errors = ( PHP_OS_FAMILY === 'Windows' ) ? '1' : '0';
+ini_set( 'display_errors', $cota_show_errors );
+ini_set( 'display_startup_errors', $cota_show_errors );
+ini_set( 'log_errors', '1' );
+error_reporting( E_ALL );
 
 /** Initialize app settings. */
 require_once __DIR__ . '/app-includes/class-app-settings.php';

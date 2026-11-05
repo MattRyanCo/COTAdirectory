@@ -130,22 +130,22 @@ function cota_render_vestry_edit_form( $vestry_rows, $member_directory, $errors 
 			<div class="vestry-row">
 				<div class="vestry-field vestry-field-name">
 					<label>Name</label>
-					<input class="form-control" type="text" name="vestry[name][]" list="vestry-member-names" value="<?php echo htmlspecialchars( $row['full_name'] ); ?>" required>
+					<input class="form-control" type="text" name="vestry[name][]" list="vestry-member-names" value="<?php echo htmlspecialchars( $row['full_name'] ?? '' ); ?>" required>
 					<?php if ( ! empty( $errors[ $index ] ) ) : ?>
 						<div class="error-message"><?php echo htmlspecialchars( $errors[ $index ] ); ?></div>
 					<?php endif; ?>
 				</div>
 				<div class="vestry-field vestry-field-class">
 					<label>Class</label>
-					<input class="form-control" type="text" name="vestry[class][]" value="<?php echo htmlspecialchars( $row['class'] ); ?>" maxlength="4">
+					<input class="form-control" type="text" name="vestry[class][]" value="<?php echo htmlspecialchars( $row['class'] ?? '' ); ?>" maxlength="4">
 				</div>
 				<div class="vestry-field vestry-field-role">
 					<label>Role</label>
-					<input class="form-control" type="text" name="vestry[vrole][]" value="<?php echo htmlspecialchars( $row['vrole'] ); ?>" maxlength="25">
+					<input class="form-control" type="text" name="vestry[vrole][]" value="<?php echo htmlspecialchars( $row['vrole'] ?? '' ); ?>" maxlength="25">
 				</div>
 				<div class="vestry-field vestry-field-liaison">
 					<label>Area Liaison</label>
-					<input class="form-control" type="text" name="vestry[liaison][]" value="<?php echo htmlspecialchars( $row['liaison'] ); ?>" maxlength="50">
+					<input class="form-control" type="text" name="vestry[liaison][]" value="<?php echo htmlspecialchars( $row['liaison'] ?? '' ); ?>" maxlength="50">
 				</div>
 				<input type="hidden" name="vestry[id][]" value="<?php echo (int) $row['id']; ?>">
 			</div>
