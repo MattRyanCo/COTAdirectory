@@ -1,114 +1,226 @@
 <?php
 /**
+ * Import CSV Data: add families (and their members) from a CSV file.
  *
+ * The expected columns come from the database (see csv-layout.php): one line
+ * per family, family columns first, then numbered member columns such as
+ * first_name1, last_name1, ... first_name2, ... Columns are matched by name,
+ * so their order doesn't matter. Pre-4.2.0 files (fname1, bday1, annday, ...)
+ * are still accepted.
+ *
+ * Importing always ADDS families; it never updates or replaces existing ones.
  */
 require_once __DIR__ . '/bootstrap.php';
 global $cota_app_settings, $cota_db, $connect;
 
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'csv-layout.php';
+
+/**
+ * Read a CSV file into an array of rows keyed by (normalized) column name.
+ *
+ * @param string $filename Path to the CSV file.
+ * @return array<int, array{line:int, data:array<string,string>}>
+ */
 function cota_read_csv_to_assoc_array( $filename ) {
-	$data   = array();
-	$escape = '\\';
-    $handle = fopen( $filename, 'r' );
-	if ( false !== $handle ) {
-		// Remove BOM from the first line if present
-		$first_line = fgets( $handle );
-		$first_line = preg_replace( '/^\xEF\xBB\xBF/', '', $first_line );
-		$headers   = str_getcsv( $first_line, ',', '"', $escape );
-		$header_count = count( $headers );
-		$line_number = 1; // Track line number for error reporting
-		
-		while ( ( $row = fgetcsv( $handle, 0, ',', '"', $escape ) ) !== false ) {
-			$line_number++;
-			
-			// Explicitly convert from Windows-1252 to UTF-8
-			foreach ( $row as &$value ) {
-				// Remove quoted-printable artifacts
-				$value = quoted_printable_decode( $value );
-				$value = trim( mb_convert_encoding( $value, 'UTF-8', 'UTF-8' ) );
-				$value = trim( mb_convert_encoding( quoted_printable_decode( $value ), 'UTF-8', 'UTF-8,ISO-8859-1,Windows-1252' ) );
-				$value = cota_fix_mime_artifacts( $value );
-			}
-			unset( $value ); // Break reference
-			
-			$row_count = count( $row );
-			
-			// Ensure row has same number of elements as headers
-			if ( $row_count !== $header_count ) {
-				// Log the mismatch for debugging
-				cota_log_error( "CSV line {$line_number}: Column count mismatch. Headers: {$header_count}, Row: {$row_count}. Row data: " . print_r( $row, true ) );
-				
-				// Pad row with empty strings if it's shorter, or truncate if longer
-				if ( $row_count < $header_count ) {
-					$row = array_pad( $row, $header_count, '' );
-				} else {
-					$row = array_slice( $row, 0, $header_count );
-				}
-			}
-			
-			$data[] = array_combine( $headers, $row );
-		}
+	$rows   = array();
+	$handle = fopen( $filename, 'r' );
+	if ( false === $handle ) {
+		return $rows;
+	}
+
+	$headers = cota_csv_read_row( $handle );
+	if ( false === $headers ) {
 		fclose( $handle );
+		return $rows;
 	}
-	return $data;
+	// Remove a UTF-8 byte order mark from the first column name, if present.
+	$headers[0]   = preg_replace( '/^\xEF\xBB\xBF/', '', (string) $headers[0] );
+	$headers      = cota_csv_normalize_header( $headers );
+	$header_count = count( $headers );
+	$line_number  = 1;
+
+	while ( ( $row = cota_csv_read_row( $handle ) ) !== false ) {
+		++$line_number;
+		if ( array( null ) === $row ) {
+			continue; // Blank line.
+		}
+
+		foreach ( $row as &$value ) {
+			// Clean up encodings left behind by spreadsheet and email programs.
+			$value = trim( mb_convert_encoding( quoted_printable_decode( (string) $value ), 'UTF-8', 'UTF-8,ISO-8859-1,Windows-1252' ) );
+			$value = cota_fix_mime_artifacts( $value );
+		}
+		unset( $value );
+
+		$row_count = count( $row );
+		if ( $row_count !== $header_count ) {
+			cota_log_error( "CSV line {$line_number}: Column count mismatch. Headers: {$header_count}, Row: {$row_count}." );
+			$row = ( $row_count < $header_count ) ? array_pad( $row, $header_count, '' ) : array_slice( $row, 0, $header_count );
+		}
+
+		$rows[] = array(
+			'line' => $line_number,
+			'data' => array_combine( $headers, $row ),
+		);
+	}
+	fclose( $handle );
+	return $rows;
 }
-	/**
-	 * cota_import_families_from_one_line
-	 *
-	 * Import families from CSV file where all family data is on one line.
-	 * Each family member is in a separate column, e.g., fname1, lname1, fname2, lname2, bday1, bap1, cell1, email1, etc.
-	 *
-	 * @param [type] $filename
-	 * @return void
-	 */
+
+/**
+ * Convert one CSV value to what the database column expects.
+ *
+ * - date columns: mm/dd, mm/dd/yyyy or yyyy-mm-dd -> yyyy-mm-dd (blank or unreadable -> NULL)
+ * - phone columns: 10 digits -> xxx-xxx-xxxx
+ * - text columns: cut to the column's maximum length
+ *
+ * @param string $column Column name.
+ * @param array  $info   Column details from cota_csv_table_columns().
+ * @param string $value  Value from the CSV.
+ * @return string|null
+ */
+function cota_import_value( $column, $info, $value ) {
+	$value = trim( (string) $value );
+
+	if ( 0 === strpos( $info['type'], 'date' ) ) {
+		return cota_import_date( $value );
+	}
+	if ( false !== strpos( $column, 'phone' ) ) {
+		$value = cota_format_phone( $value );
+	}
+	if ( null !== $info['length'] ) {
+		$value = mb_substr( $value, 0, $info['length'] );
+	}
+	return $value;
+}
+
+/**
+ * Parse a date written as mm/dd, mm/dd/yyyy (or mm/dd/yy) or yyyy-mm-dd.
+ * A date without a year gets the current year. Returns NULL when blank or unreadable.
+ */
+function cota_import_date( $value ) {
+	if ( '' === $value ) {
+		return null;
+	}
+	if ( preg_match( '/^(\d{4})-(\d{1,2})-(\d{1,2})$/', $value, $m ) ) {
+		list( , $year, $month, $day ) = $m;
+	} elseif ( preg_match( '/^(\d{1,2})\/(\d{1,2})(?:\/(\d{2}|\d{4}))?$/', $value, $m ) ) {
+		$month = $m[1];
+		$day   = $m[2];
+		$year  = isset( $m[3] ) ? $m[3] : date( 'Y' );
+		if ( 2 === strlen( $year ) ) {
+			$year = DateTime::createFromFormat( 'y', $year )->format( 'Y' );
+		}
+	} else {
+		cota_log_error( 'Import: unreadable date "' . $value . '" left blank.' );
+		return null;
+	}
+	if ( ! checkdate( (int) $month, (int) $day, (int) $year ) ) {
+		cota_log_error( 'Import: invalid date "' . $value . '" left blank.' );
+		return null;
+	}
+	return sprintf( '%04d-%02d-%02d', $year, $month, $day );
+}
+
+/**
+ * Insert a row into a table using the given column => value pairs.
+ *
+ * @return int New row id.
+ * @throws mysqli_sql_exception On a database error.
+ */
+function cota_import_insert( $connect, $table, $values ) {
+	$columns      = array_keys( $values );
+	$placeholders = implode( ', ', array_fill( 0, count( $columns ), '?' ) );
+	$sql          = 'INSERT INTO `' . $table . '` (`' . implode( '`, `', $columns ) . '`) VALUES (' . $placeholders . ')';
+	$stmt         = $connect->prepare( $sql );
+	$params       = array_values( $values );
+	$stmt->bind_param( str_repeat( 's', count( $params ) ), ...$params );
+	$stmt->execute();
+	$id = $stmt->insert_id;
+	$stmt->close();
+	return $id;
+}
+
+/**
+ * Import every family in a CSV file.
+ *
+ * Each family and its members are saved together: if anything about a family
+ * fails, none of that family is saved and the line is reported as skipped.
+ *
+ * @param string $filename Path to the CSV file.
+ * @return array{families:int, members:int, skipped:int[]} Counts, and the line numbers skipped.
+ */
 function cota_import_families_from_one_line( $filename ) {
-	global $cota_app_settings;
-	global $cota_db, $connect;
+	global $connect;
 
-	require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
-	require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
+	$family_columns = cota_csv_family_columns( $connect );
+	$member_columns = cota_csv_member_columns( $connect );
+	$summary        = array(
+		'families' => 0,
+		'members'  => 0,
+		'skipped'  => array(),
+	);
 
-	if ( ! file_exists( $filename ) ) {
-		die( 'Error: CSV file not found.' );
-	}
-	// Read input file containing families into array
-	$csv_data = cota_read_csv_to_assoc_array( $filename );
+	foreach ( cota_read_csv_to_assoc_array( $filename ) as $csv_row ) {
+		$row  = $csv_row['data'];
+		$line = $csv_row['line'];
 
-	foreach ( $csv_data as $row ) {
-		// Skip if familyname is missing
-		if ( empty( $row['familyname'] ) ) {
-			cota_log_error( 'Missing Family Name in record. Data skipped: ' . print_r( $row, true ) );
-			continue;
-		}
-		// Process Family record
-		// The $family_id will be added to each member record for linking.
-		$family_id = cota_insert_family( $row );
-		if ( ! $family_id ) {
-			cota_log_error( 'Failed to insert family. Data skipped: ' . print_r( $row, true ) );
+		if ( '' === trim( $row['familyname'] ?? '' ) ) {
+			cota_log_error( "Import: CSV line {$line} skipped - no family name." );
+			$summary['skipped'][] = $line;
 			continue;
 		}
 
-		// Now process members in the row
-		$member_index = 1;
-		while ( isset( $row[ "fname{$member_index}" ] ) && ! empty( $row[ "fname{$member_index}" ] ) ) {
-			$member_data = array(
-				'first_name' => $row[ "fname{$member_index}" ],
-				'last_name'  => ( isset( $row[ "lname{$member_index}" ] ) && $row[ "lname{$member_index}" ] !== '' ) ? $row[ "lname{$member_index}" ] : '',
-				'cellphone'  => $row[ "cell{$member_index}" ] ?? '',
-				'email'      => $row[ "email{$member_index}" ] ?? '',
-				'birthday'   => $row[ "bday{$member_index}" ] ?? '',
-				'baptism'    => $row[ "bap{$member_index}" ] ?? '',
-			);
-			// Only one anniversary date possible on a record.
-			$member_data['annday'] = ( isset( $row['annday'] ) && $row['annday'] !== '' ) ? $row['annday'] : '';
+		// Family values, by database column.
+		$family = array();
+		foreach ( $family_columns as $col => $info ) {
+			$family[ $col ] = cota_import_value( $col, $info, $row[ $col ] ?? '' );
+		}
 
-			$member_id = cota_insert_member( $family_id, $member_data );
-			if ( ! $member_id ) {
-				cota_log_error( PHP_EOL . 'Failed to insert member. Data skipped: ' . print_r( $member_data, true ) );
+		// Member numbers present in the file (first_name1, first_name2, ...).
+		$member_numbers = array();
+		foreach ( array_keys( $row ) as $name ) {
+			if ( preg_match( '/^first_name(\d+)$/', $name, $m ) ) {
+				$member_numbers[] = (int) $m[1];
 			}
-			++$member_index;
+		}
+		sort( $member_numbers );
+
+		// Pre-4.2.0 files have one family-wide anniversary column.
+		$family_anniversary = $row['annday'] ?? '';
+
+		$connect->begin_transaction();
+		try {
+			$family_id     = cota_import_insert( $connect, 'families', $family );
+			$members_added = 0;
+
+			foreach ( $member_numbers as $n ) {
+				if ( '' === trim( $row[ "first_name{$n}" ] ?? '' ) ) {
+					continue; // Unused member slot.
+				}
+				$member = array( 'family_id' => $family_id );
+				foreach ( $member_columns as $col => $info ) {
+					$value = $row[ $col . $n ] ?? '';
+					if ( 'anniversary' === $col && '' === trim( $value ) ) {
+						$value = $family_anniversary;
+					}
+					$member[ $col ] = cota_import_value( $col, $info, $value );
+				}
+				cota_import_insert( $connect, 'members', $member );
+				++$members_added;
+			}
+
+			$connect->commit();
+			++$summary['families'];
+			$summary['members'] += $members_added;
+		} catch ( mysqli_sql_exception $e ) {
+			$connect->rollback();
+			cota_log_error( "Import: CSV line {$line} skipped - " . $e->getMessage() );
+			$summary['skipped'][] = $line;
 		}
 	}
-	return;
+
+	return $summary;
 }
 
 function cota_format_phone( $phone ) {
@@ -121,18 +233,15 @@ function cota_format_phone( $phone ) {
 	// Return original if not 10 digits
 	return $phone;
 }
-	/**
-	 * The artifacts like +AC0- are not standard quoted-printable or encoding issues—they are MIME encoded-words artifacts (from email exports), where +AC0- represents a hyphen (-), +AEA- is @, and so on.
-	 * These are not standard UTF-8 or ISO-8859-1 issues, but rather specific to how certain email clients encode special characters.
-	 * You need to explicitly replace these sequences.
-	 * The fixMimeArtifacts function is designed to handle these specific cases.
-	 *
-	 * @param [type] $value
-	 * @return void
-	 */
-	// private function cota_fix_mime_artifacts($value) {
+
+/**
+ * Replace MIME encoded-word artifacts such as +AC0- (a hyphen) or +AEA- (@),
+ * which some email programs leave in exported data.
+ *
+ * @param string $value
+ * @return string
+ */
 function cota_fix_mime_artifacts( $value ) {
-	// Replace common MIME artifacts
 	$patterns = array(
 		'/\+AC0-/' => '-',   // hyphen
 		'/\+AEA-/' => '@',   // at symbol
@@ -166,238 +275,8 @@ function cota_fix_mime_artifacts( $value ) {
 		'/\+ADc-/' => '7',   // 7 (rare)
 		'/\+ADg-/' => '8',   // 8 (rare)
 		'/\+ADk-/' => '9',   // 9 (rare)
-		// Add more as needed
 	);
 	return preg_replace( array_keys( $patterns ), array_values( $patterns ), $value );
-}
-
-function get_family_id( $familyname ) {
-	global $cota_app_settings;
-	global $cota_db, $connect;
-
-	require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
-	require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
-
-	$stmt = $cota_db->conn->prepare( 'SELECT id FROM families WHERE familyname = ?' );
-	if ( ! $stmt ) {
-		// Prepare failed
-		return false;
-	}
-
-	if ( ! $stmt->bind_param( 's', $familyname ) ) {
-		// Bind failed
-		$stmt->close();
-		return false;
-	}
-
-	if ( ! $stmt->execute() ) {
-		// Execute failed
-		$stmt->close();
-		return false;
-	}
-
-	$stmt->bind_result( $family_id );
-	if ( $stmt->fetch() ) {
-		$stmt->close();
-		return $family_id;
-	} else {
-		// No matching family found
-		$stmt->close();
-		return false;
-	}
-}
-
-
-/**
- * Get field length limits from database schema for a given table
- * @param string $table_name Table name to query
- * @return array Associative array of field_name => max_length
- */
-function cota_get_table_field_lengths( $table_name ) {
-	global $cota_db;
-	
-	static $cache = array();
-	
-	// Return cached result if available
-	if ( isset( $cache[ $table_name ] ) ) {
-		return $cache[ $table_name ];
-	}
-	
-	$field_lengths = array();
-	$result = $cota_db->conn->query( "DESCRIBE `{$table_name}`" );
-	
-	if ( $result ) {
-		while ( $row = $result->fetch_assoc() ) {
-			$field_name = $row['Field'];
-			$type = $row['Type'];
-			
-			// Extract length from VARCHAR, CHAR, etc. (e.g., "VARCHAR(50)" -> 50)
-			if ( preg_match( '/^(?:VAR)?CHAR\((\d+)\)/', $type, $matches ) ) {
-				$field_lengths[ $field_name ] = (int) $matches[1];
-			} elseif ( preg_match( '/^TEXT|BLOB|DATE|DATETIME|TIMESTAMP/', $type ) ) {
-				// For TEXT, BLOB, DATE types, set a very large limit or skip truncation
-				$field_lengths[ $field_name ] = null; // null means no truncation
-			}
-		}
-		$result->free();
-	}
-	
-	// Cache the result
-	$cache[ $table_name ] = $field_lengths;
-	
-	return $field_lengths;
-}
-
-/**
- * Insert a family into the database and return the new family ID
- * @param array $data Associative array with 1 row of family data = 1 family
- * @return int New family ID in families table || bool false on error
- */
-function cota_insert_family( $data ) {
-    // echo nl2br( ' Method ' . __METHOD__ . ' loaded' . PHP_EOL );
-	require_once __DIR__ . '/bootstrap.php';
-
-	global $cota_app_settings;
-	global $cota_db, $connect;
-
-	require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
-	require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
-
-	$stmt = $cota_db->conn->prepare(
-		'INSERT INTO families (
-            familyname, address, address2, address3, city, state, zip, homephone
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-	);
-	if ( ! $stmt ) {
-		// Prepare failed
-		return false;
-	}
-
-	// Get field length limits from database schema
-	$field_lengths = cota_get_table_field_lengths( 'families' );
-	
-	// Helper function to truncate field value based on schema
-	$truncate_field = function( $field_name, $value ) use ( $field_lengths ) {
-		if ( ! isset( $value ) || $value === null ) {
-			return '';
-		}
-		if ( isset( $field_lengths[ $field_name ] ) && $field_lengths[ $field_name ] !== null ) {
-			return substr( $value, 0, $field_lengths[ $field_name ] );
-		}
-		return $value;
-	};
-	
-	// Truncate all fields to match database schema limits
-	$familyname = $truncate_field( 'familyname', $data['familyname'] ?? '' );
-	$address    = $truncate_field( 'address', $data['address'] ?? '' );
-	$address2   = $truncate_field( 'address2', $data['address2'] ?? '' );
-	$address3   = $truncate_field( 'address3', $data['address3'] ?? '' );
-	$city       = $truncate_field( 'city', $data['city'] ?? '' );
-	$state      = $truncate_field( 'state', $data['state'] ?? '' );
-	$zip        = $truncate_field( 'zip', $data['zip'] ?? '' );
-	$homephone  = cota_format_phone( $data['homephone'] ?? '' );
-	$homephone  = $truncate_field( 'homephone', $homephone );
-
-	if ( ! $stmt->bind_param(
-		'ssssssss',
-		$familyname,
-		$address,
-		$address2,
-		$address3,
-		$city,
-		$state,
-		$zip,
-		$homephone
-	) ) {
-		// Bind failed
-		$stmt->close();
-        // echo 'Bind Failed<br>';
-		return false;
-	}
-
-	if ( ! $stmt->execute() ) {
-		// Execute failed
-		$stmt->close();
-        // echo 'Execute Failed<br>';
-		return false;
-	}
-
-	$family_id = $stmt->insert_id;
-	$stmt->close();
-    // echo 'Family ID : ' . htmlspecialchars( $family_id ) . '<br>';
-
-    // var_dump($family_id);
-    // echo 'Nothing Failed<br>';
-	return $family_id;
-}
-
-	/**
-	 * Insert a member into the database
-	 *
-	 * Table: members will have a record for EVERY family member
-	 *
-	 * @param int $family_id
-	 * @param array $data Associative array with 1 row of member data = 1 family
-	 * @return int New family ID in families table || bool false on error
-	 */
-function cota_insert_member( $family_id, $data ) {
-	global $cota_app_settings;
-	global $cota_db, $connect;
-
-	require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
-	require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
-	error_log(
-		print_r(
-			(object) array(
-				'line' => __LINE__,
-				'file' => __FILE__,
-				'dump' => array(
-					$data,
-				),
-			),
-			true
-		)
-	);
-	$stmt = $cota_db->conn->prepare(
-		'INSERT INTO members (
-            family_id, first_name, last_name, cell_phone, email, birthday, baptism, anniversary 
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-	);
-	if ( ! $stmt ) {
-		// Prepare failed
-		return false;
-	}
-
-	// Format data before insert for consistancy
-	$cellphone   = cota_format_phone( $data['cellphone'] );
-	$birthday    = cota_format_date( $data['birthday'] );
-	$baptism     = cota_format_date( $data['baptism'] );
-	$anniversary = cota_format_date( $data['annday'] );
-
-	if ( ! $stmt->bind_param(
-		'isssssss',
-		$family_id,
-		$data['first_name'],
-		$data['last_name'],
-		$cellphone,
-		$data['email'],
-		$birthday,
-		$baptism,
-		$anniversary
-	) ) {
-		// Bind failed
-		$stmt->close();
-		return false;
-	}
-	if ( ! $stmt->execute() ) {
-		// Execute failed
-		$stmt->close();
-		return false;
-	}
-
-	$member_id = $stmt->insert_id;
-	$stmt->close();
-	return $member_id;
 }
 
 // Echo header
@@ -406,7 +285,8 @@ echo cota_page_header();
 // Dump out remainder of import page.
 ?>
 	<div class="cota-import-container">
-		<h2>Upload CSV File containing Family listing (not members)</h2>
+		<h2>Upload CSV File containing Family listing</h2>
+		<p>Use <a href="/app-includes/export-sample.php" target="_blank">Export Sample CSV</a> for the expected layout. Imported families are <strong>added</strong> to the directory; existing families aren't changed.</p>
 		<form class="cota-import" method="post" enctype="multipart/form-data">
 			<label>Select CSV File:</label>
 			<input type="file" name="csv_file" accept=".csv" required>
@@ -419,31 +299,31 @@ echo cota_page_header();
 <?php
 // Process input form
 if ( $_SERVER['REQUEST_METHOD'] == 'POST' && isset( $_FILES['csv_file'] ) ) {
-	$upload_dir = 'uploads/';
-	// Sanitize filename: remove dangerous chars, allow only safe chars
-	$file_name   = preg_replace( '/[^a-zA-Z0-9_\.-]/', '_', basename( $_FILES['csv_file']['name'] ) );
-	$upload_file = $upload_dir . $file_name;
-
-	// Ensure the uploads directory exists
-	if ( ! is_dir( $upload_dir ) && ! mkdir( $upload_dir, 0755, true ) ) {
-		cota_handle_error( 'Failed to find upload directory.', 101 );
-	}
-
-	// Check for upload errors
 	if ( $_FILES['csv_file']['error'] !== UPLOAD_ERR_OK ) {
-		cota_handle_error( 'File upload error. Code: ' . $_FILES['csv_file']['error'], 102 );
+		cota_handle_error( 'File upload error. Code: ' . (int) $_FILES['csv_file']['error'], 102 );
 	}
 
-	// Move uploaded file & perform import.
-	if ( move_uploaded_file( $_FILES['csv_file']['tmp_name'], $upload_file ) ) {
-		echo 'Processing file: ' . htmlspecialchars( $file_name ) . '<br>';
-		cota_import_families_from_one_line( $upload_file );
+	// Back up the database before adding anything.
+	$cota_db->dump_database( true, 'IMPORT' );
+
+	// Import straight from PHP's temporary upload file. The uploaded CSV holds
+	// members' personal details, so it is never copied into the website folders;
+	// PHP deletes the temporary file when the request ends.
+	$file_name = basename( $_FILES['csv_file']['name'] );
+	echo '<p>Processing file: ' . htmlspecialchars( $file_name ) . '</p>';
+	$summary = cota_import_families_from_one_line( $_FILES['csv_file']['tmp_name'] );
+
+	$message = sprintf(
+		'CSV imported successfully! %d %s and %d %s added.',
+		$summary['families'],
+		1 === $summary['families'] ? 'family' : 'families',
+		$summary['members'],
+		1 === $summary['members'] ? 'member' : 'members'
+	);
+	if ( empty( $summary['skipped'] ) ) {
+		write_success_notice( $message );
 	} else {
-		cota_handle_error( 'File move error. Code: ' . $_FILES['csv_file']['error'], 103 );
+		write_error_notice( $message . ' Skipped CSV line(s): ' . implode( ', ', $summary['skipped'] ) . '.' );
 	}
-
-	// cota_read_csv_to_assoc_array($upload_file);
-	write_success_notice( 'CSV imported successfully! ' );
 	exit;
-
 }

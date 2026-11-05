@@ -20,6 +20,7 @@ require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'format-vestry-listing.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'format-leadership-listing.php';
 require_once $cota_app_settings->COTA_APP_INCLUDES . 'format-staff-listing.php';
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'intro-content.php';
 
 // Echo header
 echo cota_page_header();
@@ -224,43 +225,10 @@ echo '<h2>Booklet-formatted PDF file generated successfully!</h2>';
 echo '<h4>File: ' . basename( $output_filename ) . '</h4>';
 
 // Display download link for the generated booklet PDF
-echo '<div class="mt-3"><a class="btn btn-primary cota-print" href="..' . $output_basename . '" download>Download Booklet PDF</a></div>';
+echo '<div class="mt-3"><a class="btn btn-primary cota-print" href="download.php?file=' . rawurlencode( basename( $output_filename ) ) . '">Download Booklet PDF</a></div>';
 
 // Output the instructions
 print_instructions( count( $pdf->booklet_pages ) );
 
 // Close the divs and end the print booklet section.
 echo '</div></body></html>';
-
-/**
- * Replace intro content placeholders with generated HTML.
- *
- * Supports [staff], [vestry], and [leadership] tokens in the provided
- * content string and replaces them with the corresponding generated listings.
- *
- * @param string $content Intro content containing optional placeholders.
- * @return string Processed intro content with placeholders replaced.
- */
-function cota_parse_intro_content( $content ) {
-	global $cota_db, $pdf;
-
-	// Example: Replace [staff] with generated staff listing
-	if ( strpos( $content, '[staff]' ) !== false ) {
-		$staff_listing = cota_generate_staff_listing_for_print();
-		$content = str_replace( '[staff]', $staff_listing, $content );
-	}
-
-	// Example: Replace [vestry] with generated vestry listing
-	if ( strpos( $content, '[vestry]' ) !== false ) {
-		$vestry_listing = cota_generate_vestry_listing_for_print();
-		$content = str_replace( '[vestry]', $vestry_listing, $content );
-	}
-
-	// Example: Replace [leadership] with generated leadership listing
-	if ( strpos( $content, '[leadership]' ) !== false ) {
-		$leadership_listing = cota_generate_leadership_listing_for_print();
-		$content = str_replace( '[leadership]', $leadership_listing, $content );
-	}
-
-	return $content;
-}

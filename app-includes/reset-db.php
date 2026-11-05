@@ -179,7 +179,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
                 anniversary DATE,
                 FOREIGN KEY (family_id) REFERENCES families(id) ON DELETE CASCADE )';
 
-		$cota_db->query( $createMembersTableSQL );
+		// Run the CREATE once: running it twice throws "Table 'members' already exists" on PHP 8.1+.
 		if ( $cota_db->query( $createMembersTableSQL ) === true ) {
 			write_success_notice( "Database table 'Members' has been reset successfully!" );
 			write_success_notice( 'Database tables have been reset successfully!' );

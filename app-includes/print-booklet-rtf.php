@@ -50,5 +50,5 @@ echo cota_page_header();
 echo "<div id='cota-print' class='container py-3'>";
 echo "<h2>RTF file generated successfully!</h2>";
 echo "<h4>File: " . basename($output_filename) . "</h4>";
-echo "<div class='mt-3'><a class='btn btn-primary cota-print' href='.." . $output_basename . "' download>Download File</a></div>";
+echo "<div class='mt-3'><a class='btn btn-primary cota-print' href='download.php?file=" . rawurlencode( basename( $output_filename ) ) . "'>Download File</a></div>";
 echo '</div></body></html>';
