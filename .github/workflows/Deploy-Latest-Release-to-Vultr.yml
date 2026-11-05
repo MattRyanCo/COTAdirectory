@@ -50,8 +50,11 @@ jobs:
             unzip -o cotadirectory.zip
             # Set permissions for all unzipped files and directories
             chown -R www-data:www-data COTAdirectory-${{ steps.tag.outputs.tag }}
-            # Copy contents from cotadirectory-${{ steps.tag.outputs.tag }} to current directory
-            cp -rf COTAdirectory-${{ steps.tag.outputs.tag }}/* .
-            # Clean up unnecessary files
-            # rm -rf COTAdirectory-${{ steps.tag.outputs.tag }}
+            # Copy contents from cotadirectory-${{ steps.tag.outputs.tag }} to current directory.
+            # "/." (not "/*") so hidden files are copied too - the .htaccess security rules must be deployed.
+            cp -rf COTAdirectory-${{ steps.tag.outputs.tag }}/. .
+            # Clean up: the unpacked release folder sits inside the website, so remove it.
+            rm -rf COTAdirectory-${{ steps.tag.outputs.tag }}
+            # Files removed from the app that copying doesn't delete (exposes server configuration).
+            rm -f phpinfo.php
             rm cotadirectory.zip

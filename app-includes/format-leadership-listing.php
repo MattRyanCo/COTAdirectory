@@ -46,7 +46,7 @@ function cota_generate_leadership_listing_for_print() {
 	}
 
 	if ( 0 === $num_leadership ) {
-		empty_database_alert( 'Leadership Listing Display' );
+		// Nothing to list. (Don't print the 'database is empty' notice: this runs while building the PDF/RTF.)
 	} else {
 		$leadership_individuals = $cota_db->read_members_of_leadership();
 		while ( $leadership_individual = $leadership_individuals->fetch_assoc() ) {

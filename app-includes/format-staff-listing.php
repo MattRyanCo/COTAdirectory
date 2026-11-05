@@ -69,7 +69,7 @@ function cota_generate_staff_listing_for_print() {
 	$mode = 'print';
 
 	if ( 0 === $num_staff ) {
-		empty_database_alert( 'Staff Listing Display' );
+		// Nothing to list. (Don't print the 'database is empty' notice: this runs while building the PDF/RTF.)
 	} else {
 		$staff_individuals = $cota_db->read_members_of_staff();
 		while ( $staff_individual = $staff_individuals->fetch_assoc() ) {

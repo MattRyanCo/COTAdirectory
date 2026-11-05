@@ -77,7 +77,7 @@ function cota_generate_vestry_listing_for_print() {
 	}
 
 	if ( 0 === $num_vestry ) {
-		empty_database_alert( 'Vestry Listing Display' );
+		// Nothing to list. (Don't print the 'database is empty' notice: this runs while building the PDF/RTF.)
 	} else {
 		$vestry_individuals = $cota_db->read_members_of_vestry();
 		while ( $vestry_individual = $vestry_individuals->fetch_assoc() ) {

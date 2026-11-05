@@ -1,71 +1,55 @@
 <?php
 /**
- * Export directory data to CSV
+ * Export the whole directory to CSV, one line per family.
+ *
+ * Columns come from the database itself (see csv-layout.php), so every family
+ * and member field is included, and the file can be loaded back with Import.
  */
 
 require_once __DIR__ . '/bootstrap.php';
 
-global $cota_db, $connect,  $cota_app_settings;
+global $cota_db, $connect, $cota_app_settings;
 
-require_once $cota_app_settings->COTA_APP_INCLUDES . 'headers.php';
-require_once $cota_app_settings->COTA_APP_INCLUDES . 'helper-functions.php';
+require_once $cota_app_settings->COTA_APP_INCLUDES . 'csv-layout.php';
 
-header('Content-Type: text/csv');
-header('Content-Disposition: attachment; filename="directory_export.csv"');
-$output = fopen('php://output', 'w');
+$family_columns = array_keys( cota_csv_family_columns( $connect ) );
+$member_columns = array_keys( cota_csv_member_columns( $connect ) );
+$max_members    = cota_csv_max_family_size( $connect );
 
-// Static columns before dynamic member columns
-$header = [
-    "familyname",
-    "address",
-    "address2",
-    "address3",
-    "city",
-    "state",
-    "zip",
-    "homephone"
-];
+$output = cota_csv_start_download( 'directory_export.csv' );
+cota_csv_write_row( $output, cota_csv_header( $connect, $max_members ) );
 
-// Add dynamic member columns to header row
-$max_members = (isset($cota_app_settings->MAX_FAMILY_MEMBER))
-    ? (int)$cota_app_settings->MAX_FAMILY_MEMBER
-    : 9;
-for ($i = 1; $i <= $max_members; $i++) {
-    $header[] = "fname{$i}";
-    $header[] = "lname{$i}";
-    $header[] = "bday{$i}";
-    $header[] = "bap{$i}";
-    $header[] = "cell{$i}";
-    $header[] = "email{$i}";
+$families = $connect->query( 'SELECT * FROM families ORDER BY familyname, id' );
+$stmt     = $connect->prepare( 'SELECT * FROM members WHERE family_id = ? ORDER BY id' );
+
+while ( $family = $families->fetch_assoc() ) {
+	$row = array();
+	foreach ( $family_columns as $col ) {
+		$row[] = $family[ $col ] ?? '';
+	}
+
+	// Members in the order they were entered, so the primary adults stay first.
+	$stmt->bind_param( 'i', $family['id'] );
+	$stmt->execute();
+	$members = $stmt->get_result();
+	$count   = 0;
+	while ( $member = $members->fetch_assoc() ) {
+		foreach ( $member_columns as $col ) {
+			$row[] = $member[ $col ] ?? '';
+		}
+		++$count;
+	}
+
+	// Pad smaller families so every line has the same number of columns.
+	for ( ; $count < $max_members; $count++ ) {
+		foreach ( $member_columns as $col ) {
+			$row[] = '';
+		}
+	}
+
+	cota_csv_write_row( $output, $row );
 }
-$header[] = "annday";
 
-fputcsv($output, $header);
-
-$families = $connect->query("SELECT * FROM families");
-while ($family = $families->fetch_assoc()) {
-    // Initialize family data
-    $one_family = sprintf("%s,%s,%s,%s,%s,%s,%s,%s", 
-        $family['familyname'],
-        $family['address'],
-        $family['address2'],
-        $family['address3'],
-        $family['city'],
-        $family['state'],
-        $family['zip'],
-        $family['homephone']);
-
-    // Fetch members of this family
-    $members = $connect->query("SELECT * FROM members WHERE family_id = " . $family['id']);
-    $all_members = [];
-    $one_family .= ',';
-    // Loop through each member and append their data
-    while ($member = $members->fetch_assoc()) {
-
-        $one_family .= sprintf("%s,%s,%s,%s,%s,%s,",$member['first_name'],$member['last_name'], $member['birthday'], $member['baptism'] ,$member['cell_phone'],$member['email']);
-    }
-    // write out all data on a single csv record
-    fputcsv($output, explode(",", $one_family));
-}
-fclose($output);
+$stmt->close();
+fclose( $output );
 $cota_db->close_connection();

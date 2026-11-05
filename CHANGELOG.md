@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.2.0] - 2026-11-05
+**Breaking change:** the CSV file layout used by Export CSV Directory, Export Sample CSV and Import CSV Data has changed. Import still reads files in the old layout.
+
+#### Changed
+- Export CSV Directory now builds its columns from the database, so every family and member field is included, and new fields are picked up automatically. Member columns use the database names with the member number appended (`first_name1`, `last_name1`, `cell_phone1`, `email1`, `birthday1`, `baptism1`, `anniversary1`, `first_name2`, ...). Families are sorted by name, members are in the order they were entered, and the file can be imported again without losing anything.
+- The marriage anniversary is exported and imported per member (`anniversaryN`) instead of one family-wide `annday` column.
+- Export Sample CSV is generated from the database in the same layout.
+- Import CSV Data reads the new layout and the old one (`fname1`, `lname1`, `bday1`, `bap1`, `cell1`, `email1`, `annday`). Columns are matched by name, every numbered member is read (blank slots are skipped), dates in mm/dd/yyyy keep their year, unreadable dates are left blank, and each family is saved together with its members.
+- Import CSV Data reports how many families and members were added and which CSV lines were skipped, and makes an automatic database backup first.
+- Generated PDF and RTF booklets are now downloaded through the app (`app-includes/download.php`), which requires sign-in, instead of directly from the `downloads` folder.
+
+#### Fixed
+- Reset Database no longer ends with a fatal "Table 'members' already exists" error.
+- Export CSV Directory no longer leaves out marriage anniversaries or misaligns columns when a value contains a comma.
+- RTF for External Use now replaces the `[staff]`, `[vestry]` and `[leadership]` intro placeholders with the current lists, as the PDF does. Intro page titles are centered and bold, and intro text uses a fixed-width font so the lists line up.
+- RTF text is escaped for RTF instead of HTML, so "&" and apostrophes no longer appear as `&amp;` or `&#039;`, and accented characters print correctly.
+- An empty Staff, Vestry or Leadership list no longer shows the "Directory Database is Empty" notice while generating the PDF or RTF.
+
+#### Security
+- New nginx rules file `deploy/nginx/cotadirectory-security.conf` blocks web access (403) to `backups/`, `downloads/`, `vendor/`, `deploy/`, hidden files and folders (including `.env` and `.git`; `.well-known` stays open for certificate renewal), and `.log`, `.sql`, `.csv`, `.md`, `.yml`, `.xml`, `.lock`, `.conf` and `composer.json` files. It must be included once in the live server's nginx site configuration (instructions in the file).
+- `.htaccess` has the same rules for Apache (e.g. local Laragon development).
+- Import no longer saves uploaded CSV files (which contain members' personal details) in `app-includes/uploads/`; it reads PHP's temporary upload file directly.
+- The deploy workflow now copies hidden files too, deletes the unpacked release folder from the website, and removes `phpinfo.php`.
+
+#### Removed
+- `phpinfo.php`, which showed the server's full PHP configuration to anyone.
+
 ## [4.1.22] - 2026-11-05
 #### Fixed
 - Add Family now saves the Address 2 field.
