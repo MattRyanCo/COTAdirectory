@@ -24,9 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - An empty Staff, Vestry or Leadership list no longer shows the "Directory Database is Empty" notice while generating the PDF or RTF.
 
 #### Security
-- `.htaccess` now blocks web access to `backups/`, `downloads/`, `vendor/`, hidden files and folders (including `.env` and `.git`), and `.log`, `.sql`, `.csv`, `.md`, `.yml`, `.xml`, `.lock` and `composer.json` files.
+- New nginx rules file `deploy/nginx/cotadirectory-security.conf` blocks web access (403) to `backups/`, `downloads/`, `vendor/`, `deploy/`, hidden files and folders (including `.env` and `.git`; `.well-known` stays open for certificate renewal), and `.log`, `.sql`, `.csv`, `.md`, `.yml`, `.xml`, `.lock`, `.conf` and `composer.json` files. It must be included once in the live server's nginx site configuration (instructions in the file).
+- `.htaccess` has the same rules for Apache (e.g. local Laragon development).
 - Import no longer saves uploaded CSV files (which contain members' personal details) in `app-includes/uploads/`; it reads PHP's temporary upload file directly.
-- The deploy workflow now copies hidden files (so `.htaccess` reaches the server), deletes the unpacked release folder from the website, and removes `phpinfo.php`.
+- The deploy workflow now copies hidden files too, deletes the unpacked release folder from the website, and removes `phpinfo.php`.
 
 #### Removed
 - `phpinfo.php`, which showed the server's full PHP configuration to anyone.

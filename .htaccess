@@ -1,3 +1,5 @@
+# Apache only (e.g. local Laragon). nginx ignores this file: the live server's
+# equivalent rules are in deploy/nginx/cotadirectory-security.conf.
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -7,7 +9,8 @@ RewriteBase /
 # backups/   database dumps: for the server administrator only.
 # downloads/ generated directory booklets: served by app-includes/download.php after sign-in.
 # vendor/    third-party code.
-RewriteRule ^(backups|downloads|vendor)(/|$) - [F,L]
+# deploy/    server configuration files.
+RewriteRule ^(backups|downloads|vendor|deploy)(/|$) - [F,L]
 # Hidden files and folders (.env holds the database password; .git, .github, ...),
 # except .well-known, which certificate renewal (e.g. Let's Encrypt) needs.
 RewriteRule (^|/)\.(?!well-known(/|$)) - [F,L]
