@@ -16,19 +16,20 @@ function cota_add_member_script() {
                 newMember.innerHTML = `
 
                 <label >First Name</label>
-                <input type="text" name="members[first_name][]" style="text-transform:capitalize;" required>
+                <input type="text" name="members[first_name][]" maxlength="50" style="text-transform:capitalize;" required>
                 <label for="members[last_name][]">Last Name (if different than family name)</label>
-                <input type="text" id="members[last_name][]" name="members[last_name][]" style="text-transform:capitalize;"><br>
+                <input type="text" id="members[last_name][]" name="members[last_name][]" maxlength="50" style="text-transform:capitalize;"><br>
                 <label for="members[cell_phone][]">Cell Phone</label>
-                <input type="text" id="members[cell_phone][]" name="members[cell_phone][]" placeholder="xxx-xxx-xxxx" ><br>
+                <input type="text" id="members[cell_phone][]" name="members[cell_phone][]" maxlength="20" placeholder="xxx-xxx-xxxx" ><br>
                 <label for="members[email][]">Email</label>
-                <input type="email" id="members[email][]" name="members[email][]"><br>
+                <input type="email" id="members[email][]" name="members[email][]" maxlength="100"><br>
                 <label for="members[birthday][]">Birthday</label>
                 <input type="date" id="members[birthday][]" name="members[birthday][]" placeholder="mm/dd"><br>
                 <label for="members[baptism][]">Anniversary of Baptism</label>
                 <input type="date" id="members[baptism]" name="members[baptism][]" placeholder="mm/dd"><br>
 				<label for="members[anniversary][]">Marrage Anniversary</label>
                 <input type="date" id="members[anniversary]" name="members[anniversary][]" placeholder="mm/dd"><br><br><br>
+                <input type="hidden" name="members[id][]" value="-1">
                 `;
                 membersDiv.appendChild(newMember);
             } else {

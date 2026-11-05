@@ -71,35 +71,35 @@ if ( $match_count > 1 ) {
 		<div class="row g-3">
 			<div class="col-12 col-md-6">
 				<label class="form-label fw-bold">Family Name</label>
-				<input class="form-control" type="text" name="familyname" value="<?php echo htmlspecialchars( $family['familyname'] ); ?>" required>
+				<input class="form-control" type="text" name="familyname" maxlength="50" value="<?php echo htmlspecialchars( $family['familyname'] ?? '' ); ?>" required>
 			</div>
 			<div class="col-12 col-md-6">
 				<label class="form-label fw-bold">Address</label>
-				<input class="form-control" type="text" name="address" value="<?php echo htmlspecialchars( $family['address'] ); ?>">
+				<input class="form-control" type="text" name="address" maxlength="50" value="<?php echo htmlspecialchars( $family['address'] ?? '' ); ?>">
 			</div>
 			<div class="col-12 col-md-6">
 				<label class="form-label fw-bold">Line 2</label>
-				<input class="form-control" type="text" name="address2" value="<?php echo htmlspecialchars( $family['address2'] ); ?>">
+				<input class="form-control" type="text" name="address2" maxlength="50" value="<?php echo htmlspecialchars( $family['address2'] ?? '' ); ?>">
 			</div>
 			<div class="col-12 col-md-6">
 				<label class="form-label fw-bold">Line 3</label>
-				<input class="form-control" type="text" name="address3" value="<?php echo htmlspecialchars( $family['address3'] ); ?>">
+				<input class="form-control" type="text" name="address3" maxlength="50" value="<?php echo htmlspecialchars( $family['address3'] ?? '' ); ?>">
 			</div>
 			<div class="col-12 col-md-6">
 				<label class="form-label fw-bold">City</label>
-				<input class="form-control" type="text" name="city" value="<?php echo htmlspecialchars( $family['city'] ); ?>">
+				<input class="form-control" type="text" name="city" maxlength="20" value="<?php echo htmlspecialchars( $family['city'] ?? '' ); ?>">
 			</div>
 			<div class="col-12 col-md-3">
 				<label class="form-label fw-bold">State</label>
-				<input class="form-control" type="text" name="state" value="<?php echo htmlspecialchars( $family['state'] ); ?>">
+				<input class="form-control" type="text" name="state" maxlength="10" value="<?php echo htmlspecialchars( $family['state'] ?? '' ); ?>">
 			</div>
 			<div class="col-12 col-md-3">
 				<label class="form-label fw-bold">Zip</label>
-				<input class="form-control" type="text" name="zip" value="<?php echo htmlspecialchars( $family['zip'] ); ?>">
+				<input class="form-control" type="text" name="zip" maxlength="10" value="<?php echo htmlspecialchars( $family['zip'] ?? '' ); ?>">
 			</div>
 			<div class="col-12">
 				<label class="form-label fw-bold">Home Phone</label>
-				<input class="form-control" type="text" name="homephone" value="<?php echo htmlspecialchars( $family['homephone'] ?? '' ); ?>">
+				<input class="form-control" type="text" name="homephone" maxlength="20" value="<?php echo htmlspecialchars( $family['homephone'] ?? '' ); ?>">
 			</div>
 		</div>
 
@@ -125,13 +125,13 @@ if ( $match_count > 1 ) {
 				endif;
 				?>
 			<div class="member-row">
-				<input class="form-control" type="text" name="members[first_name][]" value="<?php echo htmlspecialchars( $member['first_name'] ); ?>">
-				<input class="form-control" type="text" name="members[last_name][]" value="<?php echo ! empty( $member['last_name'] ) ? htmlspecialchars( $member['last_name'] ) : htmlspecialchars( $family['familyname'] ?? '' ); ?>">
-				<input class="form-control" type="text" name="members[cell_phone][]" value="<?php echo htmlspecialchars( $member['cell_phone'] ); ?>">
-				<input class="form-control" type="email" name="members[email][]" value="<?php echo htmlspecialchars( $member['email'] ); ?>">
-				<input class="form-control" type="date" name="members[birthday][]" value="<?php echo htmlspecialchars( $member['birthday'] ); ?>">
-				<input class="form-control" type="date" name="members[baptism][]" value="<?php echo htmlspecialchars( $member['baptism'] ); ?>">
-				<input class="form-control" type="date" name="members[anniversary][]" value="<?php echo htmlspecialchars( $member['anniversary'] ); ?>">
+				<input class="form-control" type="text" name="members[first_name][]" maxlength="50" value="<?php echo htmlspecialchars( $member['first_name'] ?? '' ); ?>">
+				<input class="form-control" type="text" name="members[last_name][]" maxlength="50" value="<?php echo ! empty( $member['last_name'] ) ? htmlspecialchars( $member['last_name'] ?? '' ) : htmlspecialchars( $family['familyname'] ?? '' ); ?>">
+				<input class="form-control" type="text" name="members[cell_phone][]" maxlength="20" value="<?php echo htmlspecialchars( $member['cell_phone'] ?? '' ); ?>">
+				<input class="form-control" type="email" name="members[email][]" maxlength="100" value="<?php echo htmlspecialchars( $member['email'] ?? '' ); ?>">
+				<input class="form-control" type="date" name="members[birthday][]" value="<?php echo htmlspecialchars( $member['birthday'] ?? '' ); ?>">
+				<input class="form-control" type="date" name="members[baptism][]" value="<?php echo htmlspecialchars( $member['baptism'] ?? '' ); ?>">
+				<input class="form-control" type="date" name="members[anniversary][]" value="<?php echo htmlspecialchars( $member['anniversary'] ?? '' ); ?>">
 				<input type="hidden" name="members[id][]" value="<?php echo $member['id']; ?>">
 			</div>
 			<?php endwhile; ?>
@@ -146,14 +146,16 @@ if ( $match_count > 1 ) {
 				<span>Email</span>
 				<span>Birthday</span>
 				<span>Baptism</span>
+				<span>Anniversary</span>
 			</div>
 			<div class="member-row">
-				<input class="form-control" type="text" name="members[first_name][]" value="<?php echo htmlspecialchars( $member['first_name'] ?? '' ); ?>" placeholder="First name">
-				<input class="form-control" type="text" name="members[last_name][]" value="<?php echo ! empty( $member['last_name'] ) ? htmlspecialchars( $member['last_name'] ) : htmlspecialchars( $family['familyname'] ?? '' ); ?>" placeholder="Last name">
-				<input class="form-control" type="text" name="members[cell_phone][]" value="<?php echo htmlspecialchars( $member['cell_phone'] ?? '' ); ?>" placeholder="Cell phone">
-				<input class="form-control" type="email" name="members[email][]" value="<?php echo htmlspecialchars( $member['email'] ?? '' ); ?>" placeholder="Email">
+				<input class="form-control" type="text" name="members[first_name][]" maxlength="50" value="<?php echo htmlspecialchars( $member['first_name'] ?? '' ); ?>" placeholder="First name">
+				<input class="form-control" type="text" name="members[last_name][]" maxlength="50" value="<?php echo ! empty( $member['last_name'] ) ? htmlspecialchars( $member['last_name'] ?? '' ) : htmlspecialchars( $family['familyname'] ?? '' ); ?>" placeholder="Last name">
+				<input class="form-control" type="text" name="members[cell_phone][]" maxlength="20" value="<?php echo htmlspecialchars( $member['cell_phone'] ?? '' ); ?>" placeholder="Cell phone">
+				<input class="form-control" type="email" name="members[email][]" maxlength="100" value="<?php echo htmlspecialchars( $member['email'] ?? '' ); ?>" placeholder="Email">
 				<input class="form-control" type="date" name="members[birthday][]" value="<?php echo htmlspecialchars( $member['birthday'] ?? '' ); ?>">
 				<input class="form-control" type="date" name="members[baptism][]" value="<?php echo htmlspecialchars( $member['baptism'] ?? '' ); ?>">
+				<input class="form-control" type="date" name="members[anniversary][]" value="">
 				<input type="hidden" name="members[id][]" value="-1">
 			</div>
 		<div class="three-button-grid mt-3">

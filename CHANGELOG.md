@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.22] - 2026-11-05
+#### Fixed
+- Add Family now saves the Address 2 field.
+- Edit Family now saves Marriage Anniversary changes for existing members, and new members added during an edit can be given an anniversary date.
+- Edit Family: members added with "Add Another Family Member" are now all saved (previously only one was saved and the rest were dropped).
+- Corrected the "family added successfully" link and the "Edit this family again" button so they open the correct family.
+- Edit Family and Delete Family no longer show PHP "Deprecated" warnings inside empty fields (e.g. Line 3 on families created with Add Family). Saving the Edit form could previously write that warning text into the database.
+- Update Vestry no longer shows PHP "Deprecated" warnings inside empty Name, Class, Role or Area Liaison fields, which could previously be saved to the database.
+- Edit Family fields now have length limits matching the database, and a database error during an edit shows a readable message and saves nothing (previously a too-long value, e.g. in Line 3, crashed the page).
+
+#### Changed
+- PHP errors and warnings are now shown on screen only in local (Windows) development. On the live server they are written to the server error log instead, so they can no longer appear inside form fields.
+
 ## [4.1.21] - 2026-11-05
 #### Changed
 - Updated the Upcoming Anniversaries look ahead period to reflect Sunday to Saturday, rather than Sunday to Sunday. 

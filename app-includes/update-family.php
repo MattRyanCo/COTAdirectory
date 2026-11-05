@@ -19,6 +19,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
     $homephone = trim($_POST["homephone"]);
     // Anniversary date is NULL if blank. All dates are optional and are set to Null if blank. 
 
+    // Save the family and all members as one transaction, so a database error
+    // (e.g. a value too long for its column) never leaves a half-saved family.
+    $connect->begin_transaction();
+    try {
+
     // Update family record
     $stmt = $connect->prepare("UPDATE families SET familyname=?, address=?, address2=?, address3=?, city=?, state=?, zip=?, homephone=? WHERE id=?");
     $stmt->bind_param("ssssssssi", $familyname, $address, $address2, $address3, $city, $state, $zip, $homephone, $family_id);
@@ -37,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
         // Ensure dates are arrays and set empty values to null
         $birthdays = isset($_POST['members']['birthday']) ? $_POST['members']['birthday'] : [];
         $baptisms = isset($_POST['members']['baptism']) ? $_POST['members']['baptism'] : [];
-        $anniversary = isset($_POST['members']['anniversary']) ? $_POST['members']['anniversary'] : [];
+        $anniversaries = isset($_POST['members']['anniversary']) ? $_POST['members']['anniversary'] : [];
     }
 
     for ($i = 0; $i < count($member_ids); $i++) {
@@ -51,14 +56,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
             $email = trim($_POST["members"]["email"][$i]);
             $bday = isset($_POST['members']['birthday'][$i]) ? trim($_POST['members']['birthday'][$i]) : null;
             $bap = isset($_POST['members']['baptism'][$i]) ? trim($_POST['members']['baptism'][$i]) : null;
+            $anniv = isset($anniversaries[$i]) ? trim($anniversaries[$i]) : null;
 
             // Set empty date strings to null
             $bday = ($bday === '' ? null : $bday);
             $bap = ($bap === '' ? null : $bap);
+            $anniv = ($anniv === '' ? null : $anniv);
 
-            // Insert new member - they are not expected to have anniversary date.
-            $stmt = $connect->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism ) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("issssss", $family_id, $fname, $lname, $cell, $email, $bday, $bap );
+            // Insert new member.
+            $stmt = $connect->prepare("INSERT INTO members (family_id, first_name, last_name, cell_phone, email, birthday, baptism, anniversary ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("isssssss", $family_id, $fname, $lname, $cell, $email, $bday, $bap, $anniv );
             $stmt->execute();
             $stmt->close();
         } else {
@@ -68,16 +75,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
             $email = trim($emails[$i]);
             $bday = isset($birthdays[$i]) ? trim($birthdays[$i]) : null;
             $bap = isset($baptisms[$i]) ? trim($baptisms[$i]) : null;
+            $anniv = isset($anniversaries[$i]) ? trim($anniversaries[$i]) : null;
 
             // Set empty date strings to null
             $bday = ($bday === '' ? null : $bday);
             $bap = ($bap === '' ? null : $bap);
+            $anniv = ($anniv === '' ? null : $anniv);
 
-            $stmt = $connect->prepare("UPDATE members SET first_name=?, last_name=?, cell_phone=?, email=?, birthday=?, baptism=? WHERE id=? AND family_id=?");
-            $stmt->bind_param("ssssssii", $fname, $lname, $cell, $email, $bday, $bap, $m_id, $family_id);
+            $stmt = $connect->prepare("UPDATE members SET first_name=?, last_name=?, cell_phone=?, email=?, birthday=?, baptism=?, anniversary=? WHERE id=? AND family_id=?");
+            $stmt->bind_param("sssssssii", $fname, $lname, $cell, $email, $bday, $bap, $anniv, $m_id, $family_id);
             $stmt->execute();
             $stmt->close();
         }
+    }
+
+    $connect->commit();
+    } catch ( mysqli_sql_exception $e ) {
+        $connect->rollback();
+        cota_log_error( 'Family update failed (family_id ' . $family_id . '): ' . $e->getMessage() );
+        echo cota_page_header();
+        echo "<div class='cota-update-container'>";
+        echo '<h2>Family not updated</h2>';
+        echo '<p class="error-message">No changes were saved. The database reported: ' . htmlspecialchars( $e->getMessage() ) . '</p>';
+        echo '<p>Use your browser&#039;s Back button to correct the entry and submit again.</p>';
+        echo '</div>';
+        $cota_db->close_connection();
+        exit;
     }
 
     // Echo header
@@ -87,7 +110,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["family_id"])) {
     echo "<h2>" . $familyname . " family updated!</h2>";
     echo "<br><br>";
     echo '<div class="two-button-grid">';
-    echo '<div><button class="cota-edit-family" type="button"><a href="edit-family.php?familyname="' . $familyname . '">Edit this family again</a></button></div>';
+    // Link back to this family, including address fields to disambiguate duplicate family names.
+    $family_query = http_build_query( array_filter( array( 'familyname' => $familyname, 'address' => $address, 'address2' => $address2 ) ), '', '&', PHP_QUERY_RFC3986 );
+    echo '<div><button class="cota-edit-family" type="button"><a href="edit-family.php?' . htmlspecialchars( $family_query, ENT_QUOTES ) . '">Edit this family again</a></button></div>';
     echo '<div><button class="cota-search-family" type="button"><a href="search-edit.php">Edit Another Family</a></button></div>';
     echo '</div>';
 

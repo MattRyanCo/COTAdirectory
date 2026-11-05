@@ -6,8 +6,13 @@
  * If they haven't set a password yet, they'll be redirected to the setup page.
  */
 
-ini_set( 'display_errors', 1 );
-ini_set( 'display_startup_errors', 1 );
+// Show PHP errors on screen only for local development (Windows/Laragon).
+// On the live server, log them instead: displayed warnings can end up inside
+// form fields and be saved to the database.
+$cota_show_errors = ( PHP_OS_FAMILY === 'Windows' ) ? '1' : '0';
+ini_set( 'display_errors', $cota_show_errors );
+ini_set( 'display_startup_errors', $cota_show_errors );
+ini_set( 'log_errors', '1' );
 error_reporting( E_ALL );
 
 // Load bootstrap (but skip authentication check)

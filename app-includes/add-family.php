@@ -11,14 +11,15 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 	// Sanitize & Validate Family Data
 	$familyname = cota_sanitize( $_POST['familyname'] );
 	$address    = cota_sanitize( $_POST['address'] );
+	$address2   = cota_sanitize( $_POST['address2'] ?? '' );
 	$city       = cota_sanitize( $_POST['city'] );
 	$state      = cota_sanitize( $_POST['state'] );
 	$zip        = cota_sanitize( $_POST['zip'] );
 	$homephone  = cota_validate_phone( $_POST['homephone'] );
 
 	// Insert family record using prepared statements
-	$stmt = $connect->prepare( 'INSERT INTO families (familyname, address, city, state, zip, homephone ) VALUES (?, ?, ?, ?, ?, ?)' );
-	$stmt->bind_param( 'ssssss', $familyname, $address, $city, $state, $zip, $homephone );
+	$stmt = $connect->prepare( 'INSERT INTO families (familyname, address, address2, city, state, zip, homephone ) VALUES (?, ?, ?, ?, ?, ?, ?)' );
+	$stmt->bind_param( 'sssssss', $familyname, $address, $address2, $city, $state, $zip, $homephone );
 
 	if ( $stmt->execute() ) {
 		$family_id = $stmt->insert_id;
@@ -62,7 +63,9 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 		echo cota_page_header();
 		// Dump out remainder of import page.
 		echo "<div class='cota-add-container'>";
-		echo '<h2><a href="display-one-family.php?familyname="' . $familyname . '">' . $familyname . ' family added successfully.</a></h2>';
+		// Link to the new family, including address fields to disambiguate duplicate family names.
+		$family_query = http_build_query( array_filter( array( 'familyname' => $familyname, 'address' => $address, 'address2' => $address2 ) ), '', '&', PHP_QUERY_RFC3986 );
+		echo '<h2><a href="display-one-family.php?' . htmlspecialchars( $family_query, ENT_QUOTES ) . '">' . $familyname . ' family added successfully.</a></h2>';
 		echo '</div>';
 	} else {
 		cota_log_error( 'SQL Error (execute): ' . $stmt->error );

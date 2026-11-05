@@ -75,27 +75,27 @@ echo cota_page_header();
 		<div class="row g-3">
 			<div class="col-12 col-md-6">
 				<label class="form-label fw-bold">Family Name</label>
-				<input class="form-control" type="text" name="familyname" value="<?php echo htmlspecialchars( $family['familyname'] ); ?>" readonly>
+				<input class="form-control" type="text" name="familyname" value="<?php echo htmlspecialchars( $family['familyname'] ?? '' ); ?>" readonly>
 			</div>
 			<div class="col-12 col-md-6">
 				<label class="form-label fw-bold">Address</label>
-				<input class="form-control" type="text" name="address" value="<?php echo htmlspecialchars( $family['address'] ); ?>" readonly>
+				<input class="form-control" type="text" name="address" value="<?php echo htmlspecialchars( $family['address'] ?? '' ); ?>" readonly>
 			</div>
 			<div class="col-12 col-md-4">
 				<label class="form-label fw-bold">City</label>
-				<input class="form-control" type="text" name="city" value="<?php echo htmlspecialchars( $family['city'] ); ?>" readonly>
+				<input class="form-control" type="text" name="city" value="<?php echo htmlspecialchars( $family['city'] ?? '' ); ?>" readonly>
 			</div>
 			<div class="col-12 col-md-4">
 				<label class="form-label fw-bold">State</label>
-				<input class="form-control" type="text" name="state" value="<?php echo htmlspecialchars( $family['state'] ); ?>" readonly>
+				<input class="form-control" type="text" name="state" value="<?php echo htmlspecialchars( $family['state'] ?? '' ); ?>" readonly>
 			</div>
 			<div class="col-12 col-md-4">
 				<label class="form-label fw-bold">Zip</label>
-				<input class="form-control" type="text" name="zip" value="<?php echo htmlspecialchars( $family['zip'] ); ?>" readonly>
+				<input class="form-control" type="text" name="zip" value="<?php echo htmlspecialchars( $family['zip'] ?? '' ); ?>" readonly>
 			</div>
 			<div class="col-12">
 				<label class="form-label fw-bold">Home Phone</label>
-				<input class="form-control" type="text" name="homephone" value="<?php echo htmlspecialchars( $family['homephone'] ); ?>" readonly>
+				<input class="form-control" type="text" name="homephone" value="<?php echo htmlspecialchars( $family['homephone'] ?? '' ); ?>" readonly>
 			</div>
 		</div>
 
@@ -123,12 +123,12 @@ endif;
 				?>
 			<div class="member-row">
 				<input class="form-check-input" type="checkbox" name="delete_member[]" value="<?php echo $member['id']; ?>">
-				<input class="form-control" type="text" name="members[first_name][]" value="<?php echo htmlspecialchars( $member['first_name'] ); ?>" readonly>
-				<input class="form-control" type="text" name="members[last_name][]" value="<?php echo ! empty( $member['last_name'] ) ? htmlspecialchars( $member['last_name'] ) : htmlspecialchars( $family['familyname'] ?? '' ); ?>" readonly>
-				<input class="form-control" type="text" name="members[cell_phone][]" value="<?php echo htmlspecialchars( $member['cell_phone'] ); ?>" readonly>
-				<input class="form-control" type="email" name="members[email][]" value="<?php echo htmlspecialchars( $member['email'] ); ?>" readonly>
-				<input class="form-control" type="date" name="members[birthday][]" value="<?php echo htmlspecialchars( $member['birthday'] ); ?>" readonly>
-				<input class="form-control" type="date" name="members[baptism][]" value="<?php echo htmlspecialchars( $member['baptism'] ); ?>" readonly>
+				<input class="form-control" type="text" name="members[first_name][]" value="<?php echo htmlspecialchars( $member['first_name'] ?? '' ); ?>" readonly>
+				<input class="form-control" type="text" name="members[last_name][]" value="<?php echo ! empty( $member['last_name'] ) ? htmlspecialchars( $member['last_name'] ?? '' ) : htmlspecialchars( $family['familyname'] ?? '' ); ?>" readonly>
+				<input class="form-control" type="text" name="members[cell_phone][]" value="<?php echo htmlspecialchars( $member['cell_phone'] ?? '' ); ?>" readonly>
+				<input class="form-control" type="email" name="members[email][]" value="<?php echo htmlspecialchars( $member['email'] ?? '' ); ?>" readonly>
+				<input class="form-control" type="date" name="members[birthday][]" value="<?php echo htmlspecialchars( $member['birthday'] ?? '' ); ?>" readonly>
+				<input class="form-control" type="date" name="members[baptism][]" value="<?php echo htmlspecialchars( $member['baptism'] ?? '' ); ?>" readonly>
 				<input type="hidden" name="members[id][]" value="<?php echo $member['id']; ?>">
 
 			</div>
